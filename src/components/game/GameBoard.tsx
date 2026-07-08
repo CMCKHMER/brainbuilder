@@ -6,6 +6,82 @@ import PlayerPanel from '@/components/game/PlayerPanel';
 import ActionPanel from '@/components/game/ActionPanel';
 import { useGameStore } from '@/lib/game-store';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
+
+// Territory detail overlay on hover
+function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
+  const territories = useGameStore(s => s.territories);
+  const players = useGameStore(s => s.players);
+
+  if (!territoryId) return null;
+  const territory = territories[territoryId];
+  if (!territory) return null;
+  const owner = territory.ownerId ? players.find(p => p.id === territory.ownerId) : null;
+
+  // Count units by type
+  const counts: Record<string, number> = {};
+  for (const u of territory.units) counts[u] = (counts[u] || 0) + 1;
+  const entries = Object.entries(counts) as [UnitTypeId, number][];
+
+  return (
+    <div
+      className="absolute top-3 left-3 p-3 rounded-lg z-10 pointer-events-none"
+      style={{
+        background: 'rgba(20,15,8,0.92)',
+        border: `1.5px solid ${owner ? owner.color + '66' : 'rgba(139,115,85,0.3)'}`,
+        backdropFilter: 'blur(8px)',
+        maxWidth: 200,
+      }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-xs font-bold" style={{
+          color: owner ? owner.color : '#8B7355',
+          fontFamily: 'var(--font-cinzel), serif',
+        }}>
+          {territory.name}
+        </span>
+        <span className="text-[9px] opacity-40">{territory.region}</span>
+      </div>
+
+      {owner && (
+        <div className="text-[10px] opacity-50 mb-1.5">
+          {owner.icon} {owner.name} • {territory.units.length} units
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-1">
+        {entries.map(([type, count]) => (
+          <div
+            key={type}
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded"
+            style={{
+              background: `${UNIT_TYPES[type].color}22`,
+              border: `1px solid ${UNIT_TYPES[type].color}33`,
+            }}
+          >
+            <span className="text-xs">{UNIT_TYPES[type].icon}</span>
+            <span className="text-[10px] font-bold" style={{ color: UNIT_TYPES[type].color }}>
+              {UNIT_TYPES[type].name} {count}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Unit stats */}
+      {entries.length > 0 && (
+        <div className="flex gap-3 mt-2 text-[9px] opacity-50">
+          {entries.slice(0, 3).map(([type]) => (
+            <span key={type}>
+              <span style={{ color: '#EF4444' }}>A{UNIT_TYPES[type].attack}</span>
+              <span style={{ color: '#60A5FA' }}> D{UNIT_TYPES[type].defense}</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function GameBoard() {
   const phase = useGameStore(s => s.phase);
@@ -13,6 +89,31 @@ export default function GameBoard() {
   const currentPlayerIndex = useGameStore(s => s.currentPlayerIndex);
   const resetGame = useGameStore(s => s.resetGame);
   const winner = useGameStore(s => s.winner);
+  const turnNumber = useGameStore(s => s.turnNumber);
+  const territories = useGameStore(s => s.territories);
+  const selectedTerritory = useGameStore(s => s.selectedTerritory);
+  const [hoveredTerritory, setHoveredTerritory] = useState<string | null>(null);
+
+  // Track mouse position over territory labels for tooltips
+  const handleSvgMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const svgP = pt.matrixTransform(svg.getScreenCTM()!.inverse());
+
+    // Check if mouse is near any territory label
+    let found: string | null = null;
+    for (const t of Object.values(territories)) {
+      const dx = svgP.x - t.labelX;
+      const dy = svgP.y - t.labelY;
+      if (Math.abs(dx) < 40 && Math.abs(dy) < 25) {
+        found = t.id;
+        break;
+      }
+    }
+    setHoveredTerritory(found);
+  };
 
   if (phase === 'setup') {
     return <GameSetup />;
@@ -47,6 +148,13 @@ export default function GameBoard() {
           >
             REALM OF AETHERMOOR
           </h1>
+          <span className="text-[10px] px-1.5 py-0.5 rounded" style={{
+            background: 'rgba(212,160,23,0.15)',
+            color: '#D4A017',
+            fontFamily: 'var(--font-cinzel), serif',
+          }}>
+            Turn {turnNumber}
+          </span>
         </div>
         <div className="flex items-center gap-3">
           {phase !== 'gameover' && currentPlayer && (
@@ -76,8 +184,16 @@ export default function GameBoard() {
       <div className="flex-1 flex min-h-0">
         {/* Map */}
         <div className="flex-1 relative p-2 md:p-4">
-          <div className="w-full h-full rounded-lg overflow-hidden" style={{ border: '2px solid rgba(139,115,85,0.2)' }}>
-            <GameMap />
+          <div className="w-full h-full rounded-lg overflow-hidden relative" style={{ border: '2px solid rgba(139,115,85,0.2)' }}>
+            <div
+              onMouseMove={handleSvgMouseMove}
+              onMouseLeave={() => setHoveredTerritory(null)}
+              className="w-full h-full"
+            >
+              <GameMap />
+            </div>
+            {/* Territory tooltip */}
+            <TerritoryTooltip territoryId={hoveredTerritory || selectedTerritory} />
           </div>
           {/* Game Over Overlay */}
           {phase === 'gameover' && winner && (
@@ -120,7 +236,7 @@ export default function GameBoard() {
 
         {/* Right Sidebar - Player Panel */}
         <aside
-          className="hidden md:flex flex-col w-64 p-3"
+          className="hidden md:flex flex-col w-72 p-3"
           style={{
             background: 'linear-gradient(180deg, rgba(30,20,10,0.9), rgba(20,15,8,0.95))',
             borderLeft: '2px solid rgba(139,115,85,0.2)',

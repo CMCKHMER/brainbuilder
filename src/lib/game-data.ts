@@ -24,11 +24,228 @@ export const PLAYER_CONFIGS: PlayerConfig[] = [
 ];
 
 export const CHARACTER_CLASSES = [
-  { id: "knight", name: "Knight", icon: "⚔️", desc: "Bonus armies on fortify" },
-  { id: "mage", name: "Mage", icon: "🔮", desc: "+1 reinforcement per turn" },
+  { id: "knight", name: "Knight", icon: "⚔️", desc: "Swordsmen gain +1 ATK" },
+  { id: "mage", name: "Mage", icon: "🔮", desc: "Mages cost 1 fewer to deploy" },
   { id: "rogue", name: "Rogue", icon: "🗡️", desc: "Reroll one die per attack" },
-  { id: "paladin", name: "Paladin", icon: "🛡️", desc: "Defender wins ties always" },
+  { id: "paladin", name: "Paladin", icon: "🛡️", desc: "Shield Bearers gain +1 DEF" },
 ];
+
+// ========================================
+// UNIT TYPES - Each with unique stats and type advantages
+// ========================================
+
+export type UnitTypeId = 'swordsman' | 'archer' | 'cavalry' | 'mage' | 'shield_bearer' | 'siege';
+
+export interface UnitType {
+  id: UnitTypeId;
+  name: string;
+  icon: string;
+  description: string;
+  attack: number;       // Base attack power (modifies dice)
+  defense: number;      // Base defense power (modifies dice)
+  health: number;       // Hit points per unit
+  cost: number;         // Reinforcement points to deploy one
+  strongVs: UnitTypeId[];  // Deals bonus damage to these
+  weakVs: UnitTypeId[];    // Takes extra damage from these
+  color: string;        // UI accent color
+  gradient: string;     // Card gradient
+  figure: string;       // ASCII art figure key
+}
+
+export const UNIT_TYPES: Record<UnitTypeId, UnitType> = {
+  swordsman: {
+    id: 'swordsman',
+    name: 'Swordsman',
+    icon: '⚔️',
+    description: 'Balanced melee fighter. Sturdy frontline unit that excels against archers at close range.',
+    attack: 3,
+    defense: 4,
+    health: 5,
+    cost: 1,
+    strongVs: ['archer'],
+    weakVs: ['cavalry'],
+    color: '#C0C0C0',
+    gradient: 'linear-gradient(135deg, #4A4A4A 0%, #2D2D2D 50%, #1A1A1A 100%)',
+    figure: 'swordsman',
+  },
+  archer: {
+    id: 'archer',
+    name: 'Archer',
+    icon: '🏹',
+    description: 'Ranged damage dealer. Devastating against slow-moving cavalry with volley fire tactics.',
+    attack: 4,
+    defense: 2,
+    health: 3,
+    cost: 1,
+    strongVs: ['cavalry'],
+    weakVs: ['swordsman'],
+    color: '#22C55E',
+    gradient: 'linear-gradient(135deg, #166534 0%, #14532D 50%, #052E16 100%)',
+    figure: 'archer',
+  },
+  cavalry: {
+    id: 'cavalry',
+    name: 'Cavalry',
+    icon: '🐎',
+    description: 'Fast flankers that crush swordsmen with devastating charge attacks.',
+    attack: 5,
+    defense: 3,
+    health: 4,
+    cost: 1,
+    strongVs: ['swordsman'],
+    weakVs: ['archer'],
+    color: '#D4A017',
+    gradient: 'linear-gradient(135deg, #92700C 0%, #78590A 50%, #5C4A32 100%)',
+    figure: 'cavalry',
+  },
+  mage: {
+    id: 'mage',
+    name: 'Mage',
+    icon: '🔮',
+    description: 'Arcane spellcaster. Powerful magic damage melts shield bearers but is vulnerable to fast cavalry.',
+    attack: 6,
+    defense: 1,
+    health: 2,
+    cost: 2,
+    strongVs: ['shield_bearer'],
+    weakVs: ['cavalry'],
+    color: '#A855F7',
+    gradient: 'linear-gradient(135deg, #7E22CE 0%, #6B21A8 50%, #581C87 100%)',
+    figure: 'mage',
+  },
+  shield_bearer: {
+    id: 'shield_bearer',
+    name: 'Shield Bearer',
+    icon: '🛡️',
+    description: 'Immovable defender. Walls of steel that absorb arrows and protect allies.',
+    attack: 1,
+    defense: 6,
+    health: 6,
+    cost: 1,
+    strongVs: ['archer'],
+    weakVs: ['mage'],
+    color: '#60A5FA',
+    gradient: 'linear-gradient(135deg, #1E40AF 0%, #1E3A5F 50%, #172554 100%)',
+    figure: 'shield',
+  },
+  siege: {
+    id: 'siege',
+    name: 'Siege Engine',
+    icon: '🏰',
+    description: 'Heavy war machine. Devastating against fortified positions and defensive formations.',
+    attack: 7,
+    defense: 2,
+    health: 3,
+    cost: 2,
+    strongVs: ['shield_bearer'],
+    weakVs: ['cavalry'],
+    color: '#F97316',
+    gradient: 'linear-gradient(135deg, #C2410C 0%, #9A3412 50%, #7C2D12 100%)',
+    figure: 'siege',
+  },
+};
+
+export const UNIT_TYPE_LIST: UnitType[] = Object.values(UNIT_TYPES);
+
+// Type advantage relationships for quick lookup
+export function getTypeAdvantage(attackerType: UnitTypeId, defenderType: UnitTypeId): 'strong' | 'weak' | 'neutral' {
+  const atkUnit = UNIT_TYPES[attackerType];
+  if (atkUnit.strongVs.includes(defenderType)) return 'strong';
+  if (atkUnit.weakVs.includes(defenderType)) return 'weak';
+  return 'neutral';
+}
+
+// ========================================
+// MILITARY TACTICS BUFFS
+// ========================================
+
+export type TacticId = 'phalanx' | 'cavalry_charge' | 'volley_fire' | 'arcane_surge' | 'siege_prep' | 'rally_cry';
+
+export interface Tactic {
+  id: TacticId;
+  name: string;
+  icon: string;
+  description: string;
+  effect: string;        // Short effect text
+  phase: 'attack' | 'deploy' | 'defense';
+  cooldown: number;      // Turns before can reuse
+  requires?: UnitTypeId; // Optional: requires this unit type in army
+  color: string;
+}
+
+export const TACTICS: Record<TacticId, Tactic> = {
+  phalanx: {
+    id: 'phalanx',
+    name: 'Phalanx Formation',
+    icon: '🛡️',
+    description: 'Shield Bearers lock into an impenetrable wall. All defense dice get +1 this turn.',
+    effect: 'All DEF dice +1',
+    phase: 'defense',
+    cooldown: 2,
+    requires: 'shield_bearer',
+    color: '#60A5FA',
+  },
+  cavalry_charge: {
+    id: 'cavalry_charge',
+    name: 'Cavalry Charge',
+    icon: '🐎',
+    description: 'Cavalry unleashes a devastating thundering charge. The first attack this turn rolls with +2 on the highest die.',
+    effect: 'First ATK +2 highest die',
+    phase: 'attack',
+    cooldown: 2,
+    requires: 'cavalry',
+    color: '#D4A017',
+  },
+  volley_fire: {
+    id: 'volley_fire',
+    name: 'Volley Fire',
+    icon: '🏹',
+    description: 'Archers unleash a rain of arrows. Roll 1 extra attack die on every attack this turn.',
+    effect: '+1 ATK die per attack',
+    phase: 'attack',
+    cooldown: 3,
+    requires: 'archer',
+    color: '#22C55E',
+  },
+  arcane_surge: {
+    id: 'arcane_surge',
+    name: 'Arcane Surge',
+    icon: '🔮',
+    description: 'Mages channel raw arcane energy. Type advantage bonus is doubled this turn.',
+    effect: 'Double type advantage',
+    phase: 'attack',
+    cooldown: 2,
+    requires: 'mage',
+    color: '#A855F7',
+  },
+  siege_prep: {
+    id: 'siege_prep',
+    name: 'Siege Preparation',
+    icon: '🏰',
+    description: 'War machines are calibrated for maximum destruction. Defender rolls 1 fewer die this turn.',
+    effect: 'DEF rolls -1 die',
+    phase: 'attack',
+    cooldown: 3,
+    requires: 'siege',
+    color: '#F97316',
+  },
+  rally_cry: {
+    id: 'rally_cry',
+    name: 'Rally Cry',
+    icon: '📯',
+    description: 'The warlord inspires the troops. Gain +2 extra reinforcements this turn.',
+    effect: '+2 reinforcements',
+    phase: 'deploy',
+    cooldown: 2,
+    color: '#EF4444',
+  },
+};
+
+export const TACTIC_LIST: Tactic[] = Object.values(TACTICS);
+
+// ========================================
+// MAP DATA
+// ========================================
 
 // Fantasy continent "Aethermoor" - 16 territories as SVG polygon paths
 // viewBox: 0 0 1000 650
@@ -195,7 +412,7 @@ export const REGION_NAMES = ["The Frostlands", "The Heartlands", "The Southern R
 export const PHASE_INFO: Record<string, { title: string; description: string }> = {
   deploy: {
     title: "⚔️ Deploy Reinforcements",
-    description: "Click your territories to place armies. Reinforcements left:",
+    description: "Click your territories, then choose a unit type to deploy. Reinforcements left:",
   },
   attack: {
     title: "🗡️ Attack Phase",

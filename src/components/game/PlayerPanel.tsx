@@ -2,6 +2,9 @@
 
 import { useGameStore } from '@/lib/game-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { UnitComposition } from './UnitCards';
+import TacticsPanel from './TacticsPanel';
+import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 
 export default function PlayerPanel() {
   const players = useGameStore(s => s.players);
@@ -13,10 +16,19 @@ export default function PlayerPanel() {
 
   if (phase === 'setup') return null;
 
-  const totalArmies = (playerId: string) =>
+  const totalUnits = (playerId: string) =>
     Object.values(territories)
       .filter(t => t.ownerId === playerId)
-      .reduce((sum, t) => sum + t.armies, 0);
+      .reduce((sum, t) => sum + t.units.length, 0);
+
+  const getPlayerUnitSummary = (playerId: string) => {
+    const allUnits = Object.values(territories)
+      .filter(t => t.ownerId === playerId)
+      .flatMap(t => t.units);
+    const counts: Record<string, number> = {};
+    for (const u of allUnits) counts[u] = (counts[u] || 0) + 1;
+    return Object.entries(counts) as [UnitTypeId, number][];
+  };
 
   return (
     <div className="flex flex-col h-full gap-3">
@@ -64,33 +76,53 @@ export default function PlayerPanel() {
         Warlords
       </div>
       <div className="flex flex-col gap-2">
-        {players.map((player, index) => (
-          <div
-            key={player.id}
-            className="flex items-center gap-2 p-2 rounded-md transition-all"
-            style={{
-              background: index === currentPlayerIndex && phase !== 'gameover'
-                ? `${player.color}15`
-                : 'rgba(255,255,255,0.03)',
-              borderLeft: `3px solid ${player.color}`,
-              opacity: player.eliminated ? 0.35 : 1,
-            }}
-          >
-            <span className="text-lg">{player.icon}</span>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold truncate" style={{ color: player.eliminated ? '#666' : player.color }}>
-                {player.name}
-                {index === currentPlayerIndex && phase !== 'gameover' && (
-                  <span className="ml-1 opacity-60">◀</span>
-                )}
+        {players.map((player, index) => {
+          const unitSummary = getPlayerUnitSummary(player.id);
+          return (
+            <div
+              key={player.id}
+              className="flex flex-col gap-1 p-2 rounded-md transition-all"
+              style={{
+                background: index === currentPlayerIndex && phase !== 'gameover'
+                  ? `${player.color}15`
+                  : 'rgba(255,255,255,0.03)',
+                borderLeft: `3px solid ${player.color}`,
+                opacity: player.eliminated ? 0.35 : 1,
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{player.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold truncate" style={{ color: player.eliminated ? '#666' : player.color }}>
+                    {player.name}
+                    {index === currentPlayerIndex && phase !== 'gameover' && (
+                      <span className="ml-1 opacity-60">◀</span>
+                    )}
+                  </div>
+                  <div className="text-[10px] opacity-50">
+                    {player.characterClass}
+                    {player.eliminated ? ' • Eliminated' : ` • ${player.territories.length} lands • ${totalUnits(player.id)} units`}
+                  </div>
+                </div>
               </div>
-              <div className="text-[10px] opacity-50">
-                {player.characterClass}
-                {player.eliminated ? ' • Eliminated' : ` • ${player.territories.length} lands • ${totalArmies(player.id)} troops`}
-              </div>
+              {/* Unit composition summary */}
+              {!player.eliminated && unitSummary.length > 0 && (
+                <div className="flex items-center gap-1 flex-wrap pl-7">
+                  {unitSummary.map(([type, count]) => (
+                    <span key={type} className="text-[10px] flex items-center gap-0.5" style={{ color: UNIT_TYPES[type].color }}>
+                      {UNIT_TYPES[type].icon}{count}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      {/* Tactics (shown in sidebar for non-lg screens too) */}
+      <div className="lg:hidden">
+        <TacticsPanel />
       </div>
 
       {/* Battle Log */}
@@ -102,20 +134,23 @@ export default function PlayerPanel() {
           {battleLog.length === 0 && (
             <div className="text-xs opacity-30 italic text-center py-4">No battles yet...</div>
           )}
-          {[...battleLog].reverse().map((entry) => (
+          {[...battleLog].reverse().slice(0, 50).map((entry) => (
             <div
               key={entry.id}
               className="text-[11px] py-1 px-2 rounded"
               style={{
                 background: entry.type === 'conquer' ? 'rgba(212,160,23,0.1)' :
                   entry.type === 'attack' ? 'rgba(220,38,38,0.08)' :
+                  entry.type === 'tactic' ? 'rgba(168,85,247,0.1)' :
                   'rgba(255,255,255,0.02)',
                 borderLeft: entry.type === 'conquer' ? '2px solid #D4A017' :
                   entry.type === 'attack' ? '2px solid #DC262644' :
+                  entry.type === 'tactic' ? '2px solid #A855F744' :
                   '2px solid transparent',
                 color: entry.type === 'conquer' ? '#D4A017' :
                   entry.type === 'attack' ? '#FCA5A5' :
                   entry.type === 'turn' ? '#D4A017' :
+                  entry.type === 'tactic' ? '#D8B4FE' :
                   'rgba(255,255,255,0.5)',
               }}
             >

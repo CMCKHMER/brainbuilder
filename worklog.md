@@ -1,31 +1,32 @@
 ---
 Task ID: 1
 Agent: Main Agent
-Task: Build a playable medieval Risk-style strategy board game as a Next.js web app
+Task: Add unit figures, type advantages, damage stats, and military tactics buffs to the Aethermoor board game
 
 Work Log:
-- Analyzed user's reference images to understand desired art style (semi-realistic digital art, soft shading, muted warm tones)
-- Generated 9 character art assets with magic effects in matching style (knight, mage, rogue, paladin, archer, healer, dragon boss, necromancer, goblin chief)
-- Generated 1 enchanted medieval village background
-- Generated 1 Risk-style game board map image
-- Fixed critical JSX parsing bug in ActionPanel.tsx (missing closing brace in style prop)
-- Verified existing game codebase: game-data.ts (16 territories, 4 player configs), game-logic.ts (dice, battle resolution, reinforcements), game-store.ts (Zustand state management)
-- Verified all UI components: GameSetup.tsx, GameBoard.tsx, GameMap.tsx (interactive SVG), ActionPanel.tsx (phase controls, dice), PlayerPanel.tsx (stats, battle log)
-- Started dev server via dev.sh and verified through Caddy gateway on port 81
-- Browser-verified: Setup screen renders correctly with player count selector, name editing, class selection
-- Browser-verified: Game board renders with colored territories, army counts, player panels
-- Browser-verified: Deploy phase works (click territories to place armies)
-- Browser-verified: Attack phase transitions correctly
-- Browser-verified: Battle chronicle logs events
-- Lint passes clean
+- Analyzed existing game codebase (game-data.ts, game-logic.ts, game-store.ts, all components)
+- Designed 6 unit types: Swordsman, Archer, Cavalry, Mage, Shield Bearer, Siege Engine - each with unique ATK/DEF/HP/cost stats
+- Designed rock-paper-scissors type advantage system (Swordsman>Archer>Cavalry>Swordsman, Mage>Shield, Siege>Shield)
+- Designed 6 military tactics buffs: Phalanx, Cavalry Charge, Volley Fire, Arcane Surge, Siege Preparation, Rally Cry
+- Refactored game-data.ts with unit type definitions, type advantage lookups, and tactics definitions
+- Refactored game-logic.ts with unit-based combat system (dominant unit type, type advantage modifiers, unit removal by HP priority, per-class bonuses)
+- Refactored game-store.ts to use unit arrays instead of army counts, with tactics state management (activation, cooldowns, per-turn usage)
+- Created UnitCards.tsx with SVG unit figures, stat cards, composition displays, and type advantage indicators
+- Created UnitDeployer.tsx for deploy phase unit type selection
+- Created TacticsPanel.tsx for military tactics activation with cooldown/requirement tracking
+- Updated GameMap.tsx to show unit icons on territories with dominant type display
+- Updated ActionPanel.tsx with unit-aware combat (type advantage display, unit composition in attack info)
+- Updated PlayerPanel.tsx with unit composition summaries per player
+- Updated GameSetup.tsx with expandable Unit Guide showing all 6 units with stats, type advantages, and the advantage cycle chart
+- Updated GameBoard.tsx with territory tooltip on hover and turn number display
+- Fixed all import and export issues (default vs named exports, cross-module imports)
+- Verified via Agent Browser: setup screen, unit guide, game board, deploy phase, attack phase, tactics panel all working
 
 Stage Summary:
-- Fully playable medieval Risk-style board game "Realm of Aethermoor" is running
-- 16 territories on SVG map with adjacency connections
-- 4 character classes with unique abilities (Knight, Mage, Rogue, Paladin)
-- 2-4 player hot-seat multiplayer
-- 3 game phases per turn: Deploy, Attack, Fortify
-- Dice-based combat with visual dice faces
-- Player elimination and win condition detection
-- Medieval dark theme with Cinzel font, gold accents
-- Character art assets generated in user's preferred semi-realistic style
+- 6 unique unit types with SVG figures, stats, and rock-paper-scissors advantages
+- 6 military tactics buffs with cooldowns and unit requirements
+- Full unit composition system replacing plain army counts
+- Interactive deploy phase with unit type selection
+- Type advantage indicators during combat
+- Expandable unit reference guide on setup screen
+- All verified working in browser

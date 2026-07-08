@@ -2,6 +2,8 @@
 
 import { useGameStore } from '@/lib/game-store';
 import { useMemo } from 'react';
+import { getUnitComposition, getDominantUnit, getMaxAttackerDice, getMaxDefenderDice, getUnitCost } from '@/lib/game-logic';
+import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 
 const OCEAN_COLOR = '#1a3a4a';
 const UNOWNED_COLOR = '#4a4a3a';
@@ -18,6 +20,7 @@ export default function GameMap() {
   const selectTerritory = useGameStore(s => s.selectTerritory);
   const deployArmy = useGameStore(s => s.deployArmy);
   const reinforcementsLeft = useGameStore(s => s.reinforcementsLeft);
+  const deployUnitType = useGameStore(s => s.deployUnitType);
 
   const playerColorMap = useMemo(() => {
     const map: Record<string, { color: string; colorLight: string }> = {};
@@ -35,7 +38,7 @@ export default function GameMap() {
     if (phase === 'deploy') {
       const territory = territories[territoryId];
       if (territory.ownerId === currentPlayerId && reinforcementsLeft > 0) {
-        deployArmy(territoryId);
+        deployArmy(territoryId, deployUnitType);
       }
     } else if (phase === 'attack' || phase === 'fortify') {
       selectTerritory(territoryId);
@@ -62,23 +65,25 @@ export default function GameMap() {
   const isSelectable = (territoryId: string): boolean => {
     if (phase === 'deploy') {
       const t = territories[territoryId];
-      return t.ownerId === currentPlayerId && reinforcementsLeft > 0;
+      const currentPlayer = players[useGameStore.getState().currentPlayerIndex];
+      const cost = getUnitCost(deployUnitType, currentPlayer.characterClass);
+      return t.ownerId === currentPlayerId && reinforcementsLeft >= cost;
     }
     if (phase === 'attack') {
       const t = territories[territoryId];
       if (selectedTerritory === null) {
-        return t.ownerId === currentPlayerId && t.armies > 1;
+        return t.ownerId === currentPlayerId && t.units.length > 1;
       }
       if (territoryId === selectedTerritory) return true;
       if (t.ownerId !== currentPlayerId) {
         return territories[selectedTerritory].adjacentTo.includes(territoryId);
       }
-      return t.ownerId === currentPlayerId && t.armies > 1;
+      return t.ownerId === currentPlayerId && t.units.length > 1;
     }
     if (phase === 'fortify') {
       const t = territories[territoryId];
       if (selectedTerritory === null) {
-        return t.ownerId === currentPlayerId && t.armies > 1;
+        return t.ownerId === currentPlayerId && t.units.length > 1;
       }
       if (territoryId === selectedTerritory) return true;
       if (t.ownerId === currentPlayerId && selectedTerritory !== null) {
@@ -89,7 +94,7 @@ export default function GameMap() {
     return false;
   };
 
-  // Draw connection lines between adjacent territories (subtle dotted lines)
+  // Draw connection lines between adjacent territories
   const connectionLines = useMemo(() => {
     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
     const drawn = new Set<string>();
@@ -107,6 +112,72 @@ export default function GameMap() {
     }
     return lines;
   }, [territories]);
+
+  // Render unit icons for a territory
+  const renderUnitIcons = (territoryId: string) => {
+    const territory = territories[territoryId];
+    if (!territory || territory.units.length === 0) return null;
+
+    const composition = getUnitComposition(territory.units);
+    const entries = Object.entries(composition) as [UnitTypeId, number][];
+    const dominant = getDominantUnit(territory.units);
+
+    return (
+      <g>
+        {/* Unit count badge */}
+        <circle
+          cx={territory.labelX}
+          cy={territory.labelY + 10}
+          r="13"
+          fill={dominant ? UNIT_TYPES[dominant].color + '44' : 'rgba(0,0,0,0.5)'}
+          stroke={dominant ? UNIT_TYPES[dominant].color : '#666'}
+          strokeWidth="1.5"
+          style={{ pointerEvents: 'none' }}
+        />
+        {/* Dominant unit icon */}
+        {dominant && (
+          <text
+            x={territory.labelX}
+            y={territory.labelY + 14}
+            textAnchor="middle"
+            fontSize="11"
+            style={{ pointerEvents: 'none' }}
+          >
+            {UNIT_TYPES[dominant].icon}
+          </text>
+        )}
+        {/* Unit count */}
+        <text
+          x={territory.labelX + 12}
+          y={territory.labelY + 7}
+          textAnchor="middle"
+          fontSize="8"
+          fontWeight="bold"
+          fill="white"
+          style={{ pointerEvents: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.9)' }}
+        >
+          {territory.units.length}
+        </text>
+        {/* Mini composition indicators */}
+        {entries.length > 1 && (
+          <g transform={`translate(${territory.labelX - (entries.length * 5)}, ${territory.labelY + 22})`}>
+            {entries.slice(0, 4).map(([type, count], i) => (
+              <text
+                key={type}
+                x={i * 10}
+                y="0"
+                textAnchor="middle"
+                fontSize="7"
+                style={{ pointerEvents: 'none' }}
+              >
+                {UNIT_TYPES[type].icon}
+              </text>
+            ))}
+          </g>
+        )}
+      </g>
+    );
+  };
 
   return (
     <svg
@@ -201,7 +272,7 @@ export default function GameMap() {
             {/* Territory name */}
             <text
               x={territory.labelX}
-              y={territory.labelY - 8}
+              y={territory.labelY - 10}
               textAnchor="middle"
               fontSize="9"
               fontFamily="var(--font-cinzel), serif"
@@ -211,27 +282,8 @@ export default function GameMap() {
               {territory.name}
             </text>
 
-            {/* Army count circle */}
-            <circle
-              cx={territory.labelX}
-              cy={territory.labelY + 10}
-              r="12"
-              fill={ownerColor || '#666'}
-              stroke="rgba(0,0,0,0.5)"
-              strokeWidth="1.5"
-              style={{ pointerEvents: 'none' }}
-            />
-            <text
-              x={territory.labelX}
-              y={territory.labelY + 14}
-              textAnchor="middle"
-              fontSize="11"
-              fontWeight="bold"
-              fill="white"
-              style={{ pointerEvents: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
-            >
-              {territory.armies}
-            </text>
+            {/* Unit icons and count */}
+            {renderUnitIcons(territory.id)}
           </g>
         );
       })}
