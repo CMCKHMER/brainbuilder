@@ -134,9 +134,9 @@ export default function ActionPanel() {
               <span className="text-red-400 text-xs font-bold ml-1">-{battleResult.attackerLosses}</span>
             )}
           </div>
-          <span className="text-lg opacity-30">⚔️</span>
+          <span className="text-lg opacity-30">{"⚔️"}</span>
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-red-400 mr-1" style={{ fontFamily: 'var(--font-cinzel), serif' }>DEF</span>
+            <span className="text-[10px] text-red-400 mr-1" style={{ fontFamily: 'var(--font-cinzel), serif' }}>DEF</span>
             {battleResult.defenderRolls.map((val, i) => (
               <DieFace key={`d-${i}`} value={val} size={32} color="#FECACA" />
             ))}
