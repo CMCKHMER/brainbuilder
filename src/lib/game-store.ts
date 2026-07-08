@@ -45,6 +45,9 @@ interface GameState {
   activeTactics: ActiveTactic[];    // All active/cooling-down tactics
   selectedTactic: TacticId | null;  // Tactic selected for this turn
 
+  // Title screen
+  startGame: () => void;
+
   // Setup
   setupGame: (playerConfigs: { name: string; color: string; colorLight: string; characterClass: string; icon: string }[]) => void;
 
@@ -132,7 +135,7 @@ function randomlyAssignTerritories(playerCount: number, players: Player[]): Reco
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
-  phase: 'setup',
+  phase: 'title',
   players: [],
   currentPlayerIndex: 0,
   territories: {},
@@ -639,9 +642,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     });
   },
 
+  startGame: () => set({ phase: 'setup' }),
+
   resetGame: () => {
     set({
-      phase: 'setup',
+      phase: 'title',
       players: [],
       currentPlayerIndex: 0,
       territories: {},

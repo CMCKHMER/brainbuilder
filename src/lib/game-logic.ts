@@ -1,6 +1,6 @@
 import { type UnitTypeId, UNIT_TYPES, getTypeAdvantage } from './game-data';
 
-export type GamePhase = 'setup' | 'deploy' | 'attack' | 'fortify' | 'gameover';
+export type GamePhase = 'title' | 'setup' | 'deploy' | 'attack' | 'fortify' | 'gameover';
 
 export interface Player {
   id: string;

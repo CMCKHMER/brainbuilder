@@ -56,3 +56,24 @@ Stage Summary:
 - 8 military tactics buffs with cooldown system
 - Full graphical upgrade: portraits in setup guide, deploy bar, battle display, tooltips, sidebar
 - All images saved to /home/z/my-project/download/unit_*.png and /public/game/units/
+
+---
+Task ID: 1
+Agent: Main Agent
+Task: Create dynamic title/starting screen from game menu image with magical effects
+
+Work Log:
+- Analyzed uploaded image (pasted_image_1783529045164.png) via VLM — identified as "Realm of Aethermoore" fantasy game menu
+- Added 'title' phase to GamePhase type in game-logic.ts
+- Added startGame() action and set initial phase to 'title' in game-store.ts
+- Created TitleScreen.tsx component with: canvas-based particle system (fireflies, embers, mist), Ken Burns background animation, golden title with animated glow and floating effect, portal pulse effect, torch flame flickers, vignette overlay, cinematic loading screen, fade-to-black transition
+- Updated page.tsx to route to TitleScreen on 'title' phase
+- Fixed loading overlay not dismissing (added 2s fallback timer for cached images)
+- Verified with Agent Browser: title renders, particles animate, buttons are interactive, NEW CAMPAIGN transitions smoothly to Game Setup
+
+Stage Summary:
+- Dynamic title screen is fully functional at the / route
+- All 5 menu buttons render with hover effects and bracket decorations
+- NEW CAMPAIGN triggers a 1.2s cinematic fade-to-black into the game setup
+- Particle engine runs at 60fps with 3 particle types (fireflies, embers, mist)
+- No console errors, clean lint pass
