@@ -8,8 +8,9 @@ import { useGameStore } from '@/lib/game-store';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
+import { UnitPortrait } from './UnitCards';
 
-// Territory detail overlay on hover
+// Territory detail overlay on hover - enhanced with unit portraits
 function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
   const territories = useGameStore(s => s.territories);
   const players = useGameStore(s => s.players);
@@ -31,7 +32,7 @@ function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
         background: 'rgba(20,15,8,0.92)',
         border: `1.5px solid ${owner ? owner.color + '66' : 'rgba(139,115,85,0.3)'}`,
         backdropFilter: 'blur(8px)',
-        maxWidth: 200,
+        maxWidth: 220,
       }}
     >
       <div className="flex items-center gap-2 mb-2">
@@ -50,7 +51,8 @@ function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1">
+      {/* Unit list with mini portraits */}
+      <div className="flex flex-wrap gap-1.5">
         {entries.map(([type, count]) => (
           <div
             key={type}
@@ -60,25 +62,18 @@ function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
               border: `1px solid ${UNIT_TYPES[type].color}33`,
             }}
           >
-            <span className="text-xs">{UNIT_TYPES[type].icon}</span>
-            <span className="text-[10px] font-bold" style={{ color: UNIT_TYPES[type].color }}>
-              {UNIT_TYPES[type].name} {count}
-            </span>
+            <UnitPortrait unitType={type} size={16} />
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold leading-tight" style={{ color: UNIT_TYPES[type].color }}>
+                {UNIT_TYPES[type].name}
+              </span>
+              <span className="text-[8px] opacity-40 leading-tight">
+                x{count} • A{UNIT_TYPES[type].attack} D{UNIT_TYPES[type].defense}
+              </span>
+            </div>
           </div>
         ))}
       </div>
-
-      {/* Unit stats */}
-      {entries.length > 0 && (
-        <div className="flex gap-3 mt-2 text-[9px] opacity-50">
-          {entries.slice(0, 3).map(([type]) => (
-            <span key={type}>
-              <span style={{ color: '#EF4444' }}>A{UNIT_TYPES[type].attack}</span>
-              <span style={{ color: '#60A5FA' }}> D{UNIT_TYPES[type].defense}</span>
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

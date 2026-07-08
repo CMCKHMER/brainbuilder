@@ -2,7 +2,7 @@
 
 import { useGameStore } from '@/lib/game-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { UnitComposition } from './UnitCards';
+import { UnitComposition, UnitPortrait } from './UnitCards';
 import TacticsPanel from './TacticsPanel';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 
@@ -105,13 +105,14 @@ export default function PlayerPanel() {
                   </div>
                 </div>
               </div>
-              {/* Unit composition summary */}
+              {/* Unit composition summary with mini portraits */}
               {!player.eliminated && unitSummary.length > 0 && (
-                <div className="flex items-center gap-1 flex-wrap pl-7">
+                <div className="flex items-center gap-1.5 flex-wrap pl-7">
                   {unitSummary.map(([type, count]) => (
-                    <span key={type} className="text-[10px] flex items-center gap-0.5" style={{ color: UNIT_TYPES[type].color }}>
-                      {UNIT_TYPES[type].icon}{count}
-                    </span>
+                    <div key={type} className="flex items-center gap-0.5">
+                      <UnitPortrait unitType={type} size={14} />
+                      <span className="text-[9px] font-bold" style={{ color: UNIT_TYPES[type].color }}>{count}</span>
+                    </div>
                   ))}
                 </div>
               )}

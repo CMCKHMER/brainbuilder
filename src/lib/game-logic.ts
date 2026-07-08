@@ -138,11 +138,11 @@ export function resolveBattle(
   }
 
   // Character class bonuses
-  if (attackerClass === 'knight' && attackerType === 'swordsman') {
-    atkBonus += 1; // Knights: Swordsmen gain +1 ATK
+  if (attackerClass === 'knight' && (attackerType === 'swordsman' || attackerType === 'cavalry')) {
+    atkBonus += 1; // Knights: Swordsmen & Cavalry gain +1 ATK
   }
-  if (defenderClass === 'paladin' && defenderType === 'shield_bearer') {
-    defBonus += 1; // Paladins: Shield Bearers gain +1 DEF
+  if (defenderClass === 'paladin' && (defenderType === 'shield_bearer' || defenderType === 'paladin')) {
+    defBonus += 1; // Paladins: Shield Bearers & Paladins gain +1 DEF
   }
 
   // Rogue reroll: handled at store level (simplification - we just give +1 to one die)

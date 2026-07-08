@@ -6,7 +6,7 @@ import { PHASE_INFO, UNIT_TYPES, getTypeAdvantage, type UnitTypeId } from '@/lib
 import { Button } from '@/components/ui/button';
 import { useState, useCallback, useMemo } from 'react';
 import UnitDeployer from './UnitDeployer';
-import { TypeAdvantageIndicator, UnitComposition } from './UnitCards';
+import { TypeAdvantageIndicator, UnitComposition, BattleUnitDisplay, UnitPortrait } from './UnitCards';
 import TacticsPanel from './TacticsPanel';
 import { TACTICS } from '@/lib/game-data';
 
@@ -126,16 +126,19 @@ export default function ActionPanel() {
             )}
             {phase === 'attack' && selectedTerritory && !targetTerritory && (
               <div className="flex items-center gap-2">
+                <UnitPortrait unitType={getDominantUnit(selectedTerr.units) || 'swordsman'} size={18} />
                 <span>Selected <strong className="text-amber-300">{selectedTerr.name}</strong></span>
                 <UnitComposition units={selectedTerr.units} compact />
                 <span className="opacity-50">({selectedTerr.units.length} units). Click adjacent enemy.</span>
               </div>
             )}
-            {phase === 'attack' && selectedTerritory && targetTerritory && (
+            {phase === 'attack' && selectedTerritory && targetTerritory && !battleResult && (
               <div className="flex items-center gap-2 flex-wrap">
+                <UnitPortrait unitType={attackDominantType || 'swordsman'} size={18} />
                 <span className="text-amber-300">{selectedTerr.name}</span>
                 <UnitComposition units={selectedTerr.units} compact />
                 <span className="opacity-40">→</span>
+                <UnitPortrait unitType={defendDominantType || 'swordsman'} size={18} />
                 <span className="text-red-400">{targetTerr.name}</span>
                 <UnitComposition units={targetTerr.units} compact />
               </div>
@@ -155,51 +158,63 @@ export default function ActionPanel() {
         </div>
 
         {/* Tactics panel on the right */}
-        <div className="hidden lg:block w-64 flex-shrink-0">
+        <div className="hidden lg:block w-72 flex-shrink-0">
           <TacticsPanel />
         </div>
       </div>
 
       {/* Row 2: Deploy unit selector */}
-      {phase === 'deploy' && (
-        <UnitDeployer />
-      )}
+      {phase === 'deploy' && <UnitDeployer />}
 
       {/* Row 2: Attack controls */}
       {phase === 'attack' && (
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Type advantage indicator */}
-          {selectedTerritory && targetTerritory && battleResult && (
-            <TypeAdvantageIndicator
-              attackerType={battleResult.attackerType}
-              defenderType={battleResult.defenderType}
-              advantage={battleResult.typeAdvantage}
-            />
+          {/* Battle result display with unit portraits */}
+          {battleResult && (
+            <div className="flex items-center gap-4 px-3 py-1 rounded-lg" style={{
+              background: battleResult.conquered ? 'rgba(212,160,23,0.1)' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${battleResult.conquered ? '#D4A01744' : 'rgba(255,255,255,0.06)'}`,
+            }}>
+              {battleResult.attackerType && (
+                <BattleUnitDisplay unitType={battleResult.attackerType} side="attacker" losses={battleResult.attackerLosses} />
+              )}
+              <div className="flex flex-col items-center gap-1">
+                {/* Dice */}
+                <div className="flex items-center gap-1">
+                  <span className="text-[9px] text-amber-400 mr-0.5" style={{ fontFamily: 'var(--font-cinzel), serif' }}>ATK</span>
+                  {battleResult.attackerRolls.map((val, i) => (
+                    <DieFace key={`a-${i}`} value={val} size={30} color="#FDE68A" />
+                  ))}
+                </div>
+                <span className="text-sm opacity-40">⚔️</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[9px] text-red-400 mr-0.5" style={{ fontFamily: 'var(--font-cinzel), serif' }}>DEF</span>
+                  {battleResult.defenderRolls.map((val, i) => (
+                    <DieFace key={`d-${i}`} value={val} size={30} color="#FECACA" />
+                  ))}
+                </div>
+                {battleResult.tacticUsed && (
+                  <span className="text-[8px] px-1.5 py-0.5 rounded" style={{
+                    background: `${TACTICS[battleResult.tacticUsed as keyof typeof TACTICS]?.color}22`,
+                    color: TACTICS[battleResult.tacticUsed as keyof typeof TACTICS]?.color,
+                  }}>
+                    {TACTICS[battleResult.tacticUsed as keyof typeof TACTICS]?.icon} {TACTICS[battleResult.tacticUsed as keyof typeof TACTICS]?.name}
+                  </span>
+                )}
+              </div>
+              {battleResult.defenderType && (
+                <BattleUnitDisplay unitType={battleResult.defenderType} side="defender" losses={battleResult.defenderLosses} />
+              )}
+            </div>
           )}
 
-          {/* Dice Display */}
-          {battleResult && (
-            <div className="flex items-center gap-3 px-3">
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-amber-400 mr-1" style={{ fontFamily: 'var(--font-cinzel), serif' }}>ATK</span>
-                {battleResult.attackerRolls.map((val, i) => (
-                  <DieFace key={`a-${i}`} value={val} size={32} color="#FDE68A" />
-                ))}
-                {battleResult.attackerLosses > 0 && (
-                  <span className="text-red-400 text-xs font-bold ml-1">-{battleResult.attackerLosses}</span>
-                )}
-              </div>
-              <span className="text-lg opacity-30">⚔️</span>
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-red-400 mr-1" style={{ fontFamily: 'var(--font-cinzel), serif' }}>DEF</span>
-                {battleResult.defenderRolls.map((val, i) => (
-                  <DieFace key={`d-${i}`} value={val} size={32} color="#FECACA" />
-                ))}
-                {battleResult.defenderLosses > 0 && (
-                  <span className="text-red-400 text-xs font-bold ml-1">-{battleResult.defenderLosses}</span>
-                )}
-              </div>
-            </div>
+          {/* Type advantage indicator before battle */}
+          {selectedTerritory && targetTerritory && !battleResult && (
+            <TypeAdvantageIndicator
+              attackerType={attackDominantType}
+              defenderType={defendDominantType}
+              advantage={typeAdvResult}
+            />
           )}
 
           {/* Dice Selector */}
@@ -223,15 +238,6 @@ export default function ActionPanel() {
                   {n}
                 </button>
               ))}
-
-              {/* Unit type info for battle */}
-              {selectedTerr && targetTerr && (
-                <TypeAdvantageIndicator
-                  attackerType={attackDominantType}
-                  defenderType={defendDominantType}
-                  advantage={typeAdvResult}
-                />
-              )}
 
               <Button
                 onClick={handleAttack}

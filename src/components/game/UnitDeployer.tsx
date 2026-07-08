@@ -3,7 +3,7 @@
 import { useGameStore } from '@/lib/game-store';
 import { UNIT_TYPE_LIST, type UnitTypeId } from '@/lib/game-data';
 import { getUnitCost } from '@/lib/game-logic';
-import { UnitCard, UnitComposition } from './UnitCards';
+import { UnitPortrait, UnitComposition } from './UnitCards';
 
 export default function UnitDeployer() {
   const phase = useGameStore(s => s.phase);
@@ -24,7 +24,7 @@ export default function UnitDeployer() {
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
-      {/* Unit type selector */}
+      {/* Unit type selector with mini portraits */}
       <div className="flex items-center gap-1.5">
         {UNIT_TYPE_LIST.map(unit => {
           const cost = getUnitCost(unit.id, currentPlayer.characterClass);
@@ -36,7 +36,7 @@ export default function UnitDeployer() {
               key={unit.id}
               onClick={() => setDeployUnitType(unit.id)}
               disabled={!canAfford}
-              className="relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md transition-all"
+              className="relative flex flex-col items-center gap-0.5 px-1.5 py-1.5 rounded-md transition-all"
               style={{
                 background: isSelected ? `${unit.color}22` : 'rgba(255,255,255,0.03)',
                 border: `1.5px solid ${isSelected ? unit.color : 'rgba(255,255,255,0.08)'}`,
@@ -46,14 +46,14 @@ export default function UnitDeployer() {
               }}
               title={`${unit.name} - ATK:${unit.attack} DEF:${unit.defense} HP:${unit.health} Cost:${cost}\nStrong vs: ${unit.strongVs.map(t => UNIT_TYPE_LIST.find(u => u.id === t)?.name).join(', ')}\nWeak vs: ${unit.weakVs.map(t => UNIT_TYPE_LIST.find(u => u.id === t)?.name).join(', ')}`}
             >
-              <span className="text-lg leading-none">{unit.icon}</span>
-              <span className="text-[8px] font-bold" style={{
+              <UnitPortrait unitType={unit.id} size={28} />
+              <span className="text-[7px] font-bold" style={{
                 color: isSelected ? unit.color : '#8B7355',
                 fontFamily: 'var(--font-cinzel), serif',
               }}>
                 {unit.name}
               </span>
-              <span className="text-[9px] font-bold" style={{
+              <span className="text-[8px] font-bold" style={{
                 color: canAfford ? '#D4A017' : '#EF4444',
               }}>
                 {cost === 1 ? '★' : '★★'}

@@ -24,17 +24,17 @@ export const PLAYER_CONFIGS: PlayerConfig[] = [
 ];
 
 export const CHARACTER_CLASSES = [
-  { id: "knight", name: "Knight", icon: "⚔️", desc: "Swordsmen gain +1 ATK" },
+  { id: "knight", name: "Knight", icon: "⚔️", desc: "Swordsmen gain +1 ATK, Cavalry +1 ATK" },
   { id: "mage", name: "Mage", icon: "🔮", desc: "Mages cost 1 fewer to deploy" },
   { id: "rogue", name: "Rogue", icon: "🗡️", desc: "Reroll one die per attack" },
-  { id: "paladin", name: "Paladin", icon: "🛡️", desc: "Shield Bearers gain +1 DEF" },
+  { id: "paladin", name: "Paladin", icon: "🛡️", desc: "Shield Bearers & Paladins gain +1 DEF" },
 ];
 
 // ========================================
-// UNIT TYPES - Each with unique stats and type advantages
+// UNIT TYPES - Each with unique stats, portraits, and type advantages
 // ========================================
 
-export type UnitTypeId = 'swordsman' | 'archer' | 'cavalry' | 'mage' | 'shield_bearer' | 'siege';
+export type UnitTypeId = 'spearman' | 'swordsman' | 'archer' | 'cavalry' | 'mage' | 'shield_bearer' | 'paladin' | 'assassin' | 'siege';
 
 export interface UnitType {
   id: UnitTypeId;
@@ -49,99 +49,174 @@ export interface UnitType {
   weakVs: UnitTypeId[];    // Takes extra damage from these
   color: string;        // UI accent color
   gradient: string;     // Card gradient
-  figure: string;       // ASCII art figure key
+  image: string;        // Path to unit portrait image
+  figure: string;       // Fallback SVG figure key
+  speed: number;        // Movement rating (1-5, visual/flavor)
+  role: string;         // Unit role tag
 }
 
 export const UNIT_TYPES: Record<UnitTypeId, UnitType> = {
+  spearman: {
+    id: 'spearman',
+    name: 'Spearman',
+    icon: '🔱',
+    description: 'Light infantry armed with long spears. Forms an anti-cavalry wall that stops charges dead in their tracks. Cheap and effective.',
+    attack: 2,
+    defense: 3,
+    health: 4,
+    cost: 1,
+    strongVs: ['cavalry'],
+    weakVs: ['swordsman', 'archer'],
+    color: '#A1887F',
+    gradient: 'linear-gradient(135deg, #5D4037 0%, #3E2723 50%, #2C1810 100%)',
+    image: '/game/units/unit_spearman.png',
+    figure: 'spearman',
+    speed: 2,
+    role: 'Anti-Cavalry',
+  },
   swordsman: {
     id: 'swordsman',
     name: 'Swordsman',
     icon: '⚔️',
-    description: 'Balanced melee fighter. Sturdy frontline unit that excels against archers at close range.',
+    description: 'Balanced melee fighter and backbone of any army. Sturdy frontline unit that excels against spearman and archers at close range.',
     attack: 3,
     defense: 4,
     health: 5,
     cost: 1,
-    strongVs: ['archer'],
-    weakVs: ['cavalry'],
+    strongVs: ['spearman', 'archer'],
+    weakVs: ['cavalry', 'assassin'],
     color: '#C0C0C0',
     gradient: 'linear-gradient(135deg, #4A4A4A 0%, #2D2D2D 50%, #1A1A1A 100%)',
+    image: '/game/units/unit_swordsman.png',
     figure: 'swordsman',
+    speed: 2,
+    role: 'Melee Core',
   },
   archer: {
     id: 'archer',
     name: 'Archer',
     icon: '🏹',
-    description: 'Ranged damage dealer. Devastating against slow-moving cavalry with volley fire tactics.',
+    description: 'Ranged damage dealer with deadly volley fire. Devastating against slow-moving targets but extremely vulnerable when flanked.',
     attack: 4,
     defense: 2,
     health: 3,
     cost: 1,
-    strongVs: ['cavalry'],
-    weakVs: ['swordsman'],
+    strongVs: ['spearman', 'assassin'],
+    weakVs: ['swordsman', 'cavalry'],
     color: '#22C55E',
     gradient: 'linear-gradient(135deg, #166534 0%, #14532D 50%, #052E16 100%)',
+    image: '/game/units/unit_archer.png',
     figure: 'archer',
+    speed: 2,
+    role: 'Ranged DPS',
   },
   cavalry: {
     id: 'cavalry',
     name: 'Cavalry',
     icon: '🐎',
-    description: 'Fast flankers that crush swordsmen with devastating charge attacks.',
+    description: 'Fast flankers that crush infantry with devastating charge attacks. Their speed makes them deadly but mages can pick them off.',
     attack: 5,
     defense: 3,
     health: 4,
     cost: 1,
-    strongVs: ['swordsman'],
-    weakVs: ['archer'],
+    strongVs: ['swordsman', 'archer'],
+    weakVs: ['spearman', 'mage', 'assassin'],
     color: '#D4A017',
     gradient: 'linear-gradient(135deg, #92700C 0%, #78590A 50%, #5C4A32 100%)',
+    image: '/game/units/unit_cavalry.png',
     figure: 'cavalry',
+    speed: 5,
+    role: 'Flanker',
   },
   mage: {
     id: 'mage',
-    name: 'Mage',
+    name: 'Battle Mage',
     icon: '🔮',
-    description: 'Arcane spellcaster. Powerful magic damage melts shield bearers but is vulnerable to fast cavalry.',
+    description: 'Arcane spellcaster wielding devastating magic. Powerful attacks melt armor and barriers but they are fragile and slow.',
     attack: 6,
     defense: 1,
     health: 2,
     cost: 2,
-    strongVs: ['shield_bearer'],
-    weakVs: ['cavalry'],
+    strongVs: ['shield_bearer', 'cavalry'],
+    weakVs: ['assassin', 'archer'],
     color: '#A855F7',
     gradient: 'linear-gradient(135deg, #7E22CE 0%, #6B21A8 50%, #581C87 100%)',
+    image: '/game/units/unit_mage.png',
     figure: 'mage',
+    speed: 1,
+    role: 'Magic DPS',
   },
   shield_bearer: {
     id: 'shield_bearer',
     name: 'Shield Bearer',
     icon: '🛡️',
-    description: 'Immovable defender. Walls of steel that absorb arrows and protect allies.',
+    description: 'Immovable defender with massive tower shields. Walls of steel that absorb arrows and protect allies in formation.',
     attack: 1,
     defense: 6,
     health: 6,
     cost: 1,
-    strongVs: ['archer'],
-    weakVs: ['mage'],
+    strongVs: ['archer', 'assassin'],
+    weakVs: ['mage', 'swordsman'],
     color: '#60A5FA',
     gradient: 'linear-gradient(135deg, #1E40AF 0%, #1E3A5F 50%, #172554 100%)',
+    image: '/game/units/unit_shield_bearer.png',
     figure: 'shield',
+    speed: 1,
+    role: 'Tank',
+  },
+  paladin: {
+    id: 'paladin',
+    name: 'Paladin',
+    icon: '✨',
+    description: 'Holy warrior blessed with divine power. Combines decent offense with excellent defense and inspires nearby allies.',
+    attack: 4,
+    defense: 5,
+    health: 5,
+    cost: 2,
+    strongVs: ['mage', 'assassin'],
+    weakVs: ['cavalry', 'swordsman'],
+    color: '#FBBF24',
+    gradient: 'linear-gradient(135deg, #B45309 0%, #92400E 50%, #78350F 100%)',
+    image: '/game/units/unit_paladin.png',
+    figure: 'paladin',
+    speed: 2,
+    role: 'Holy Tank',
+  },
+  assassin: {
+    id: 'assassin',
+    name: 'Assassin',
+    icon: '🗡️',
+    description: 'Shadow-stalking killer with twin daggers. Extremely high burst damage but paper-thin defense. Deadly from the flanks.',
+    attack: 7,
+    defense: 1,
+    health: 2,
+    cost: 2,
+    strongVs: ['mage', 'swordsman', 'cavalry'],
+    weakVs: ['shield_bearer', 'archer', 'paladin'],
+    color: '#F472B6',
+    gradient: 'linear-gradient(135deg, #831843 0%, #701A3E 50%, #500724 100%)',
+    image: '/game/units/unit_assassin.png',
+    figure: 'assassin',
+    speed: 4,
+    role: 'Burst DPS',
   },
   siege: {
     id: 'siege',
     name: 'Siege Engine',
     icon: '🏰',
-    description: 'Heavy war machine. Devastating against fortified positions and defensive formations.',
+    description: 'Heavy war machine for breaking fortifications. Devastating against defensive formations but helpless against fast units.',
     attack: 7,
     defense: 2,
     health: 3,
     cost: 2,
     strongVs: ['shield_bearer'],
-    weakVs: ['cavalry'],
+    weakVs: ['cavalry', 'assassin'],
     color: '#F97316',
     gradient: 'linear-gradient(135deg, #C2410C 0%, #9A3412 50%, #7C2D12 100%)',
+    image: '',
     figure: 'siege',
+    speed: 1,
+    role: 'Anti-Fort',
   },
 };
 
@@ -159,7 +234,7 @@ export function getTypeAdvantage(attackerType: UnitTypeId, defenderType: UnitTyp
 // MILITARY TACTICS BUFFS
 // ========================================
 
-export type TacticId = 'phalanx' | 'cavalry_charge' | 'volley_fire' | 'arcane_surge' | 'siege_prep' | 'rally_cry';
+export type TacticId = 'phalanx' | 'cavalry_charge' | 'volley_fire' | 'arcane_surge' | 'siege_prep' | 'rally_cry' | 'assassinate' | 'holy_shield';
 
 export interface Tactic {
   id: TacticId;
@@ -178,7 +253,7 @@ export const TACTICS: Record<TacticId, Tactic> = {
     id: 'phalanx',
     name: 'Phalanx Formation',
     icon: '🛡️',
-    description: 'Shield Bearers lock into an impenetrable wall. All defense dice get +1 this turn.',
+    description: 'Shield Bearers and Spearmen lock into an impenetrable wall. All defense dice get +1 this turn.',
     effect: 'All DEF dice +1',
     phase: 'defense',
     cooldown: 2,
@@ -200,7 +275,7 @@ export const TACTICS: Record<TacticId, Tactic> = {
     id: 'volley_fire',
     name: 'Volley Fire',
     icon: '🏹',
-    description: 'Archers unleash a rain of arrows. Roll 1 extra attack die on every attack this turn.',
+    description: 'Archers unleash a rain of arrows skyward. Roll 1 extra attack die on every attack this turn.',
     effect: '+1 ATK die per attack',
     phase: 'attack',
     cooldown: 3,
@@ -233,11 +308,33 @@ export const TACTICS: Record<TacticId, Tactic> = {
     id: 'rally_cry',
     name: 'Rally Cry',
     icon: '📯',
-    description: 'The warlord inspires the troops. Gain +2 extra reinforcements this turn.',
+    description: 'The warlord inspires the troops with a thunderous battle cry. Gain +2 extra reinforcements this turn.',
     effect: '+2 reinforcements',
     phase: 'deploy',
     cooldown: 2,
     color: '#EF4444',
+  },
+  assassinate: {
+    id: 'assassinate',
+    name: 'Shadow Strike',
+    icon: '🗡️',
+    description: 'Assassins emerge from the shadows for a lethal precision strike. +3 on the highest attack die this turn.',
+    effect: 'Highest ATK die +3',
+    phase: 'attack',
+    cooldown: 3,
+    requires: 'assassin',
+    color: '#F472B6',
+  },
+  holy_shield: {
+    id: 'holy_shield',
+    name: 'Divine Shield',
+    icon: '✨',
+    description: 'Paladins channel holy energy into a radiant barrier. All friendly units take 1 fewer loss this turn.',
+    effect: '-1 loss per battle',
+    phase: 'defense',
+    cooldown: 3,
+    requires: 'paladin',
+    color: '#FBBF24',
   },
 };
 

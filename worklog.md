@@ -29,4 +29,30 @@ Stage Summary:
 - Interactive deploy phase with unit type selection
 - Type advantage indicators during combat
 - Expandable unit reference guide on setup screen
-- All verified working in browser
+- All verified working in browser---
+Task ID: 1
+Agent: Main Agent
+Task: Add graphical unit figures with damage/attack/weakness stats and military tactics buffs
+
+Work Log:
+- Generated 8 unit portrait images matching the soft art style (spearman, swordsman, archer, shield_bearer, cavalry, mage, paladin, assassin)
+- Copied all unit images to /public/game/units/ for Next.js static serving
+- Expanded unit types from 6 to 9 (added Spearman, Paladin, Assassin)
+- Added image paths, speed stat, and role tags to all unit types in game-data.ts
+- Created UnitPortrait component that renders actual unit images with fallback
+- Updated UnitCards.tsx with portrait-based cards, stat bars, BattleUnitDisplay component
+- Updated GameSetup.tsx with interactive unit guide showing portraits, detailed stat panel on click, and expanded type advantage web
+- Updated UnitDeployer.tsx with mini portraits in deploy selector
+- Updated ActionPanel.tsx with battle portraits showing attacker vs defender with loss indicators
+- Updated GameBoard.tsx territory tooltip with mini unit portraits
+- Updated PlayerPanel.tsx sidebar with mini unit portraits in army composition
+- Added 2 new military tactics: Shadow Strike (assassin, +3 highest die) and Divine Shield (paladin, +1 DEF)
+- Updated character class bonuses (Knight buffs Cavalry too, Paladin buffs Paladin unit)
+- Updated type advantage web to incorporate new units
+- Verified game via Agent Browser: setup, deploy, attack phases all functional
+
+Stage Summary:
+- 9 unit types with unique stats, portraits, roles, strengths/weaknesses
+- 8 military tactics buffs with cooldown system
+- Full graphical upgrade: portraits in setup guide, deploy bar, battle display, tooltips, sidebar
+- All images saved to /home/z/my-project/download/unit_*.png and /public/game/units/

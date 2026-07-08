@@ -103,7 +103,7 @@ function randomlyAssignTerritories(playerCount: number, players: Player[]): Reco
   }
 
   // Default unit types to distribute
-  const defaultUnits: UnitTypeId[] = ['swordsman', 'swordsman', 'archer', 'cavalry', 'shield_bearer'];
+  const defaultUnits: UnitTypeId[] = ['spearman', 'swordsman', 'swordsman', 'archer', 'cavalry', 'shield_bearer', 'mage', 'assassin'];
 
   for (let i = 0; i < territoryIds.length; i++) {
     const def = TERRITORIES.find(t => t.id === territoryIds[i])!;
@@ -537,6 +537,12 @@ export const useGameStore = create<GameState>((set, get) => ({
         modifiers.defenderDiceReduction = 1;
         break;
       case 'phalanx':
+        modifiers.defenseDieBonus = 1;
+        break;
+      case 'assassinate':
+        modifiers.attackDieBonus = 3;
+        break;
+      case 'holy_shield':
         modifiers.defenseDieBonus = 1;
         break;
     }
