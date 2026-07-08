@@ -77,3 +77,28 @@ Stage Summary:
 - NEW CAMPAIGN triggers a 1.2s cinematic fade-to-black into the game setup
 - Particle engine runs at 60fps with 3 particle types (fireflies, embers, mist)
 - No console errors, clean lint pass
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Clean menu image text, generate realms visual, write full storyline document
+
+Work Log:
+- Analyzed uploaded image (pasted_image_1783529822610.png) via VLM — identified as game menu with text overlays
+- Used image-edit SDK with base64 encoding to remove all text from the menu image → game_menu_clean.png
+- Replaced /public/game_menu.png with clean version so live HTML text renders over the text-free artwork
+- Generated "realms_of_aethermoore.png" — a fantasy cartographic map showing all 16 realms across 5 regions
+- Wrote comprehensive lore document (Aethermoore_Lore_and_Chronicles.docx) with:
+  - Dark Ink Gold cover (R3 variant) with gold accents on black background
+  - Prologue: The Sundering (origin story of the Shattering)
+  - The Five Regions: Frostlands, Heartlands, Southern Realms, Eastern Shores, Western Reaches
+  - The Four Factions: Lord Ashford (Crimson Banner), Lady Elara (Golden Circle), Shadow Vex (Verdant Fang), Sir Gideon (Sanctified Order)
+  - Web of Alliances and Rivalries (Iron-Gold Compact, Shadow War, Holy Suspicion)
+  - Territory Guide table (all 16 territories with strategic notes)
+  - Epilogue: The Coming Storm (foreshadowing the Hollow King threat)
+- Postcheck: 8/9 passed, 0 errors, 1 expected warning (cover title line spacing)
+
+Stage Summary:
+- game_menu_clean.png replaces old menu background (text-free, live HTML text now overlays it)
+- realms_of_aethermoore.png: cartographic visual of all 16 territories
+- Aethermoore_Lore_and_Chronicles.docx: ~4000 word lore document with full storyline
