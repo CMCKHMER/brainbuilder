@@ -102,3 +102,21 @@ Stage Summary:
 - game_menu_clean.png replaces old menu background (text-free, live HTML text now overlays it)
 - realms_of_aethermoore.png: cartographic visual of all 16 territories
 - Aethermoore_Lore_and_Chronicles.docx: ~4000 word lore document with full storyline
+---
+Task ID: 3D World Map
+Agent: Main Agent
+Task: Transform the 2D SVG world map into a rotational 3D platform with 3D environments and structures
+
+Work Log:
+- Installed three, @react-three/fiber, @react-three/drei, @types/three
+- Created GameMap3D.tsx with full 3D scene: floating island platform, 16 extruded territory meshes, 10 structure types (mountain, castle, tower, forest, temple, crystal, port, ruins, fortress, ice)
+- Added atmospheric effects: fog, magical particles, animated ocean, dynamic lighting
+- Integrated orbit controls with auto-rotation, zoom limits, and damping
+- Wired up full game state: territory hover/click/selection, deploy/attack/fortify phase interactions, unit display
+- Updated GameBoard.tsx to use dynamic import of GameMap3D with hover callback for tooltips
+- Build verified clean
+
+Stage Summary:
+- GameMap3D.tsx: Complete 3D rotational world map with structures, lighting, particles, and full game interaction
+- GameBoard.tsx: Updated to use 3D map via dynamic import (SSR-safe)
+- 3D structures per territory: Ironhold/Fortress, Wintermere/Ice, Frostpeak/Dragonspine/Mountains, Goldshire/Castle, Silverdale/Ravencrest/Towers, Ashenvale/Darkwood/Forests, Sunforge/Moonhaven/Temples, Crystal Lake/Crystals, Port Brighthelm/Port, Stormhold/Thornwall/Fortresses, Misthollow/Ruins

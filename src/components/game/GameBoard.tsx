@@ -1,14 +1,25 @@
 'use client';
 
 import GameSetup from '@/components/game/GameSetup';
-import GameMap from '@/components/game/GameMap';
 import PlayerPanel from '@/components/game/PlayerPanel';
 import ActionPanel from '@/components/game/ActionPanel';
 import { useGameStore } from '@/lib/game-store';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 import { UnitPortrait } from './UnitCards';
+import dynamic from 'next/dynamic';
+
+const GameMap3D = dynamic(() => import('./GameMap3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center" style={{ background: '#060810' }}>
+      <span style={{ fontFamily: 'var(--font-cinzel), serif', color: '#D4A017', fontSize: '13px', letterSpacing: '3px', opacity: 0.6 }}>
+        LOADING AETHERMOOR...
+      </span>
+    </div>
+  ),
+});
 
 // Territory detail overlay on hover - enhanced with unit portraits
 function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
@@ -89,26 +100,10 @@ export default function GameBoard() {
   const selectedTerritory = useGameStore(s => s.selectedTerritory);
   const [hoveredTerritory, setHoveredTerritory] = useState<string | null>(null);
 
-  // Track mouse position over territory labels for tooltips
-  const handleSvgMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
-    const pt = svg.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-    const svgP = pt.matrixTransform(svg.getScreenCTM()!.inverse());
-
-    // Check if mouse is near any territory label
-    let found: string | null = null;
-    for (const t of Object.values(territories)) {
-      const dx = svgP.x - t.labelX;
-      const dy = svgP.y - t.labelY;
-      if (Math.abs(dx) < 40 && Math.abs(dy) < 25) {
-        found = t.id;
-        break;
-      }
-    }
-    setHoveredTerritory(found);
-  };
+  // Handle territory hover from 3D map
+  const handleTerritoryHover = useCallback((id: string | null) => {
+    setHoveredTerritory(id);
+  }, []);
 
   if (phase === 'setup') {
     return <GameSetup />;
@@ -180,12 +175,8 @@ export default function GameBoard() {
         {/* Map */}
         <div className="flex-1 relative p-2 md:p-4">
           <div className="w-full h-full rounded-lg overflow-hidden relative" style={{ border: '2px solid rgba(139,115,85,0.2)' }}>
-            <div
-              onMouseMove={handleSvgMouseMove}
-              onMouseLeave={() => setHoveredTerritory(null)}
-              className="w-full h-full"
-            >
-              <GameMap />
+            <div className="w-full h-full">
+              <GameMap3D onTerritoryHover={handleTerritoryHover} />
             </div>
             {/* Territory tooltip */}
             <TerritoryTooltip territoryId={hoveredTerritory || selectedTerritory} />
