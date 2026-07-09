@@ -18,6 +18,8 @@ const PLATFORM_RADIUS = 7.5;
 
 type StructureType = 'mountain' | 'tower' | 'castle' | 'forest' | 'temple' | 'crystal' | 'port' | 'ruins' | 'fortress' | 'ice';
 
+const STRUCTURE_SCALE = 3.5;
+
 interface TerritoryVisualData {
   structure: StructureType;
   height: number;
@@ -196,33 +198,64 @@ function TowerStructure({ position, color }: { position: [number, number, number
 
 function ForestStructure({ position, color }: { position: [number, number, number]; color: string }) {
   const trees = useMemo(() => [
-    { x: 0, z: 0, s: 1, h: 0.2 },
-    { x: 0.1, z: 0.06, s: 0.75, h: 0.16 },
-    { x: -0.08, z: -0.05, s: 0.6, h: 0.13 },
-    { x: 0.05, z: -0.09, s: 0.85, h: 0.18 },
-    { x: -0.12, z: 0.04, s: 0.5, h: 0.11 },
-    { x: 0.13, z: -0.03, s: 0.65, h: 0.14 },
+    // Inner dense cluster
+    { x: 0, z: 0, s: 1.0, h: 0.22, foliageR: 0.07, trunkH: 0.14, foliageColor: color },
+    { x: 0.09, z: 0.05, s: 0.85, h: 0.18, foliageR: 0.06, trunkH: 0.12, foliageColor: color },
+    { x: -0.07, z: -0.06, s: 0.7, h: 0.15, foliageR: 0.055, trunkH: 0.1, foliageColor: color },
+    { x: 0.04, z: -0.1, s: 0.9, h: 0.2, foliageR: 0.065, trunkH: 0.13, foliageColor: color },
+    { x: -0.11, z: 0.04, s: 0.6, h: 0.13, foliageR: 0.05, trunkH: 0.09, foliageColor: color },
+    { x: 0.12, z: -0.04, s: 0.75, h: 0.17, foliageR: 0.06, trunkH: 0.11, foliageColor: color },
+    // Outer ring for density
+    { x: -0.15, z: -0.12, s: 0.55, h: 0.12, foliageR: 0.045, trunkH: 0.08, foliageColor: color },
+    { x: 0.16, z: 0.1, s: 0.65, h: 0.14, foliageR: 0.05, trunkH: 0.09, foliageColor: color },
+    { x: -0.05, z: 0.14, s: 0.5, h: 0.11, foliageR: 0.04, trunkH: 0.07, foliageColor: color },
+    { x: 0.08, z: -0.15, s: 0.6, h: 0.13, foliageR: 0.05, trunkH: 0.085, foliageColor: color },
+    { x: -0.14, z: 0.1, s: 0.45, h: 0.1, foliageR: 0.04, trunkH: 0.065, foliageColor: color },
+    { x: 0.18, z: -0.08, s: 0.5, h: 0.11, foliageR: 0.045, trunkH: 0.07, foliageColor: color },
   ], []);
+  // Darker green for variety
+  const darkGreen = '#1B5E20';
+  const mossGreen = '#2E7D32';
   return (
     <group position={position}>
+      {/* Ground patch - mossy base */}
+      <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.22, 16]} />
+        <meshStandardMaterial color="#2A4A1A" roughness={1} transparent opacity={0.6} />
+      </mesh>
       {trees.map((tree, i) => (
         <group key={i} position={[tree.x, 0, tree.z]} scale={tree.s}>
-          {/* Trunk */}
-          <mesh position={[0, 0.06, 0]}>
-            <cylinderGeometry args={[0.012, 0.018, 0.12, 5]} />
-            <meshStandardMaterial color="#5C4033" roughness={0.95} />
+          {/* Trunk - thicker for visibility */}
+          <mesh position={[0, tree.trunkH / 2, 0]}>
+            <cylinderGeometry args={[0.015, 0.022, tree.trunkH, 6]} />
+            <meshStandardMaterial color="#4E342E" roughness={0.95} />
           </mesh>
-          {/* Foliage layers */}
-          <mesh position={[0, 0.15, 0]}>
-            <coneGeometry args={[0.065, 0.12, 6]} />
-            <meshStandardMaterial color={color} roughness={0.85} />
+          {/* Bottom foliage layer - wider */}
+          <mesh position={[0, tree.trunkH + tree.foliageR * 0.5, 0]}>
+            <coneGeometry args={[tree.foliageR * 1.3, tree.foliageR * 2.5, 7]} />
+            <meshStandardMaterial color={i % 3 === 0 ? darkGreen : i % 3 === 1 ? mossGreen : tree.foliageColor} roughness={0.85} />
           </mesh>
-          <mesh position={[0, 0.2, 0]}>
-            <coneGeometry args={[0.05, 0.1, 6]} />
-            <meshStandardMaterial color={color} roughness={0.85} />
+          {/* Middle foliage layer */}
+          <mesh position={[0, tree.trunkH + tree.foliageR * 1.2, 0]}>
+            <coneGeometry args={[tree.foliageR * 1.05, tree.foliageR * 2, 7]} />
+            <meshStandardMaterial color={i % 2 === 0 ? mossGreen : tree.foliageColor} roughness={0.8} />
+          </mesh>
+          {/* Top foliage layer - smaller cap */}
+          <mesh position={[0, tree.trunkH + tree.foliageR * 1.8, 0]}>
+            <coneGeometry args={[tree.foliageR * 0.7, tree.foliageR * 1.2, 6]} />
+            <meshStandardMaterial color={tree.foliageColor} roughness={0.8} />
           </mesh>
         </group>
       ))}
+      {/* Mushroom clusters for detail */}
+      <mesh position={[0.06, 0.015, 0.1]}>
+        <sphereGeometry args={[0.012, 6, 4, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color="#8B0000" roughness={0.7} />
+      </mesh>
+      <mesh position={[-0.1, 0.012, -0.08]}>
+        <sphereGeometry args={[0.008, 6, 4, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color="#A52A2A" roughness={0.7} />
+      </mesh>
     </group>
   );
 }
@@ -427,18 +460,20 @@ function IceStructure({ position }: { position: [number, number, number] }) {
 }
 
 function StructureRenderer({ type, position, color }: { type: StructureType; position: [number, number, number]; color: string }) {
-  switch (type) {
-    case 'mountain': return <MountainStructure position={position} color={color} />;
-    case 'castle': return <CastleStructure position={position} color={color} />;
-    case 'tower': return <TowerStructure position={position} color={color} />;
-    case 'forest': return <ForestStructure position={position} color={color} />;
-    case 'temple': return <TempleStructure position={position} color={color} />;
-    case 'crystal': return <CrystalStructure position={position} />;
-    case 'port': return <PortStructure position={position} color={color} />;
-    case 'ruins': return <RuinsStructure position={position} color={color} />;
-    case 'fortress': return <FortressStructure position={position} color={color} />;
-    case 'ice': return <IceStructure position={position} />;
-  }
+  return (
+    <group scale={[STRUCTURE_SCALE, STRUCTURE_SCALE, STRUCTURE_SCALE]} position={position}>
+      {type === 'mountain' && <MountainStructure position={[0, 0, 0]} color={color} />}
+      {type === 'castle' && <CastleStructure position={[0, 0, 0]} color={color} />}
+      {type === 'tower' && <TowerStructure position={[0, 0, 0]} color={color} />}
+      {type === 'forest' && <ForestStructure position={[0, 0, 0]} color={color} />}
+      {type === 'temple' && <TempleStructure position={[0, 0, 0]} color={color} />}
+      {type === 'crystal' && <CrystalStructure position={[0, 0, 0]} />}
+      {type === 'port' && <PortStructure position={[0, 0, 0]} color={color} />}
+      {type === 'ruins' && <RuinsStructure position={[0, 0, 0]} color={color} />}
+      {type === 'fortress' && <FortressStructure position={[0, 0, 0]} color={color} />}
+      {type === 'ice' && <IceStructure position={[0, 0, 0]} />}
+    </group>
+  );
 }
 
 // ========================
@@ -595,11 +630,11 @@ function TerritoryMesh({ territoryId, path, labelX, labelY, onHover, onClick }: 
         <lineBasicMaterial color="#3D2B1F" transparent opacity={0.8} />
       </lineSegments>
 
-      {/* 3D Structure */}
+      {/* 3D Structure - positioned so base sits on top of territory */}
       <StructureRenderer type={visual.structure} position={[cx, structY, cz]} color={visual.structureColor} />
 
       {/* Territory label and unit badge */}
-      <Html position={[cx, structY + (visual.structure === 'mountain' ? 0.75 : visual.structure === 'tower' ? 0.8 : visual.structure === 'fortress' ? 0.45 : 0.35), cz]} center>
+      <Html position={[cx, structY + (visual.structure === 'mountain' ? 2.8 : visual.structure === 'tower' ? 3.0 : visual.structure === 'fortress' ? 1.8 : visual.structure === 'forest' ? 1.2 : 1.5), cz]} center>
         <div style={{ pointerEvents: 'none', userSelect: 'none', textAlign: 'center' }}>
           <div style={{
             fontSize: '9px',
