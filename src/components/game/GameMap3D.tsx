@@ -883,15 +883,13 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
 
       <SceneLighting />
       <OrbitControls
-        autoRotate
-        autoRotateSpeed={0.4}
-        enablePan={false}
-        minDistance={6}
+        enablePan={true}
+        minDistance={4}
         maxDistance={22}
         minPolarAngle={Math.PI / 8}
         maxPolarAngle={Math.PI / 2.1}
         enableDamping
-        dampingFactor={0.05}
+        dampingFactor={0.08}
       />
 
       <FloatingPlatform />
