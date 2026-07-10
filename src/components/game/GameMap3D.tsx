@@ -11,11 +11,11 @@ import { getUnitComposition, getDominantUnit, getUnitCost } from '@/lib/game-log
 // ========================
 // Constants
 // ========================
-const SCALE = 0.016;
+const SCALE = 0.025;
 const CENTER_X = 500;
 const CENTER_Y = 325;
-const PLATFORM_RX = 9.2;  // Elliptical - wider
-const PLATFORM_RZ = 6.5;  // Elliptical - shorter depth
+const PLATFORM_RX = 14.5;  // Elliptical - wider
+const PLATFORM_RZ = 10;    // Elliptical - shorter depth
 
 type StructureType = 'mountain' | 'tower' | 'castle' | 'forest' | 'temple' | 'crystal' | 'port' | 'ruins' | 'fortress' | 'ice';
 
@@ -801,7 +801,7 @@ function Ocean() {
 
   return (
     <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.5, 0]}>
-      <planeGeometry args={[80, 60, 32, 32]} />
+      <planeGeometry args={[120, 90, 32, 32]} />
       <meshStandardMaterial
         color="#0A2A3A"
         transparent
@@ -823,9 +823,9 @@ function MagicalParticles() {
   const [positions] = useState(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 22;
-      pos[i * 3 + 1] = Math.random() * 6 + 0.5;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 16;
+      pos[i * 3] = (Math.random() - 0.5) * 34;
+      pos[i * 3 + 1] = Math.random() * 8 + 0.5;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 24;
     }
     return pos;
   });
@@ -882,8 +882,8 @@ function SceneLighting() {
   useFrame((state) => {
     if (dirLightRef.current) {
       const t = state.clock.elapsedTime * 0.1;
-      dirLightRef.current.position.x = Math.sin(t) * 3;
-      dirLightRef.current.position.z = Math.cos(t) * 3;
+      dirLightRef.current.position.x = Math.sin(t) * 5;
+      dirLightRef.current.position.z = Math.cos(t) * 5;
     }
   });
 
@@ -896,16 +896,16 @@ function SceneLighting() {
       {/* Main directional - slowly orbiting moonlight */}
       <directionalLight
         ref={dirLightRef}
-        position={[3, 8, 3]}
-        intensity={0.6}
+        position={[4, 10, 4]}
+        intensity={0.7}
         color="#C0C8E0"
         castShadow={false}
       />
       {/* Warm accent light - from below the platform */}
-      <pointLight position={[0, -2, 0]} intensity={0.4} color="#FF8844" distance={12} decay={2} />
+      <pointLight position={[0, -3, 0]} intensity={0.5} color="#FF8844" distance={18} decay={2} />
       {/* Secondary fill light */}
-      <pointLight position={[-4, 4, -2]} intensity={0.15} color="#6688CC" distance={15} decay={2} />
-      <pointLight position={[4, 3, 3]} intensity={0.1} color="#CC8844" distance={12} decay={2} />
+      <pointLight position={[-6, 6, -3]} intensity={0.2} color="#6688CC" distance={22} decay={2} />
+      <pointLight position={[6, 4, 4]} intensity={0.15} color="#CC8844" distance={18} decay={2} />
     </>
   );
 }
@@ -921,13 +921,13 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
   return (
     <>
       <color attach="background" args={['#060810']} />
-      <fog attach="fog" args={['#060810', 18, 45]} />
+      <fog attach="fog" args={['#060810', 28, 65]} />
 
       <SceneLighting />
       <OrbitControls
         enablePan={true}
-        minDistance={5}
-        maxDistance={28}
+        minDistance={7}
+        maxDistance={38}
         minPolarAngle={Math.PI / 8}
         maxPolarAngle={Math.PI / 2.1}
         enableDamping
@@ -953,7 +953,7 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
       <MagicalParticles />
 
       {/* Map title in 3D space */}
-      <Html position={[0, -0.1, 4.2]} center>
+      <Html position={[0, -0.1, 6.5]} center>
         <div style={{
           pointerEvents: 'none',
           fontSize: '10px',
@@ -1019,7 +1019,7 @@ export default function GameMap3D({ onTerritoryHover = () => {} }: GameMap3DProp
   return (
     <Suspense fallback={<LoadingScreen />}>
       <Canvas
-        camera={{ position: [0, 11, 12], fov: 50, near: 0.1, far: 100 }}
+        camera={{ position: [0, 16, 16], fov: 55, near: 0.1, far: 150 }}
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         style={{ background: '#060810' }}
         onPointerMissed={() => {
