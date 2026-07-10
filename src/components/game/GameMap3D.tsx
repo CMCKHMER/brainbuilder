@@ -1,12 +1,30 @@
 'use client';
 
-import React, { useRef, useState, useCallback, useMemo, Suspense } from 'react';
+import React, { useRef, useState, useCallback, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '@/lib/game-store';
-import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
+import { UNIT_TYPES, TERRITORIES as TERRITORY_DEFS, type UnitTypeId } from '@/lib/game-data';
 import { getUnitComposition, getDominantUnit, getUnitCost } from '@/lib/game-logic';
+
+// ========================
+// WebGL Detection
+// ========================
+let _webGLSupported: boolean | null = null;
+
+function isWebGLSupported(): boolean {
+  if (_webGLSupported !== null) return _webGLSupported;
+  if (typeof window === 'undefined') { _webGLSupported = false; return false; }
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    _webGLSupported = !!gl;
+  } catch {
+    _webGLSupported = false;
+  }
+  return _webGLSupported;
+}
 
 // ========================
 // Constants
@@ -1004,6 +1022,112 @@ function LoadingScreen() {
 }
 
 // ========================
+// 2D FALLBACK MAP (when WebGL is unavailable)
+// ========================
+
+function Fallback2DMap({ onTerritoryHover }: GameMap3DProps) {
+  const territories = useGameStore(s => s.territories);
+  const players = useGameStore(s => s.players);
+  const selectedTerritory = useGameStore(s => s.selectedTerritory);
+  const selectTerritory = useGameStore(s => s.selectTerritory);
+  const phase = useGameStore(s => s.phase);
+
+  return (
+    <div
+      className="w-full h-full relative overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0a1520 0%, #0d1a12 50%, #1a1510 100%)' }}
+    >
+      {/* Ocean background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 50%, #0a1a2e 0%, #060810 70%)',
+        }}
+      />
+
+      {/* SVG Map */}
+      <svg
+        viewBox="0 0 1000 650"
+        className="w-full h-full"
+        style={{ maxHeight: '100%' }}
+      >
+        {TERRITORY_DEFS.map(tDef => {
+          const tState = territories[tDef.id];
+          if (!tState) return null;
+          const owner = tState.ownerId ? players.find(p => p.id === tState.ownerId) : null;
+          const isSelected = selectedTerritory === tDef.id;
+          const unitCount = tState.units.length;
+
+          return (
+            <g
+              key={tDef.id}
+              onClick={() => (phase === 'attack' || phase === 'fortify' || phase === 'deploy') && selectTerritory(tDef.id)}
+              onMouseEnter={() => onTerritoryHover(tDef.id)}
+              onMouseLeave={() => onTerritoryHover(null)}
+              style={{ cursor: 'pointer' }}
+            >
+              <path
+                d={tDef.path}
+                fill={owner ? owner.color + '44' : 'rgba(60,50,40,0.3)'}
+                stroke={isSelected ? '#D4A017' : owner ? owner.color + '88' : 'rgba(139,115,85,0.3)'}
+                strokeWidth={isSelected ? 2.5 : 1.2}
+                style={{ transition: 'fill 0.2s, stroke 0.2s' }}
+              />
+              {/* Territory label */}
+              <text
+                x={tDef.labelX}
+                y={tDef.labelY}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{
+                  fontFamily: 'var(--font-cinzel), serif',
+                  fontSize: '9px',
+                  fill: owner ? owner.colorLight : '#8B7355',
+                  pointerEvents: 'none',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.9)',
+                }}
+              >
+                {tDef.name}
+              </text>
+              {/* Unit count */}
+              {unitCount > 0 && (
+                <text
+                  x={tDef.labelX}
+                  y={tDef.labelY + 14}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  style={{
+                    fontFamily: 'var(--font-cinzel), serif',
+                    fontSize: '8px',
+                    fill: owner ? owner.color : '#666',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {unitCount} ⚔️
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* WebGL warning banner */}
+      <div
+        className="absolute bottom-2 left-2 px-3 py-1.5 rounded text-[9px]"
+        style={{
+          background: 'rgba(0,0,0,0.7)',
+          border: '1px solid rgba(220,38,38,0.3)',
+          color: '#EF4444',
+          fontFamily: 'var(--font-cinzel), serif',
+        }}
+      >
+        ⚠️ 3D Unavailable — Showing 2D Map
+      </div>
+    </div>
+  );
+}
+
+// ========================
 // Exported Component
 // ========================
 
@@ -1012,9 +1136,20 @@ interface GameMap3DProps {
 }
 
 export default function GameMap3D({ onTerritoryHover = () => {} }: GameMap3DProps) {
+  const [webGL, setWebGL] = useState<boolean | null>(null);
   const handleHover = useCallback((id: string | null) => {
     onTerritoryHover(id);
   }, [onTerritoryHover]);
+
+  useEffect(() => {
+    setWebGL(isWebGLSupported());
+  }, []);
+
+  // Still detecting
+  if (webGL === null) return <LoadingScreen />;
+
+  // WebGL not available — show 2D fallback
+  if (!webGL) return <Fallback2DMap onTerritoryHover={handleHover} />;
 
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -1024,6 +1159,10 @@ export default function GameMap3D({ onTerritoryHover = () => {} }: GameMap3DProp
         style={{ background: '#060810' }}
         onPointerMissed={() => {
           useGameStore.getState().clearSelection();
+        }}
+        onError={() => {
+          // If Canvas still fails after detection, show fallback
+          setWebGL(false);
         }}
       >
         <WorldScene onTerritoryHover={handleHover} />
