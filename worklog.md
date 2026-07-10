@@ -141,3 +141,27 @@ Stage Summary:
 - Campaign flow: Prologue → Chapter 1 Title → Character Intro → Gameplay (with mid-game triggers) → Chapter transitions → Victory
 - 6 types of mid-game story triggers fire contextually during gameplay
 - 5-chapter structure advances based on conquests, eliminations, and territory control
+---
+Task ID: 1
+Agent: main
+Task: Add sound/audio effects and polish AI with rival dialogue
+
+Work Log:
+- Created `/src/lib/audio-engine.ts` — full procedural audio engine using Web Audio API (no external files)
+  - UI sounds: click, select, deploy, phase change
+  - Battle sounds: dice roll, sword clash, battle win/lose, conquest fanfare, elimination rumble, victory fanfare, tactic activate
+  - Story narration cues: story open (bass swell), page advance (chime), story close (descending tone)
+  - Ambient music: dark atmospheric drone with LFO modulation + random mystical chimes
+  - AI dialogue appear sound
+- Added `aiDialogue` state, `showAIDialogue()`, `dismissAIDialogue()` to game store
+- Created `/src/components/game/AIDialogueBubble.tsx` — floating speech bubble with portrait, speaker info, typewriter-style text, auto-dismiss
+- Modified `/src/hooks/useAIController.ts` — AI now triggers rival dialogue at: turn start, attacking, defending (when AI is attacked), losing (≤3 territories, turn≥5), winning (≥8 territories, turn≥5). Also integrated all audio cues (deploy, select, dice roll, sword clash, conquest, elimination, tactic, phase change)
+- Modified `/src/components/game/GameBoard.tsx` — starts ambient music on game begin, battle audio for human player attacks, victory sound on game over, AI dialogue bubble rendered
+- Modified `/src/components/game/ActionPanel.tsx` — click sounds on buttons, dice roll + sword clash on attack
+- Modified `/src/components/game/StoryOverlay.tsx` — story open sound on mount, page advance chime, close sound on dismiss/skip
+- WebGL fallback already existed in GameMap3D.tsx (2D SVG map fallback)
+
+Stage Summary:
+- Audio engine: 15+ procedural sound effects + ambient music loop
+- AI rival dialogue: 21 dialogue sets across 4 classes × 5 contexts, triggered contextually during gameplay
+- All changes compile and build successfully

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { type StoryBeat } from '@/lib/story-data';
 import Image from 'next/image';
+import { playStoryOpen, playStoryPage, playStoryClose } from '@/lib/audio-engine';
 
 interface StoryOverlayProps {
   beat: StoryBeat;
@@ -56,6 +57,8 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
   // Skip hint after delay
   useEffect(() => {
     const timer = setTimeout(() => setShowSkip(true), 1500);
+    // Play story open sound on mount
+    playStoryOpen();
     return () => clearTimeout(timer);
   }, []);
 
@@ -112,12 +115,14 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
     }
 
     if (pageIndex < totalPages - 1) {
+      playStoryPage();
       setFadeState('out');
       setTimeout(() => {
         setPageIndex(prev => prev + 1);
       }, 400);
     } else {
       // Last page — call onLastPage if provided, then dismiss
+      playStoryClose();
       if (onLastPage) onLastPage();
       setFadeState('out');
       setTimeout(() => {
@@ -135,6 +140,7 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
       }
       if (e.key === 'Escape' && beat.skippable) {
         if (typingRef.current) clearTimeout(typingRef.current);
+        playStoryClose();
         setFadeState('out');
         setTimeout(() => onDismiss(), 300);
       }
@@ -335,6 +341,7 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
           onClick={(e) => {
             e.stopPropagation();
             if (typingRef.current) clearTimeout(typingRef.current);
+            playStoryClose();
             setFadeState('out');
             setTimeout(() => onDismiss(), 300);
           }}

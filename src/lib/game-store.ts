@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { TERRITORIES, PLAYER_CONFIGS, type PlayerConfig, type UnitTypeId, type TacticId, UNIT_TYPES, TACTICS, CHARACTER_CLASSES } from './game-data';
+import { stopMusic } from './audio-engine';
 import {
   type StoryBeat, type CampaignProgress,
   PROLOGUE, getCharacterIntro, getEliminationBeat, getVictoryBeat,
@@ -103,6 +104,19 @@ interface GameState {
   dismissEvent: () => void;
   storySeen: Set<string>;
 
+  // AI Dialogue system
+  aiDialogue: {
+    speaker: string;
+    text: string;
+    color: string;
+    characterClass: string;
+    icon: string;
+    portrait: string;
+    timestamp: number;
+  } | null;
+  showAIDialogue: (speaker: string, text: string, color: string, characterClass: string, icon: string, portrait: string) => void;
+  dismissAIDialogue: () => void;
+
   // Campaign mode
   isCampaignMode: boolean;
   campaignProgress: CampaignProgress;
@@ -184,6 +198,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   storyQueue: [],
   currentEvent: null,
   storySeen: new Set(),
+  aiDialogue: null,
   isCampaignMode: false,
   campaignProgress: {
     currentChapter: 1,
@@ -743,6 +758,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   startGame: () => set({ phase: 'setup' }),
 
   resetGame: () => {
+    stopMusic();
     set({
       phase: 'title',
       players: [],
@@ -765,6 +781,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       storyQueue: [],
       currentEvent: null,
       storySeen: new Set(),
+      aiDialogue: null,
       isCampaignMode: false,
       campaignProgress: {
         currentChapter: 1,
@@ -1027,5 +1044,24 @@ export const useGameStore = create<GameState>((set, get) => ({
     progress.rivalClashes = rivalClashes;
     progress.regionDominanceFired = regionDominanceFired;
     set({ campaignProgress: progress });
+  },
+
+  // AI Dialogue system
+  showAIDialogue: (speaker, text, color, characterClass, icon, portrait) => {
+    set({
+      aiDialogue: {
+        speaker,
+        text,
+        color,
+        characterClass,
+        icon,
+        portrait,
+        timestamp: Date.now(),
+      },
+    });
+  },
+
+  dismissAIDialogue: () => {
+    set({ aiDialogue: null });
   },
 }));

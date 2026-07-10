@@ -1,0 +1,1031 @@
+     1→import { create } from 'zustand';
+     2→import { TERRITORIES, PLAYER_CONFIGS, type PlayerConfig, type UnitTypeId, type TacticId, UNIT_TYPES, TACTICS, CHARACTER_CLASSES } from './game-data';
+     3→import {
+     4→  type StoryBeat, type CampaignProgress,
+     5→  PROLOGUE, getCharacterIntro, getEliminationBeat, getVictoryBeat,
+     6→  CAMPAIGN_EVENTS, type CampaignEvent,
+     7→  CHAPTERS, getChapterTitleBeat,
+     8→  getFirstBloodBeat, getTerritoryCaptureBeat, getRegionDominanceBeat,
+     9→  getRivalClashBeat, getDesperateHourBeat, getDominantForceBeat,
+    10→  REGION_LORE,
+    11→} from './story-data';
+    12→import {
+    13→  type GamePhase,
+    14→  type Player,
+    15→  type TerritoryState,
+    16→  type BattleResult,
+    17→  type BattleLogEntry,
+    18→  type CombatModifiers,
+    19→  calculateReinforcements,
+    20→  getMaxAttackerDice,
+    21→  getMaxDefenderDice,
+    22→  resolveBattle,
+    23→  getUnitCost,
+    24→  getDominantUnit,
+    25→  removeUnits,
+    26→} from './game-logic';
+    27→
+    28→interface ActiveTactic {
+    29→  tacticId: TacticId;
+    30→  playerId: string;
+    31→  turnUsed: number;
+    32→  turnsUntilAvailable: number;
+    33→  usedThisTurn: boolean;
+    34→}
+    35→
+    36→interface GameState {
+    37→  phase: GamePhase;
+    38→  players: Player[];
+    39→  currentPlayerIndex: number;
+    40→  territories: Record<string, TerritoryState>;
+    41→  selectedTerritory: string | null;
+    42→  targetTerritory: string | null;
+    43→  reinforcementsLeft: number;
+    44→  attackerDiceCount: number;
+    45→  defenderDiceCount: number;
+    46→  battleResult: BattleResult | null;
+    47→  battleLog: BattleLogEntry[];
+    48→  winner: Player | null;
+    49→  fortifyArmies: number;
+    50→  turnNumber: number;
+    51→
+    52→  // Unit system
+    53→  deployUnitType: UnitTypeId;       // Currently selected unit type for deployment
+    54→  activeTactics: ActiveTactic[];    // All active/cooling-down tactics
+    55→  selectedTactic: TacticId | null;  // Tactic selected for this turn
+    56→
+    57→  // Title screen
+    58→  startGame: () => void;
+    59→
+    60→  // Setup
+    61→  setupGame: (playerConfigs: { name: string; color: string; colorLight: string; characterClass: string; icon: string; isAI?: boolean }[]) => void;
+    62→
+    63→  // Deploy
+    64→  deployArmy: (territoryId: string, unitType: UnitTypeId) => void;
+    65→  setDeployUnitType: (unitType: UnitTypeId) => void;
+    66→
+    67→  // Attack
+    68→  selectTerritory: (territoryId: string) => void;
+    69→  clearSelection: () => void;
+    70→  setAttackerDiceCount: (count: number) => void;
+    71→  executeAttack: () => void;
+    72→
+    73→  // Fortify
+    74→  setFortifyArmies: (count: number) => void;
+    75→  executeFortify: (fromId: string, toId: string) => void;
+    76→
+    77→  // Tactics
+    78→  activateTactic: (tacticId: TacticId) => void;
+    79→  getAvailableTactics: () => TacticId[];
+    80→  getActiveTacticEffect: () => CombatModifiers | null;
+    81→  isTacticActive: (tacticId: TacticId) => boolean;
+    82→  getActiveTactic: () => TacticId | null;
+    83→
+    84→  // Phase management
+    85→  endDeployPhase: () => void;
+    86→  endAttackPhase: () => void;
+    87→  endTurn: () => void;
+    88→  resetGame: () => void;
+    89→
+    90→  // Helpers
+    91→  getCurrentPlayer: () => Player;
+    92→  getTerritory: (id: string) => TerritoryState;
+    93→  getPlayerById: (id: string) => Player | undefined;
+    94→
+    95→  // Story system
+    96→  storyBeat: StoryBeat | null;
+    97→  storyQueue: StoryBeat[];
+    98→  currentEvent: CampaignEvent | null;
+    99→  showStory: (beat: StoryBeat) => void;
+   100→  queueStory: (beat: StoryBeat) => void;
+   101→  dismissStory: () => void;
+   102→  rollCampaignEvent: () => void;
+   103→  dismissEvent: () => void;
+   104→  storySeen: Set<string>;
+   105→
+   106→  // Campaign mode
+   107→  isCampaignMode: boolean;
+   108→  campaignProgress: CampaignProgress;
+   109→  startCampaign: () => void;
+   110→  startSkirmish: () => void;
+   111→  checkStoryTriggers: (conqueredTerritoryId?: string | null, attackerId?: string | null, defenderId?: string | null) => void;
+   112→  advanceChapter: () => void;
+   113→}
+   114→
+   115→let logIdCounter = 0;
+   116→
+   117→function addLog(state: GameState, message: string, type: BattleLogEntry['type']): BattleLogEntry {
+   118→  logIdCounter++;
+   119→  return {
+   120→    id: `log-${logIdCounter}`,
+   121→    message,
+   122→    type,
+   123→    timestamp: Date.now(),
+   124→  };
+   125→}
+   126→
+   127→function randomlyAssignTerritories(playerCount: number, players: Player[]): Record<string, TerritoryState> {
+   128→  const territories: Record<string, TerritoryState> = {};
+   129→  const territoryIds = TERRITORIES.map(t => t.id);
+   130→  // Shuffle
+   131→  for (let i = territoryIds.length - 1; i > 0; i--) {
+   132→    const j = Math.floor(Math.random() * (i + 1));
+   133→    [territoryIds[i], territoryIds[j]] = [territoryIds[j], territoryIds[i]];
+   134→  }
+   135→
+   136→  // Default unit types to distribute
+   137→  const defaultUnits: UnitTypeId[] = ['spearman', 'swordsman', 'swordsman', 'archer', 'cavalry', 'shield_bearer', 'mage', 'assassin'];
+   138→
+   139→  for (let i = 0; i < territoryIds.length; i++) {
+   140→    const def = TERRITORIES.find(t => t.id === territoryIds[i])!;
+   141→    const playerIndex = i % playerCount;
+   142→    const unitType = defaultUnits[i % defaultUnits.length];
+   143→    territories[territoryIds[i]] = {
+   144→      ...def,
+   145→      ownerId: players[playerIndex].id,
+   146→      units: [unitType], // Start with 1 unit each
+   147→    };
+   148→  }
+   149→
+   150→  // Give each player bonus units to reach minimum 2-3 units per territory on average
+   151→  const territoriesPerPlayer = Math.floor(16 / playerCount);
+   152→  for (const player of players) {
+   153→    const playerTerritories = Object.values(territories).filter(t => t.ownerId === player.id);
+   154→    const bonusUnits = Math.max(0, Math.ceil(territoriesPerPlayer / 2));
+   155→    for (let i = 0; i < bonusUnits; i++) {
+   156→      const randomTerritory = playerTerritories[Math.floor(Math.random() * playerTerritories.length)];
+   157→      const randomUnit = defaultUnits[Math.floor(Math.random() * defaultUnits.length)];
+   158→      territories[randomTerritory.id].units.push(randomUnit);
+   159→    }
+   160→  }
+   161→
+   162→  return territories;
+   163→}
+   164→
+   165→export const useGameStore = create<GameState>((set, get) => ({
+   166→  phase: 'title',
+   167→  players: [],
+   168→  currentPlayerIndex: 0,
+   169→  territories: {},
+   170→  selectedTerritory: null,
+   171→  targetTerritory: null,
+   172→  reinforcementsLeft: 0,
+   173→  attackerDiceCount: 0,
+   174→  defenderDiceCount: 0,
+   175→  battleResult: null,
+   176→  battleLog: [],
+   177→  winner: null,
+   178→  fortifyArmies: 0,
+   179→  turnNumber: 0,
+   180→  deployUnitType: 'swordsman',
+   181→  activeTactics: [],
+   182→  selectedTactic: null,
+   183→  storyBeat: null,
+   184→  storyQueue: [],
+   185→  currentEvent: null,
+   186→  storySeen: new Set(),
+   187→  isCampaignMode: false,
+   188→  campaignProgress: {
+   189→    currentChapter: 1,
+   190→    totalConquests: 0,
+   191→    firstBloodFired: false,
+   192→    firedTriggers: new Set(),
+   193→    rivalClashes: new Set(),
+   194→    regionDominanceFired: new Set(),
+   195→    turnStoryFired: new Set(),
+   196→  },
+   197→
+   198→  setupGame: (playerConfigs) => {
+   199→    const players: Player[] = playerConfigs.map((config, index) => ({
+   200→      id: `player-${index}`,
+   201→      ...config,
+   202→      isAI: config.isAI ?? false,
+   203→      territories: [],
+   204→      eliminated: false,
+   205→    }));
+   206→
+   207→    const territories = randomlyAssignTerritories(players.length, players);
+   208→
+   209→    // Update player territory lists
+   210→    for (const player of players) {
+   211→      player.territories = Object.values(territories)
+   212→        .filter(t => t.ownerId === player.id)
+   213→        .map(t => t.id);
+   214→    }
+   215→
+   216→    set({
+   217→      phase: 'deploy',
+   218→      players,
+   219→      currentPlayerIndex: 0,
+   220→      territories,
+   221→      selectedTerritory: null,
+   222→      targetTerritory: null,
+   223→      battleResult: null,
+   224→      battleLog: [],
+   225→      winner: null,
+   226→      turnNumber: 1,
+   227→      reinforcementsLeft: calculateReinforcements(
+   228→        players[0].territories.length,
+   229→        players[0].characterClass
+   230→      ),
+   231→      attackerDiceCount: 0,
+   232→      defenderDiceCount: 0,
+   233→      fortifyArmies: 0,
+   234→      deployUnitType: 'swordsman',
+   235→      activeTactics: [],
+   236→      selectedTactic: null,
+   237→    });
+   238→
+   239→    // Queue story beats: prologue → character intro for player 1
+   240→    const humanPlayer = players.find(p => !p.isAI) || players[0];
+   241→    const charClass = humanPlayer.characterClass.toLowerCase();
+   242→    const playerConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === charClass) || PLAYER_CONFIGS[0];
+   243→
+   244→    const introBeat = getCharacterIntro(
+   245→      charClass,
+   246→      humanPlayer.name,
+   247→      humanPlayer.color,
+   248→      humanPlayer.colorLight,
+   249→      playerConfig.image
+   250→    );
+   251→
+   252→    // Queue story beats: prologue → chapter 1 title → character intro for player 1
+   253→    get().showStory(PROLOGUE);
+   254→
+   255→    if (get().isCampaignMode) {
+   256→      const chapter1 = CHAPTERS[0];
+   257→      const chapterBeat = getChapterTitleBeat(chapter1);
+   258→      get().queueStory(chapterBeat);
+   259→    }
+   260→
+   261→    get().queueStory(introBeat);
+   262→  },
+   263→
+   264→  deployArmy: (territoryId, unitType) => {
+   265→    const state = get();
+   266→    if (state.phase !== 'deploy' || state.reinforcementsLeft <= 0) return;
+   267→
+   268→    const territory = state.territories[territoryId];
+   269→    if (!territory || territory.ownerId !== state.players[state.currentPlayerIndex].id) return;
+   270→
+   271→    const currentPlayer = state.players[state.currentPlayerIndex];
+   272→    const cost = getUnitCost(unitType, currentPlayer.characterClass);
+   273→    if (cost > state.reinforcementsLeft) return;
+   274→
+   275→    const newTerritories = { ...state.territories };
+   276→    newTerritories[territoryId] = {
+   277→      ...territory,
+   278→      units: [...territory.units, unitType],
+   279→    };
+   280→
+   281→    const newReinforcements = state.reinforcementsLeft - cost;
+   282→    const unitName = UNIT_TYPES[unitType].name;
+   283→    const newLog = [...state.battleLog, addLog(state, `${UNIT_TYPES[unitType].icon} ${territory.name}: +1 ${unitName} deployed`, 'deploy')];
+   284→
+   285→    set({
+   286→      territories: newTerritories,
+   287→      reinforcementsLeft: newReinforcements,
+   288→      battleLog: newLog,
+   289→      selectedTerritory: null,
+   290→    });
+   291→  },
+   292→
+   293→  setDeployUnitType: (unitType) => set({ deployUnitType: unitType }),
+   294→
+   295→  selectTerritory: (territoryId) => {
+   296→    const state = get();
+   297→    const territory = state.territories[territoryId];
+   298→    if (!territory) return;
+   299→    const currentPlayer = state.players[state.currentPlayerIndex];
+   300→
+   301→    if (state.phase === 'attack') {
+   302→      if (state.selectedTerritory === null) {
+   303→        if (territory.ownerId === currentPlayer.id && territory.units.length > 1) {
+   304→          set({
+   305→            selectedTerritory: territoryId,
+   306→            targetTerritory: null,
+   307→            attackerDiceCount: 0,
+   308→            battleResult: null,
+   309→          });
+   310→        }
+   311→      } else if (state.selectedTerritory === territoryId) {
+   312→        set({ selectedTerritory: null, targetTerritory: null, attackerDiceCount: 0, battleResult: null });
+   313→      } else if (territory.ownerId !== currentPlayer.id) {
+   314→        const selectedTerritory = state.territories[state.selectedTerritory];
+   315→        if (selectedTerritory.adjacentTo.includes(territoryId)) {
+   316→          set({
+   317→            targetTerritory: territoryId,
+   318→            defenderDiceCount: getMaxDefenderDice(territory.units.length),
+   319→          });
+   320→        }
+   321→      } else if (territory.ownerId === currentPlayer.id && territory.units.length > 1) {
+   322→        set({
+   323→          selectedTerritory: territoryId,
+   324→          targetTerritory: null,
+   325→          attackerDiceCount: 0,
+   326→          battleResult: null,
+   327→        });
+   328→      }
+   329→    }
+   330→
+   331→    if (state.phase === 'fortify') {
+   332→      if (state.selectedTerritory === null) {
+   333→        if (territory.ownerId === currentPlayer.id && territory.units.length > 1) {
+   334→          set({
+   335→            selectedTerritory: territoryId,
+   336→            targetTerritory: null,
+   337→            fortifyArmies: territory.units.length - 1,
+   338→          });
+   339→        }
+   340→      } else if (state.selectedTerritory === territoryId) {
+   341→        set({ selectedTerritory: null, targetTerritory: null, fortifyArmies: 0 });
+   342→      } else if (territory.ownerId === currentPlayer.id) {
+   343→        const selectedTerritory = state.territories[state.selectedTerritory];
+   344→        if (selectedTerritory.adjacentTo.includes(territoryId)) {
+   345→          set({
+   346→            targetTerritory: territoryId,
+   347→            fortifyArmies: Math.min(state.fortifyArmies, selectedTerritory.units.length - 1),
+   348→          });
+   349→        }
+   350→      }
+   351→    }
+   352→  },
+   353→
+   354→  clearSelection: () => {
+   355→    set({ selectedTerritory: null, targetTerritory: null, attackerDiceCount: 0, defenderDiceCount: 0, battleResult: null, fortifyArmies: 0 });
+   356→  },
+   357→
+   358→  setAttackerDiceCount: (count) => set({ attackerDiceCount: count }),
+   359→
+   360→  executeAttack: () => {
+   361→    const state = get();
+   362→    if (!state.selectedTerritory || !state.targetTerritory || state.attackerDiceCount === 0) return;
+   363→
+   364→    const fromTerritory = state.territories[state.selectedTerritory];
+   365→    const toTerritory = state.territories[state.targetTerritory];
+   366→    if (!fromTerritory || !toTerritory) return;
+   367→
+   368→    const attacker = state.players.find(p => p.id === fromTerritory.ownerId)!;
+   369→    const defender = state.players.find(p => p.id === toTerritory.ownerId)!;
+   370→
+   371→    // Get tactic modifiers
+   372→    const modifiers = state.getActiveTacticEffect();
+   373→    const activeTactic = state.selectedTactic;
+   374→
+   375→    const result = resolveBattle(
+   376→      state.attackerDiceCount,
+   377→      state.defenderDiceCount,
+   378→      fromTerritory.units,
+   379→      toTerritory.units,
+   380→      attacker.characterClass,
+   381→      defender.characterClass,
+   382→      modifiers || undefined,
+   383→      activeTactic,
+   384→    );
+   385→
+   386→    const newTerritories = { ...state.territories };
+   387→    const newPlayers = state.players.map(p => ({ ...p, territories: [...p.territories] }));
+   388→
+   389→    // Apply losses using unit system
+   390→    newTerritories[state.selectedTerritory] = {
+   391→      ...fromTerritory,
+   392→      units: removeUnits(fromTerritory.units, result.attackerLosses),
+   393→    };
+   394→    newTerritories[state.targetTerritory] = {
+   395→      ...toTerritory,
+   396→      units: removeUnits(toTerritory.units, result.defenderLosses),
+   397→    };
+   398→
+   399→    let newLog = [...state.battleLog];
+   400→    let conquered = false;
+   401→
+   402→    // Build advantage label
+   403→    const advantageLabel = result.typeAdvantage === 'strong' ? ' ⬆ADVANTAGE' : result.typeAdvantage === 'weak' ? ' ⬇DISADVANTAGE' : '';
+   404→    const atkTypeName = result.attackerType ? UNIT_TYPES[result.attackerType].name : 'Army';
+   405→    const defTypeName = result.defenderType ? UNIT_TYPES[result.defenderType].name : 'Army';
+   406→
+   407→    if (newTerritories[state.targetTerritory].units.length === 0) {
+   408→      conquered = true;
+   409→      const movingUnits = Math.min(state.attackerDiceCount, newTerritories[state.selectedTerritory].units.length);
+   410→
+   411→      const oldOwner = newTerritories[state.targetTerritory].ownerId;
+   412→      const newOwner = newTerritories[state.selectedTerritory].ownerId;
+   413→
+   414→      // Move top units to conquered territory
+   415→      const remaining = newTerritories[state.selectedTerritory].units;
+   416→      const movedUnits = remaining.slice(0, movingUnits);
+   417→      const stayedUnits = remaining.slice(movingUnits);
+   418→
+   419→      newTerritories[state.targetTerritory] = {
+   420→        ...newTerritories[state.targetTerritory],
+   421→        ownerId: newOwner,
+   422→        units: movedUnits,
+   423→      };
+   424→      newTerritories[state.selectedTerritory] = {
+   425→        ...newTerritories[state.selectedTerritory],
+   426→        units: stayedUnits,
+   427→      };
+   428→
+   429→      if (oldOwner) {
+   430→        const oldPlayer = newPlayers.find(p => p.id === oldOwner)!;
+   431→        oldPlayer.territories = oldPlayer.territories.filter(id => id !== state.targetTerritory);
+   432→        if (oldPlayer.territories.length === 0) {
+   433→          oldPlayer.eliminated = true;
+   434→          newLog.push(addLog(state, `💀 ${oldPlayer.name} has been eliminated!`, 'info'));
+   435→
+   436→          // Queue elimination story for AI players
+   437→          if (oldPlayer.isAI) {
+   438→            const elimClass = oldPlayer.characterClass.toLowerCase();
+   439→            const elimConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === elimClass) || PLAYER_CONFIGS[0];
+   440→            const elimBeat = getEliminationBeat(oldPlayer.name, elimClass, oldPlayer.color);
+   441→            get().queueStory(elimBeat);
+   442→          }
+   443→        }
+   444→      }
+   445→      const newOwnerPlayer = newPlayers.find(p => p.id === newOwner)!;
+   446→      newOwnerPlayer.territories.push(state.targetTerritory);
+   447→
+   448→      newLog.push(addLog(state, `🏆 ${attacker.name} conquered ${toTerritory.name} from ${defender.name}!`, 'conquer'));
+   449→
+   450→      // Campaign story triggers on conquest
+   451→      if (get().isCampaignMode) {
+   452→        get().checkStoryTriggers(state.targetTerritory, fromTerritory.ownerId, toTerritory.ownerId);
+   453→      }
+   454→    } else {
+   455→      newLog.push(addLog(state,
+   456→        `⚔️ ${atkTypeName}${advantageLabel} → ${defTypeName}: ATK lost ${result.attackerLosses}, DEF lost ${result.defenderLosses}`,
+   457→        'attack'
+   458→      ));
+   459→    }
+   460→
+   461→    const battleResult: BattleResult = {
+   462→      ...result,
+   463→      conquered,
+   464→      fromTerritory: state.selectedTerritory,
+   465→      toTerritory: state.targetTerritory,
+   466→      tacticUsed: activeTactic,
+   467→    };
+   468→
+   469→    // Check win condition
+   470→    const winner = newPlayers.find(p => !p.eliminated && p.territories.length === 16) || null;
+   471→
+   472→    // Queue victory story if game ends
+   473→    if (winner) {
+   474→      const winClass = winner.characterClass.toLowerCase();
+   475→      const winConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === winClass) || PLAYER_CONFIGS[0];
+   476→      const victoryBeat = getVictoryBeat(winner.name, winClass, winner.color, winner.colorLight, winConfig.image);
+   477→      get().queueStory(victoryBeat);
+   478→    }
+   479→
+   480→    const maxAttack = getMaxAttackerDice(newTerritories[state.selectedTerritory].units.length);
+   481→    const maxDefend = getMaxDefenderDice(newTerritories[state.targetTerritory].units.length);
+   482→
+   483→    // Mark tactic as used if it's an attack-phase tactic and battle happened
+   484→    let newActiveTactics = state.activeTactics;
+   485→    if (activeTactic) {
+   486→      const tactic = TACTICS[activeTactic];
+   487→      if (tactic.phase === 'attack') {
+   488→        newActiveTactics = newActiveTactics.map(t =>
+   489→          t.tacticId === activeTactic ? { ...t, usedThisTurn: true } : t
+   490→        );
+   491→      }
+   492→    }
+   493→
+   494→    set({
+   495→      territories: newTerritories,
+   496→      players: newPlayers,
+   497→      battleResult,
+   498→      battleLog: newLog,
+   499→      attackerDiceCount: conquered ? 0 : Math.min(state.attackerDiceCount, maxAttack),
+   500→      defenderDiceCount: conquered ? 0 : maxDefend,
+   501→      targetTerritory: conquered ? null : state.targetTerritory,
+   502→      selectedTerritory: conquered ? null : state.selectedTerritory,
+   503→      winner: winner ? winner : null,
+   504→      phase: winner ? 'gameover' : state.phase,
+   505→      activeTactics: newActiveTactics,
+   506→    });
+   507→  },
+   508→
+   509→  setFortifyArmies: (count) => set({ fortifyArmies: count }),
+   510→
+   511→  executeFortify: (fromId, toId) => {
+   512→    const state = get();
+   513→    if (state.fortifyArmies <= 0) return;
+   514→
+   515→    const newTerritories = { ...state.territories };
+   516→    const fromUnits = newTerritories[fromId].units;
+   517→    const toUnits = newTerritories[toId].units;
+   518→
+   519→    // Move last N units (weakest) to destination
+   520→    const moved = fromUnits.slice(-state.fortifyArmies);
+   521→    const remaining = fromUnits.slice(0, fromUnits.length - state.fortifyArmies);
+   522→
+   523→    newTerritories[fromId] = {
+   524→      ...newTerritories[fromId],
+   525→      units: remaining,
+   526→    };
+   527→    newTerritories[toId] = {
+   528→      ...newTerritories[toId],
+   529→      units: [...toUnits, ...moved],
+   530→    };
+   531→
+   532→    const fromName = newTerritories[fromId].name;
+   533→    const toName = newTerritories[toId].name;
+   534→    const newLog = [...state.battleLog, addLog(state, `🛡️ ${state.fortifyArmies} units moved: ${fromName} → ${toName}`, 'fortify')];
+   535→
+   536→    set({
+   537→      territories: newTerritories,
+   538→      battleLog: newLog,
+   539→      selectedTerritory: null,
+   540→      targetTerritory: null,
+   541→      fortifyArmies: 0,
+   542→    });
+   543→  },
+   544→
+   545→  activateTactic: (tacticId) => {
+   546→    const state = get();
+   547→    const currentPlayer = state.players[state.currentPlayerIndex];
+   548→    const tactic = TACTICS[tacticId];
+   549→
+   550→    // Check if already active or on cooldown
+   551→    const existing = state.activeTactics.find(t => t.tacticId === tacticId && t.playerId === currentPlayer.id);
+   552→    if (existing) return;
+   553→
+   554→    // Check if player has the required unit type
+   555→    if (tactic.requires) {
+   556→      const hasUnit = Object.values(state.territories)
+   557→        .filter(t => t.ownerId === currentPlayer.id)
+   558→        .some(t => t.units.includes(tactic.requires!));
+   559→      if (!hasUnit) return;
+   560→    }
+   561→
+   562→    const newActiveTactics = [...state.activeTactics, {
+   563→      tacticId,
+   564→      playerId: currentPlayer.id,
+   565→      turnUsed: state.turnNumber,
+   566→      turnsUntilAvailable: tactic.cooldown,
+   567→      usedThisTurn: false,
+   568→    }];
+   569→
+   570→    const newLog = [...state.battleLog, addLog(state, `${tactic.icon} ${currentPlayer.name} activates ${tactic.name}!`, 'tactic')];
+   571→
+   572→    set({
+   573→      activeTactics: newActiveTactics,
+   574→      selectedTactic: tacticId,
+   575→      battleLog: newLog,
+   576→    });
+   577→  },
+   578→
+   579→  getAvailableTactics: () => {
+   580→    const state = get();
+   581→    const currentPlayer = state.players[state.currentPlayerIndex];
+   582→    const playerTactics = state.activeTactics.filter(t => t.playerId === currentPlayer.id);
+   583→
+   584→    const available: TacticId[] = [];
+   585→    for (const tactic of Object.values(TACTICS)) {
+   586→      const existing = playerTactics.find(t => t.tacticId === tactic.id);
+   587→      // Available if not on cooldown (or cooldown expired) and not used this turn
+   588→      if (!existing || (state.turnNumber >= existing.turnUsed + existing.turnsUntilAvailable && !existing.usedThisTurn)) {
+   589→        // Check unit requirement
+   590→        if (tactic.requires) {
+   591→          const hasUnit = Object.values(state.territories)
+   592→            .filter(t => t.ownerId === currentPlayer.id)
+   593→            .some(t => t.units.includes(tactic.requires!));
+   594→          if (!hasUnit) continue;
+   595→        }
+   596→        available.push(tactic.id);
+   597→      }
+   598→    }
+   599→    return available;
+   600→  },
+   601→
+   602→  getActiveTacticEffect: () => {
+   603→    const state = get();
+   604→    const activeTactic = state.selectedTactic;
+   605→    if (!activeTactic) return null;
+   606→
+   607→    const tactic = TACTICS[activeTactic];
+   608→    const modifiers: CombatModifiers = {
+   609→      attackDiceBonus: 0,
+   610→      attackDieBonus: 0,
+   611→      defenseDiceBonus: 0,
+   612→      defenseDieBonus: 0,
+   613→      defenderDiceReduction: 0,
+   614→    };
+   615→
+   616→    switch (activeTactic) {
+   617→      case 'cavalry_charge':
+   618→        modifiers.attackDieBonus = 2;
+   619→        break;
+   620→      case 'volley_fire':
+   621→        modifiers.attackDiceBonus = 1;
+   622→        break;
+   623→      case 'arcane_surge':
+   624→        // Handled in resolveBattle directly via typeAdvantage doubling
+   625→        modifiers.attackDieBonus = 1;
+   626→        break;
+   627→      case 'siege_prep':
+   628→        modifiers.defenderDiceReduction = 1;
+   629→        break;
+   630→      case 'phalanx':
+   631→        modifiers.defenseDieBonus = 1;
+   632→        break;
+   633→      case 'assassinate':
+   634→        modifiers.attackDieBonus = 3;
+   635→        break;
+   636→      case 'holy_shield':
+   637→        modifiers.defenseDieBonus = 1;
+   638→        break;
+   639→    }
+   640→
+   641→    return modifiers;
+   642→  },
+   643→
+   644→  isTacticActive: (tacticId) => {
+   645→    const state = get();
+   646→    return state.selectedTactic === tacticId;
+   647→  },
+   648→
+   649→  getActiveTactic: () => {
+   650→    return get().selectedTactic;
+   651→  },
+   652→
+   653→  endDeployPhase: () => {
+   654→    const state = get();
+   655→    set({
+   656→      phase: 'attack',
+   657→      selectedTerritory: null,
+   658→      targetTerritory: null,
+   659→      attackerDiceCount: 0,
+   660→      battleResult: null,
+   661→    });
+   662→  },
+   663→
+   664→  endAttackPhase: () => {
+   665→    const state = get();
+   666→    set({
+   667→      phase: 'fortify',
+   668→      selectedTerritory: null,
+   669→      targetTerritory: null,
+   670→      attackerDiceCount: 0,
+   671→      battleResult: null,
+   672→      fortifyArmies: 0,
+   673→    });
+   674→  },
+   675→
+   676→  endTurn: () => {
+   677→    const state = get();
+   678→    const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+   679→    let actualNext = nextPlayerIndex;
+   680→    let safety = 0;
+   681→
+   682→    while (state.players[actualNext].eliminated && safety < 10) {
+   683→      actualNext = (actualNext + 1) % state.players.length;
+   684→      safety++;
+   685→    }
+   686→
+   687→    // If we looped back to the current player, it means only they remain
+   688→    const newTurnNumber = actualNext <= state.currentPlayerIndex ? state.turnNumber + 1 : state.turnNumber;
+   689→
+   690→    const nextPlayer = state.players[actualNext];
+   691→
+   692→    // Check if rally cry is active for next player
+   693→    const rallyCryActive = state.activeTactics.some(
+   694→      t => t.tacticId === 'rally_cry' && t.playerId === nextPlayer.id && t.turnUsed === newTurnNumber && !t.usedThisTurn
+   695→    );
+   696→
+   697→    const reinforcements = calculateReinforcements(
+   698→      nextPlayer.territories.length,
+   699→      nextPlayer.characterClass,
+   700→      rallyCryActive,
+   701→    );
+   702→
+   703→    // Mark rally cry as used if it was active
+   704→    let newActiveTactics = state.activeTactics;
+   705→    if (rallyCryActive) {
+   706→      newActiveTactics = newActiveTactics.map(t =>
+   707→        t.tacticId === 'rally_cry' && t.playerId === nextPlayer.id && t.turnUsed === newTurnNumber
+   708→          ? { ...t, usedThisTurn: true }
+   709→          : t
+   710→      );
+   711→    }
+   712→
+   713→    const newLog = [...state.battleLog, addLog(state, `--- ${nextPlayer.name}'s turn ---`, 'turn')];
+   714→
+   715→    set({
+   716→      phase: 'deploy',
+   717→      currentPlayerIndex: actualNext,
+   718→      turnNumber: newTurnNumber,
+   719→      reinforcementsLeft: reinforcements,
+   720→      selectedTerritory: null,
+   721→      targetTerritory: null,
+   722→      attackerDiceCount: 0,
+   723→      defenderDiceCount: 0,
+   724→      battleResult: null,
+   725→      battleLog: newLog,
+   726→      fortifyArmies: 0,
+   727→      selectedTactic: null,
+   728→      activeTactics: newActiveTactics,
+   729→      deployUnitType: 'swordsman',
+   730→    });
+   731→
+   732→    // Roll for campaign event on new turn cycle (only for human player's turn)
+   733→    if (newTurnNumber > state.turnNumber && !nextPlayer.isAI) {
+   734→      get().rollCampaignEvent();
+   735→
+   736→      // Campaign: check chapter advancement and turn-based triggers
+   737→      if (get().isCampaignMode) {
+   738→        get().advanceChapter();
+   739→      }
+   740→    }
+   741→  },
+   742→
+   743→  startGame: () => set({ phase: 'setup' }),
+   744→
+   745→  resetGame: () => {
+   746→    set({
+   747→      phase: 'title',
+   748→      players: [],
+   749→      currentPlayerIndex: 0,
+   750→      territories: {},
+   751→      selectedTerritory: null,
+   752→      targetTerritory: null,
+   753→      reinforcementsLeft: 0,
+   754→      attackerDiceCount: 0,
+   755→      defenderDiceCount: 0,
+   756→      battleResult: null,
+   757→      battleLog: [],
+   758→      winner: null,
+   759→      fortifyArmies: 0,
+   760→      turnNumber: 0,
+   761→      deployUnitType: 'swordsman',
+   762→      activeTactics: [],
+   763→      selectedTactic: null,
+   764→      storyBeat: null,
+   765→      storyQueue: [],
+   766→      currentEvent: null,
+   767→      storySeen: new Set(),
+   768→      isCampaignMode: false,
+   769→      campaignProgress: {
+   770→        currentChapter: 1,
+   771→        totalConquests: 0,
+   772→        firstBloodFired: false,
+   773→        firedTriggers: new Set(),
+   774→        rivalClashes: new Set(),
+   775→        regionDominanceFired: new Set(),
+   776→        turnStoryFired: new Set(),
+   777→      },
+   778→    });
+   779→  },
+   780→
+   781→  getCurrentPlayer: () => {
+   782→    const state = get();
+   783→    return state.players[state.currentPlayerIndex];
+   784→  },
+   785→
+   786→  getTerritory: (id) => {
+   787→    const state = get();
+   788→    return state.territories[id];
+   789→  },
+   790→
+   791→  getPlayerById: (id) => {
+   792→    const state = get();
+   793→    return state.players.find(p => p.id === id);
+   794→  },
+   795→
+   796→  // Story system
+   797→  showStory: (beat) => {
+   798→    const state = get();
+   799→    if (!state.storyBeat) {
+   800→      set({ storyBeat: beat });
+   801→    } else {
+   802→      set({ storyQueue: [...state.storyQueue, beat] });
+   803→    }
+   804→  },
+   805→
+   806→  queueStory: (beat) => {
+   807→    const state = get();
+   808→    set({ storyQueue: [...state.storyQueue, beat] });
+   809→  },
+   810→
+   811→  dismissStory: () => {
+   812→    const state = get();
+   813→    const queue = [...state.storyQueue];
+   814→    const seen = new Set(state.storySeen);
+   815→    if (state.storyBeat) {
+   816→      seen.add(state.storyBeat.id);
+   817→    }
+   818→    if (queue.length > 0) {
+   819→      const next = queue.shift()!;
+   820→      // Don't replay seen beats
+   821→      if (seen.has(next.id)) {
+   822→        // Skip this one and try the next
+   823→        set({ storyBeat: queue.length > 0 ? queue.shift()! : null, storyQueue: queue, storySeen: seen });
+   824→      } else {
+   825→        set({ storyBeat: next, storyQueue: queue, storySeen: seen });
+   826→      }
+   827→    } else {
+   828→      set({ storyBeat: null, storyQueue: queue, storySeen: seen });
+   829→    }
+   830→  },
+   831→
+   832→  rollCampaignEvent: () => {
+   833→    const state = get();
+   834→    if (state.phase === 'gameover' || state.storyBeat) return;
+   835→
+   836→    const eligible = CAMPAIGN_EVENTS.filter(e => {
+   837→      if (state.turnNumber < e.minTurn) return false;
+   838→      if (e.maxTurn && state.turnNumber > e.maxTurn) return false;
+   839→      if (state.storySeen.has(e.id)) return false;
+   840→      return Math.random() < e.triggerChance;
+   841→    });
+   842→
+   843→    if (eligible.length > 0) {
+   844→      const event = eligible[Math.floor(Math.random() * eligible.length)];
+   845→      const seen = new Set(state.storySeen);
+   846→      seen.add(event.id);
+   847→      set({ currentEvent: event, storySeen: seen });
+   848→    }
+   849→  },
+   850→
+   851→  dismissEvent: () => {
+   852→    set({ currentEvent: null });
+   853→  },
+   854→
+   855→  // Campaign mode functions
+   856→  startCampaign: () => {
+   857→    set({
+   858→      isCampaignMode: true,
+   859→      campaignProgress: {
+   860→        currentChapter: 1,
+   861→        totalConquests: 0,
+   862→        firstBloodFired: false,
+   863→        firedTriggers: new Set(),
+   864→        rivalClashes: new Set(),
+   865→        regionDominanceFired: new Set(),
+   866→        turnStoryFired: new Set(),
+   867→      },
+   868→    });
+   869→    get().startGame();
+   870→  },
+   871→
+   872→  startSkirmish: () => {
+   873→    set({ isCampaignMode: false });
+   874→    get().startGame();
+   875→  },
+   876→
+   877→  advanceChapter: () => {
+   878→    const state = get();
+   879→    if (!state.isCampaignMode || state.phase === 'gameover' || state.storyBeat) return;
+   880→    if (state.storyQueue.length > 0) return; // Don't advance while story is queued
+   881→
+   882→    const progress = { ...state.campaignProgress };
+   883→    const humanPlayer = state.players.find(p => !p.isAI) || state.players[0];
+   884→    if (!humanPlayer) return;
+   885→
+   886→    const territoryCount = humanPlayer.territories.length;
+   887→    const alivePlayers = state.players.filter(p => !p.eliminated).length;
+   888→
+   889→    let newChapter = progress.currentChapter;
+   890→
+   891→    // Chapter 2: First conquest happened
+   892→    if (newChapter === 1 && progress.totalConquests >= 1) {
+   893→      newChapter = 2;
+   894→    }
+   895→    // Chapter 3: A player has been eliminated OR turn 8+
+   896→    else if (newChapter === 2 && (alivePlayers < state.players.length || state.turnNumber >= 8)) {
+   897→      newChapter = 3;
+   898→    }
+   899→    // Chapter 4: Human has 8+ territories OR only 2 players remain
+   900→    else if (newChapter === 3 && (territoryCount >= 8 || alivePlayers <= 2)) {
+   901→      newChapter = 4;
+   902→    }
+   903→    // Chapter 5: Only 2 players remain
+   904→    else if (newChapter === 4 && alivePlayers <= 2) {
+   905→      newChapter = 5;
+   906→    }
+   907→
+   908→    if (newChapter !== progress.currentChapter) {
+   909→      progress.currentChapter = newChapter;
+   910→      const chapter = CHAPTERS.find(c => c.number === newChapter);
+   911→      if (chapter) {
+   912→        const beat = getChapterTitleBeat(chapter);
+   913→        get().queueStory(beat);
+   914→      }
+   915→      set({ campaignProgress: progress });
+   916→    }
+   917→  },
+   918→
+   919→  checkStoryTriggers: (conqueredTerritoryId, attackerId, defenderId) => {
+   920→    const state = get();
+   921→    if (!state.isCampaignMode || state.phase === 'gameover') return;
+   922→
+   923→    const progress = { ...state.campaignProgress };
+   924→    const firedTriggers = new Set(progress.firedTriggers);
+   925→    const rivalClashes = new Set(progress.rivalClashes);
+   926→    const regionDominanceFired = new Set(progress.regionDominanceFired);
+   927→
+   928→    // Increment conquest counter
+   929→    progress.totalConquests = (progress.totalConquests || 0) + 1;
+   930→
+   931→    if (!conqueredTerritoryId || !attackerId || !defenderId) {
+   932→      set({ campaignProgress: progress });
+   933→      return;
+   934→    }
+   935→
+   936→    const attacker = state.players.find(p => p.id === attackerId);
+   937→    const defender = state.players.find(p => p.id === defenderId);
+   938→    if (!attacker || !defender) return;
+   939→
+   940→    const territory = state.territories[conqueredTerritoryId];
+   941→    if (!territory) return;
+   942→
+   943→    // Get config for portrait lookups
+   944→    const atkConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === attacker.characterClass.toLowerCase()) || PLAYER_CONFIGS[0];
+   945→    const defConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === defender.characterClass.toLowerCase()) || PLAYER_CONFIGS[1];
+   946→
+   947→    // --- FIRST BLOOD ---
+   948→    if (!progress.firstBloodFired) {
+   949→      progress.firstBloodFired = true;
+   950→      const beat = getFirstBloodBeat(
+   951→        attacker.name, attacker.characterClass, attacker.color, attacker.colorLight, atkConfig.image,
+   952→        defender.name, territory.name
+   953→      );
+   954→      get().queueStory(beat);
+   955→    }
+   956→
+   957→    // --- KEY TERRITORY CAPTURE ---
+   958→    const keyTerritoryTriggerId = `territory-${conqueredTerritoryId}`;
+   959→    if (!firedTriggers.has(keyTerritoryTriggerId)) {
+   960→      const captureBeat = getTerritoryCaptureBeat(
+   961→        conqueredTerritoryId, territory.name, attacker.name, attacker.characterClass,
+   962→        attacker.color, attacker.colorLight, atkConfig.image
+   963→      );
+   964→      if (captureBeat) {
+   965→        firedTriggers.add(keyTerritoryTriggerId);
+   966→        get().queueStory(captureBeat);
+   967→      }
+   968→    }
+   969→
+   970→    // --- RIVAL CLASH ---
+   971→    const clashKey = [attackerId, defenderId].sort().join('-');
+   972→    if (!rivalClashes.has(clashKey)) {
+   973→      rivalClashes.add(clashKey);
+   974→      const clashBeat = getRivalClashBeat(
+   975→        attacker.name, attacker.characterClass, attacker.color, atkConfig.image,
+   976→        defender.name, defender.characterClass, defender.color, defConfig.image
+   977→      );
+   978→      get().queueStory(clashBeat);
+   979→    }
+   980→
+   981→    // --- REGION DOMINANCE ---
+   982→    const region = territory.region;
+   983→    if (!regionDominanceFired.has(region)) {
+   984→      // Check if attacker now controls all territories in this region
+   985→      const regionTerritories = TERRITORIES.filter(t => t.region === region);
+   986→      const ownsAll = regionTerritories.every(t => {
+   987→        const tState = state.territories[t.id];
+   988→        return tState && tState.ownerId === attackerId;
+   989→      });
+   990→      if (ownsAll && regionTerritories.length >= 2) {
+   991→        regionDominanceFired.add(region);
+   992→        const lore = REGION_LORE[region] || '';
+   993→        const dominanceBeat = getRegionDominanceBeat(region, attacker.name, attacker.color, lore);
+   994→        get().queueStory(dominanceBeat);
+   995→      }
+   996→    }
+   997→
+   998→    // --- DESPERATE HOUR (check all human players) ---
+   999→    for (const player of state.players) {
+  1000→      if (player.isAI || player.eliminated) continue;
+  1001→      const pConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === player.characterClass.toLowerCase()) || PLAYER_CONFIGS[0];
+  1002→      const desperateId = `desperate-${player.id}`;
+  1003→      if (!firedTriggers.has(desperateId) && player.territories.length <= 2 && state.turnNumber >= 3) {
+  1004→        firedTriggers.add(desperateId);
+  1005→        const desperateBeat = getDesperateHourBeat(
+  1006→          player.name, player.characterClass, player.color, player.colorLight, pConfig.image,
+  1007→          player.territories.length
+  1008→        );
+  1009→        get().queueStory(desperateBeat);
+  1010→      }
+  1011→    }
+  1012→
+  1013→    // --- DOMINANT FORCE ---
+  1014→    for (const player of state.players) {
+  1015→      if (player.eliminated) continue;
+  1016→      const dominantId = `dominant-${player.id}`;
+  1017→      if (!firedTriggers.has(dominantId) && player.territories.length >= 10 && state.turnNumber >= 5) {
+  1018→        firedTriggers.add(dominantId);
+  1019→        const dominantBeat = getDominantForceBeat(
+  1020→          player.name, player.color, player.territories.length, state.players.filter(p => !p.eliminated).length
+  1021→        );
+  1022→        get().queueStory(dominantBeat);
+  1023→      }
+  1024→    }
+  1025→
+  1026→    progress.firedTriggers = firedTriggers;
+  1027→    progress.rivalClashes = rivalClashes;
+  1028→    progress.regionDominanceFired = regionDominanceFired;
+  1029→    set({ campaignProgress: progress });
+  1030→  },
+  1031→}));

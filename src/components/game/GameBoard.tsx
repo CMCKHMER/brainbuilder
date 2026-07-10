@@ -5,12 +5,18 @@ import PlayerPanel from '@/components/game/PlayerPanel';
 import ActionPanel from '@/components/game/ActionPanel';
 import { useGameStore } from '@/lib/game-store';
 import { Button } from '@/components/ui/button';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 import { UnitPortrait } from './UnitCards';
 import { useAIController } from '@/hooks/useAIController';
 import StoryOverlay from './StoryOverlay';
+import AIDialogueBubble from './AIDialogueBubble';
 import dynamic from 'next/dynamic';
+import {
+  initAudio, startMusic, resumeAudio,
+  playSwordClash, playBattleWin, playBattleLose,
+  playConquest, playElimination, playVictory,
+} from '@/lib/audio-engine';
 
 const GameMap3D = dynamic(() => import('./GameMap3D'), {
   ssr: false,
@@ -109,6 +115,64 @@ export default function GameBoard() {
   const dismissEvent = useGameStore(s => s.dismissEvent);
   const isCampaignMode = useGameStore(s => s.isCampaignMode);
   const campaignProgress = useGameStore(s => s.campaignProgress);
+
+  // Audio: initialize and start music when game begins
+  const musicStartedRef = useRef(false);
+  useEffect(() => {
+    if (phase !== 'title' && phase !== 'setup' && !musicStartedRef.current) {
+      initAudio();
+      startMusic();
+      musicStartedRef.current = true;
+    }
+    if (phase === 'title') {
+      musicStartedRef.current = false;
+    }
+  }, [phase]);
+
+  // Audio: play battle sounds when battleResult changes
+  const battleResult = useGameStore(s => s.battleResult);
+  const prevBattleResultRef = useRef(battleResult);
+  useEffect(() => {
+    if (battleResult && battleResult !== prevBattleResultRef.current) {
+      // Only play audio for human player battles (AI handles its own audio)
+      const currentPlayer = useGameStore.getState().players[useGameStore.getState().currentPlayerIndex];
+      if (currentPlayer && !currentPlayer.isAI) {
+        if (battleResult.conquered) {
+          playConquest();
+          // Check for elimination
+          const state = useGameStore.getState();
+          const eliminated = state.players.find(p => p.eliminated);
+          if (eliminated && state.battleLog.some(l => l.message.includes(eliminated.name) && l.message.includes('eliminated'))) {
+            setTimeout(() => playElimination(), 300);
+          }
+        } else {
+          const attackerLostMore = battleResult.attackerLosses > battleResult.defenderLosses;
+          if (attackerLostMore) {
+            playBattleLose();
+          } else {
+            playBattleWin();
+          }
+        }
+      }
+    }
+    prevBattleResultRef.current = battleResult;
+  }, [battleResult]);
+
+  // Audio: victory sound on game over
+  const phaseRef = useRef(phase);
+  useEffect(() => {
+    if (phase === 'gameover' && phaseRef.current !== 'gameover') {
+      playVictory();
+    }
+    phaseRef.current = phase;
+  }, [phase]);
+
+  // Resume audio on any click (browser autoplay policy)
+  useEffect(() => {
+    const handler = () => resumeAudio();
+    window.addEventListener('click', handler, { once: false });
+    return () => window.removeEventListener('click', handler);
+  }, []);
 
   // AI turn controller
   useAIController();
@@ -294,6 +358,9 @@ export default function GameBoard() {
 
       {/* Action Panel (Bottom) */}
       <ActionPanel />
+
+      {/* AI Dialogue Bubble */}
+      <AIDialogueBubble />
 
       {/* Campaign Event Banner */}
       {currentEvent && !storyBeat && (

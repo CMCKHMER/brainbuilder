@@ -9,6 +9,9 @@ import UnitDeployer from './UnitDeployer';
 import { TypeAdvantageIndicator, UnitComposition, BattleUnitDisplay, UnitPortrait } from './UnitCards';
 import TacticsPanel from './TacticsPanel';
 import { TACTICS } from '@/lib/game-data';
+import {
+  playDiceRoll, playSwordClash, playClick, playPhaseChange,
+} from '@/lib/audio-engine';
 
 // Dice face SVG component
 function DieFace({ value, size = 36, color = '#F5F0E8', rolling = false }: { value: number; size?: number; color?: string; rolling?: boolean }) {
@@ -78,14 +81,17 @@ export default function ActionPanel() {
   const handleAttack = useCallback(() => {
     if (attackerDiceCount === 0 || !selectedTerritory || !targetTerritory) return;
     setIsRolling(true);
+    playDiceRoll();
     setTimeout(() => {
+      playSwordClash();
       executeAttack();
-      setIsRolling(false);
+      setTimeout(() => setIsRolling(false), 200);
     }, 600);
   }, [attackerDiceCount, selectedTerritory, targetTerritory, executeAttack]);
 
   const handleFortify = useCallback(() => {
     if (fortifyArmies <= 0 || !selectedTerritory || !targetTerritory) return;
+    playClick();
     executeFortify(selectedTerritory, targetTerritory);
   }, [fortifyArmies, selectedTerritory, targetTerritory, executeFortify]);
 
@@ -296,7 +302,7 @@ export default function ActionPanel() {
                 </Button>
               )}
               <Button
-                onClick={endAttackPhase}
+                onClick={() => { playClick(); endAttackPhase(); }}
                 size="sm"
                 className="px-3"
                 style={{
@@ -315,7 +321,7 @@ export default function ActionPanel() {
           {/* End Attack Phase (no attacks made) */}
           {!selectedTerritory && !battleResult && (
             <Button
-              onClick={endAttackPhase}
+              onClick={() => { playClick(); endAttackPhase(); }}
               size="sm"
               className="px-3"
               style={{
@@ -335,7 +341,7 @@ export default function ActionPanel() {
       {/* Row 2: Deploy End button */}
       {phase === 'deploy' && (
         <Button
-          onClick={endDeployPhase}
+          onClick={() => { playClick(); endDeployPhase(); }}
           disabled={reinforcementsLeft > 0}
           size="sm"
           className="px-4 self-end"
@@ -384,7 +390,7 @@ export default function ActionPanel() {
       {/* Fortify: End Turn */}
       {phase === 'fortify' && !targetTerritory && (
         <Button
-          onClick={endTurn}
+          onClick={() => { playClick(); endTurn(); }}
           size="sm"
           className="px-4 self-end"
           style={{

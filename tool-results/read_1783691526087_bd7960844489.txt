@@ -1,0 +1,688 @@
+     1→'use client';
+     2→
+     3→import { useEffect, useRef, useState, useCallback } from 'react';
+     4→import { useGameStore } from '@/lib/game-store';
+     5→
+     6→/* ─── particle system ─── */
+     7→interface Particle {
+     8→  x: number;
+     9→  y: number;
+    10→  vx: number;
+    11→  vy: number;
+    12→  size: number;
+    13→  opacity: number;
+    14→  hue: number;
+    15→  life: number;
+    16→  maxLife: number;
+    17→  type: 'firefly' | 'ember' | 'mist';
+    18→}
+    19→
+    20→function lerp(a: number, b: number, t: number) {
+    21→  return a + (b - a) * t;
+    22→}
+    23→
+    24→function randomRange(min: number, max: number) {
+    25→  return Math.random() * (max - min) + min;
+    26→}
+    27→
+    28→export default function TitleScreen() {
+    29→  const canvasRef = useRef<HTMLCanvasElement>(null);
+    30→  const animRef = useRef<number>(0);
+    31→  const particles = useRef<Particle[]>([]);
+    32→  const mouseRef = useRef({ x: 0, y: 0 });
+    33→  const [loaded, setLoaded] = useState(false);
+    34→
+    35→  // Fallback: ensure loading overlay dismisses even if image is cached
+    36→  useEffect(() => {
+    37→    const timer = setTimeout(() => setLoaded(true), 2000);
+    38→    return () => clearTimeout(timer);
+    39→  }, []);
+    40→  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+    41→  const [fadeToGame, setFadeToGame] = useState(false);
+    42→  const [showModeSelect, setShowModeSelect] = useState(false);
+    43→  const startCampaign = useGameStore((s) => s.startCampaign);
+    44→  const startSkirmish = useGameStore((s) => s.startSkirmish);
+    45→  const startGame = useGameStore((s) => s.startGame);
+    46→
+    47→  const menuItems = [
+    48→    { id: 'campaign', label: 'NEW CAMPAIGN', action: () => { setShowModeSelect(true); } },
+    49→    { id: 'skirmish', label: 'SKIRMISH MODE', action: () => handleModeSelect(false) },
+    50→    { id: 'multi', label: 'MULTIPLAYER', action: () => {} },
+    51→    { id: 'credits', label: 'CREDITS', action: () => {} },
+    52→  ];
+    53→
+    54→  const handleModeSelect = useCallback((isCampaign: boolean) => {
+    55→    setShowModeSelect(false);
+    56→    setFadeToGame(true);
+    57→    setTimeout(() => {
+    58→      if (isCampaign) {
+    59→        startCampaign();
+    60→      } else {
+    61→        startSkirmish();
+    62→      }
+    63→    }, 1200);
+    64→  }, [startCampaign, startSkirmish]);
+    65→
+    66→  const handleStart = useCallback(() => {
+    67→    setFadeToGame(true);
+    68→    setTimeout(() => startGame(), 1200);
+    69→  }, [startGame]);
+    70→
+    71→  /* ─── canvas particle engine ─── */
+    72→  useEffect(() => {
+    73→    const canvas = canvasRef.current;
+    74→    if (!canvas) return;
+    75→    const ctx = canvas.getContext('2d');
+    76→    if (!ctx) return;
+    77→
+    78→    const resize = () => {
+    79→      canvas.width = window.innerWidth;
+    80→      canvas.height = window.innerHeight;
+    81→    };
+    82→    resize();
+    83→    window.addEventListener('resize', resize);
+    84→
+    85→    const onMouse = (e: MouseEvent) => {
+    86→      mouseRef.current = { x: e.clientX, y: e.clientY };
+    87→    };
+    88→    window.addEventListener('mousemove', onMouse);
+    89→
+    90→    // Seed initial particles
+    91→    const spawnParticle = (type: Particle['type'] = 'firefly'): Particle => {
+    92→      const w = canvas.width;
+    93→      const h = canvas.height;
+    94→      switch (type) {
+    95→        case 'firefly':
+    96→          return {
+    97→            x: Math.random() * w,
+    98→            y: Math.random() * h,
+    99→            vx: randomRange(-0.3, 0.3),
+   100→            vy: randomRange(-0.5, -0.1),
+   101→            size: randomRange(1.5, 3.5),
+   102→            opacity: 0,
+   103→            hue: randomRange(35, 55), // warm gold
+   104→            life: 0,
+   105→            maxLife: randomRange(180, 420),
+   106→            type: 'firefly',
+   107→          };
+   108→        case 'ember':
+   109→          return {
+   110→            x: Math.random() * w,
+   111→            y: h + 10,
+   112→            vx: randomRange(-0.5, 0.5),
+   113→            vy: randomRange(-1.5, -0.5),
+   114→            size: randomRange(1, 2.5),
+   115→            opacity: randomRange(0.5, 0.9),
+   116→            hue: randomRange(10, 35), // orange-red
+   117→            life: 0,
+   118→            maxLife: randomRange(120, 300),
+   119→            type: 'ember',
+   120→          };
+   121→        case 'mist':
+   122→          return {
+   123→            x: randomRange(-100, w + 100),
+   124→            y: h * randomRange(0.5, 0.95),
+   125→            vx: randomRange(0.1, 0.4),
+   126→            vy: randomRange(-0.05, 0.05),
+   127→            size: randomRange(80, 200),
+   128→            opacity: 0,
+   129→            hue: 220,
+   130→            life: 0,
+   131→            maxLife: randomRange(400, 800),
+   132→            type: 'mist',
+   133→          };
+   134→      }
+   135→    };
+   136→
+   137→    // Initialize
+   138→    for (let i = 0; i < 60; i++) particles.current.push(spawnParticle('firefly'));
+   139→    for (let i = 0; i < 15; i++) particles.current.push(spawnParticle('ember'));
+   140→    for (let i = 0; i < 6; i++) particles.current.push(spawnParticle('mist'));
+   141→
+   142→    let frame = 0;
+   143→    const draw = () => {
+   144→      frame++;
+   145→      ctx.clearRect(0, 0, canvas.width, canvas.height);
+   146→      const w = canvas.width;
+   147→      const h = canvas.height;
+   148→      const mx = mouseRef.current.x;
+   149→      const my = mouseRef.current.y;
+   150→
+   151→      // Spawn new particles periodically
+   152→      if (frame % 8 === 0 && particles.current.filter(p => p.type === 'firefly').length < 80) {
+   153→        particles.current.push(spawnParticle('firefly'));
+   154→      }
+   155→      if (frame % 20 === 0 && particles.current.filter(p => p.type === 'ember').length < 25) {
+   156→        particles.current.push(spawnParticle('ember'));
+   157→      }
+   158→      if (frame % 60 === 0 && particles.current.filter(p => p.type === 'mist').length < 8) {
+   159→        particles.current.push(spawnParticle('mist'));
+   160→      }
+   161→
+   162→      // Draw & update
+   163→      for (let i = particles.current.length - 1; i >= 0; i--) {
+   164→        const p = particles.current[i];
+   165→        p.life++;
+   166→
+   167→        // Fade in/out lifecycle
+   168→        const lifeRatio = p.life / p.maxLife;
+   169→        if (lifeRatio < 0.15) {
+   170→          p.opacity = lerp(0, p.type === 'mist' ? 0.06 : 0.8, lifeRatio / 0.15);
+   171→        } else if (lifeRatio > 0.75) {
+   172→          p.opacity = lerp(p.type === 'mist' ? 0.06 : 0.8, 0, (lifeRatio - 0.75) / 0.25);
+   173→        }
+   174→
+   175→        // Gentle mouse repulsion for fireflies
+   176→        if (p.type === 'firefly') {
+   177→          const dx = p.x - mx;
+   178→          const dy = p.y - my;
+   179→          const dist = Math.sqrt(dx * dx + dy * dy);
+   180→          if (dist < 120 && dist > 0) {
+   181→            const force = (120 - dist) / 120 * 0.15;
+   182→            p.vx += (dx / dist) * force;
+   183→            p.vy += (dy / dist) * force;
+   184→          }
+   185→          // Dampen velocity
+   186→          p.vx *= 0.995;
+   187→          p.vy *= 0.995;
+   188→          // Wandering
+   189→          p.vx += Math.sin(frame * 0.01 + i) * 0.02;
+   190→          p.vy += Math.cos(frame * 0.013 + i) * 0.015;
+   191→        }
+   192→
+   193→        p.x += p.vx;
+   194→        p.y += p.vy;
+   195→
+   196→        // Remove dead or off-screen
+   197→        if (p.life >= p.maxLife || p.x < -250 || p.x > w + 250 || p.y < -50 || p.y > h + 50) {
+   198→          particles.current.splice(i, 1);
+   199→          continue;
+   200→        }
+   201→
+   202→        if (p.type === 'firefly') {
+   203→          // Pulsing glow
+   204→          const pulse = 0.6 + Math.sin(frame * 0.05 + i * 1.7) * 0.4;
+   205→          const alpha = p.opacity * pulse;
+   206→          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
+   207→          glow.addColorStop(0, `hsla(${p.hue}, 80%, 70%, ${alpha})`);
+   208→          glow.addColorStop(0.4, `hsla(${p.hue}, 70%, 55%, ${alpha * 0.4})`);
+   209→          glow.addColorStop(1, `hsla(${p.hue}, 60%, 40%, 0)`);
+   210→          ctx.fillStyle = glow;
+   211→          ctx.beginPath();
+   212→          ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+   213→          ctx.fill();
+   214→          // Core
+   215→          ctx.fillStyle = `hsla(${p.hue}, 90%, 85%, ${alpha})`;
+   216→          ctx.beginPath();
+   217→          ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
+   218→          ctx.fill();
+   219→        } else if (p.type === 'ember') {
+   220→          const flicker = 0.7 + Math.sin(frame * 0.12 + i * 3.1) * 0.3;
+   221→          const alpha = p.opacity * flicker;
+   222→          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
+   223→          glow.addColorStop(0, `hsla(${p.hue}, 90%, 60%, ${alpha})`);
+   224→          glow.addColorStop(0.5, `hsla(${p.hue}, 80%, 45%, ${alpha * 0.3})`);
+   225→          glow.addColorStop(1, `hsla(${p.hue}, 70%, 30%, 0)`);
+   226→          ctx.fillStyle = glow;
+   227→          ctx.beginPath();
+   228→          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+   229→          ctx.fill();
+   230→        } else if (p.type === 'mist') {
+   231→          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+   232→          gradient.addColorStop(0, `hsla(${p.hue}, 30%, 40%, ${p.opacity})`);
+   233→          gradient.addColorStop(0.6, `hsla(${p.hue}, 25%, 30%, ${p.opacity * 0.4})`);
+   234→          gradient.addColorStop(1, `hsla(${p.hue}, 20%, 25%, 0)`);
+   235→          ctx.fillStyle = gradient;
+   236→          ctx.beginPath();
+   237→          ctx.ellipse(p.x, p.y, p.size, p.size * 0.4, 0, 0, Math.PI * 2);
+   238→          ctx.fill();
+   239→        }
+   240→      }
+   241→
+   242→      // Subtle vignette
+   243→      const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.25, w / 2, h / 2, w * 0.75);
+   244→      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+   245→      vignette.addColorStop(1, 'rgba(0,0,0,0.35)');
+   246→      ctx.fillStyle = vignette;
+   247→      ctx.fillRect(0, 0, w, h);
+   248→
+   249→      animRef.current = requestAnimationFrame(draw);
+   250→    };
+   251→
+   252→    animRef.current = requestAnimationFrame(draw);
+   253→
+   254→    return () => {
+   255→      cancelAnimationFrame(animRef.current);
+   256→      window.removeEventListener('resize', resize);
+   257→      window.removeEventListener('mousemove', onMouse);
+   258→    };
+   259→  }, []);
+   260→
+   261→  return (
+   262→    <div
+   263→      className="relative w-screen h-screen overflow-hidden"
+   264→      style={{ cursor: 'default' }}
+   265→    >
+   266→      {/* Background image */}
+   267→      <div
+   268→        className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-in-out"
+   269→        style={{
+   270→          backgroundImage: 'url(/game_menu.png)',
+   271→          animation: 'kenBurns 20s ease-in-out infinite alternate',
+   272→          filter: 'brightness(0.75) saturate(1.15) contrast(1.05)',
+   273→        }}
+   274→      />
+   275→
+   276→      {/* Dark gradient overlays for depth */}
+   277→      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+   278→      <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none" />
+   279→
+   280→      {/* Particle canvas */}
+   281→      <canvas
+   282→        ref={canvasRef}
+   283→        className="absolute inset-0 z-10 pointer-events-none"
+   284→      />
+   285→
+   286→      {/* Ambient light beams */}
+   287→      <div
+   288→        className="absolute z-[5] pointer-events-none"
+   289→        style={{
+   290→          top: '5%',
+   291→          left: '50%',
+   292→          transform: 'translateX(-50%)',
+   293→          width: '120%',
+   294→          height: '60%',
+   295→          background: 'radial-gradient(ellipse at 50% 0%, rgba(180,160,120,0.06) 0%, transparent 60%)',
+   296→          animation: 'lightBeam 8s ease-in-out infinite alternate',
+   297→        }}
+   298→      />
+   299→
+   300→      {/* Portal glow pulse (top center area) */}
+   301→      <div
+   302→        className="absolute z-[6] pointer-events-none"
+   303→        style={{
+   304→          top: '0%',
+   305→          left: '50%',
+   306→          transform: 'translateX(-50%)',
+   307→          width: '400px',
+   308→          height: '200px',
+   309→          background: 'radial-gradient(ellipse at 50% 80%, rgba(100,80,200,0.12) 0%, rgba(60,100,200,0.06) 40%, transparent 70%)',
+   310→          animation: 'portalPulse 4s ease-in-out infinite',
+   311→        }}
+   312→      />
+   313→
+   314→      {/* Title area */}
+   315→      <div
+   316→        className="absolute z-20 flex flex-col items-center pointer-events-none"
+   317→        style={{
+   318→          top: '6%',
+   319→          left: '50%',
+   320→          transform: 'translateX(-50%)',
+   321→          width: '90%',
+   322→          maxWidth: '800px',
+   323→        }}
+   324→      >
+   325→        {/* Title glow backdrop */}
+   326→        <div
+   327→          className="absolute -inset-10 opacity-30"
+   328→          style={{
+   329→            background: 'radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.3) 0%, transparent 65%)',
+   330→            animation: 'titleGlow 3s ease-in-out infinite alternate',
+   331→          }}
+   332→        />
+   333→        <h1
+   334→          className="relative font-[var(--font-cinzel)] text-center select-none"
+   335→          style={{
+   336→            fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+   337→            fontWeight: 900,
+   338→            color: '#D4AF37',
+   339→            textShadow: `
+   340→              0 0 20px rgba(212,175,55,0.6),
+   341→              0 0 40px rgba(212,175,55,0.3),
+   342→              0 0 80px rgba(212,175,55,0.15),
+   343→              0 2px 4px rgba(0,0,0,0.8)
+   344→            `,
+   345→            letterSpacing: '0.08em',
+   346→            animation: 'titleFloat 6s ease-in-out infinite',
+   347→          }}
+   348→        >
+   349→          REALM OF
+   350→        </h1>
+   351→        <h1
+   352→          className="relative font-[var(--font-cinzel)] text-center select-none mt-1"
+   353→          style={{
+   354→            fontSize: 'clamp(2.5rem, 6vw, 5.5rem)',
+   355→            fontWeight: 900,
+   356→            color: '#F0D060',
+   357→            textShadow: `
+   358→              0 0 25px rgba(240,208,96,0.7),
+   359→              0 0 50px rgba(240,208,96,0.35),
+   360→              0 0 100px rgba(240,208,96,0.15),
+   361→              0 3px 6px rgba(0,0,0,0.9)
+   362→            `,
+   363→            letterSpacing: '0.12em',
+   364→            animation: 'titleFloat 6s ease-in-out infinite reverse',
+   365→          }}
+   366→        >
+   367→          AETHERMOORE
+   368→        </h1>
+   369→
+   370→        {/* Decorative divider */}
+   371→        <div
+   372→          className="relative mt-4 mb-1"
+   373→          style={{
+   374→            width: 'clamp(200px, 40vw, 500px)',
+   375→            height: '2px',
+   376→            background: 'linear-gradient(90deg, transparent, #D4AF37, #F0D060, #D4AF37, transparent)',
+   377→            boxShadow: '0 0 12px rgba(212,175,55,0.5)',
+   378→            animation: 'dividerGlow 2.5s ease-in-out infinite alternate',
+   379→          }}
+   380→        />
+   381→        <p
+   382→          className="relative font-[var(--font-cinzel)] text-center select-none"
+   383→          style={{
+   384→            fontSize: 'clamp(0.7rem, 1.5vw, 1rem)',
+   385→            color: 'rgba(200,180,130,0.7)',
+   386→            letterSpacing: '0.3em',
+   387→            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+   388→            textTransform: 'uppercase',
+   389→          }}
+   390→        >
+   391→          Conquer the Shattered Lands
+   392→        </p>
+   393→      </div>
+   394→
+   395→      {/* Mode Selection Overlay */}
+   396→      {showModeSelect && (
+   397→        <div
+   398→          className="absolute inset-0 z-30 flex items-center justify-center"
+   399→          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', animation: 'modeFadeIn 0.3s ease forwards' }}
+   400→        >
+   401→          <div
+   402→            className="p-8 rounded-xl max-w-md w-[90%]"
+   403→            style={{
+   404→              background: 'linear-gradient(180deg, rgba(30,20,8,0.95), rgba(15,10,5,0.98))',
+   405→              border: '1.5px solid rgba(212,175,55,0.3)',
+   406→              boxShadow: '0 0 40px rgba(212,175,55,0.1), 0 16px 48px rgba(0,0,0,0.6)',
+   407→            }}
+   408→          >
+   409→            <h2
+   410→              className="text-xl font-bold tracking-widest text-center mb-2"
+   411→              style={{
+   412→                fontFamily: 'var(--font-cinzel), serif',
+   413→                color: '#D4AF37',
+   414→                textShadow: '0 0 12px rgba(212,175,55,0.4)',
+   415→              }}
+   416→            >
+   417→              CHOOSE YOUR PATH
+   418→            </h2>
+   419→            <p className="text-[11px] text-center opacity-40 mb-6" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+   420→              How will you wage war for the Aetheric Crown?
+   421→            </p>
+   422→            <div className="flex flex-col gap-3">
+   423→              <button
+   424→                onClick={() => handleModeSelect(true)}
+   425→                onMouseEnter={() => setHoveredItem('mode-campaign')}
+   426→                onMouseLeave={() => setHoveredItem(null)}
+   427→                className="p-4 rounded-lg text-left transition-all"
+   428→                style={{
+   429→                  background: hoveredItem === 'mode-campaign' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
+   430→                  border: `1.5px solid ${hoveredItem === 'mode-campaign' ? 'rgba(212,175,55,0.5)' : 'rgba(139,115,85,0.2)'}`,
+   431→                }}
+   432→              >
+   433→                <div className="flex items-center gap-3 mb-1">
+   434→                  <span className="text-2xl">📜</span>
+   435→                  <span
+   436→                    className="text-base font-bold tracking-wider"
+   437→                    style={{
+   438→                      fontFamily: 'var(--font-cinzel), serif',
+   439→                      color: hoveredItem === 'mode-campaign' ? '#F5E6A3' : '#D4AF37',
+   440→                    }}
+   441→                  >
+   442→                    CAMPAIGN
+   443→                  </span>
+   444→                </div>
+   445→                <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+   446→                  Experience the full story of Aethermoor's war. Chapter transitions, narrative triggers on key territory captures, rival dialogues, and an epic 5-chapter saga from assembly to final stand.
+   447→                </p>
+   448→              </button>
+   449→              <button
+   450→                onClick={() => handleModeSelect(false)}
+   451→                onMouseEnter={() => setHoveredItem('mode-skirmish')}
+   452→                onMouseLeave={() => setHoveredItem(null)}
+   453→                className="p-4 rounded-lg text-left transition-all"
+   454→                style={{
+   455→                  background: hoveredItem === 'mode-skirmish' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
+   456→                  border: `1.5px solid ${hoveredItem === 'mode-skirmish' ? 'rgba(212,175,55,0.5)' : 'rgba(139,115,85,0.2)'}`,
+   457→                }}
+   458→              >
+   459→                <div className="flex items-center gap-3 mb-1">
+   460→                  <span className="text-2xl">⚔️</span>
+   461→                  <span
+   462→                    className="text-base font-bold tracking-wider"
+   463→                    style={{
+   464→                      fontFamily: 'var(--font-cinzel), serif',
+   465→                      color: hoveredItem === 'mode-skirmish' ? '#F5E6A3' : '#D4AF37',
+   466→                    }}
+   467→                  >
+   468→                    SKIRMISH
+   469→                  </span>
+   470→                </div>
+   471→                <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+   472→                  Jump straight into battle. Pure strategy with no story interruptions. Conquer Aethermoor at your own pace with random events and full tactical gameplay.
+   473→                </p>
+   474→              </button>
+   475→            </div>
+   476→            <button
+   477→              onClick={() => setShowModeSelect(false)}
+   478→              className="w-full mt-4 py-2 rounded text-[10px] tracking-widest uppercase transition-all opacity-50 hover:opacity-100"
+   479→              style={{
+   480→                fontFamily: 'var(--font-cinzel), serif',
+   481→                color: '#8B7355',
+   482→                border: '1px solid rgba(139,115,85,0.2)',
+   483→              }}
+   484→            >
+   485→              Cancel
+   486→            </button>
+   487→          </div>
+   488→        </div>
+   489→      )}
+   490→
+   491→      {/* Menu panel */}
+   492→      <div
+   493→        className="absolute z-20 flex flex-col items-center gap-3"
+   494→        style={{
+   495→          bottom: '12%',
+   496→          left: '50%',
+   497→          transform: 'translateX(-50%)',
+   498→        }}
+   499→      >
+   500→        {menuItems.map((item, index) => (
+   501→          <button
+   502→            key={item.id}
+   503→            onClick={item.action}
+   504→            onMouseEnter={() => setHoveredItem(item.id)}
+   505→            onMouseLeave={() => setHoveredItem(null)}
+   506→            className="group relative font-[var(--font-cinzel)] select-none outline-none border-none bg-transparent"
+   507→            style={{
+   508→              fontSize: 'clamp(0.9rem, 2vw, 1.3rem)',
+   509→              fontWeight: 600,
+   510→              color: hoveredItem === item.id ? '#F5E6A3' : '#C9A84C',
+   511→              textShadow: hoveredItem === item.id
+   512→                ? '0 0 15px rgba(212,175,55,0.8), 0 0 30px rgba(212,175,55,0.4), 0 2px 4px rgba(0,0,0,0.9)'
+   513→                : '0 0 8px rgba(212,175,55,0.3), 0 1px 3px rgba(0,0,0,0.8)',
+   514→              letterSpacing: '0.2em',
+   515→              padding: '8px 32px',
+   516→              transition: 'all 0.3s ease',
+   517→              transform: hoveredItem === item.id ? 'scale(1.08)' : 'scale(1)',
+   518→              animation: `menuFadeIn 0.8s ease ${index * 0.12}s both`,
+   519→              cursor: 'pointer',
+   520→              background: hoveredItem === item.id
+   521→                ? 'linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent)'
+   522→                : 'none',
+   523→              borderRadius: '4px',
+   524→            }}
+   525→          >
+   526→            {/* Hover underline glow */}
+   527→            <span
+   528→              className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[1px] transition-all duration-300"
+   529→              style={{
+   530→                width: hoveredItem === item.id ? '80%' : '0%',
+   531→                background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+   532→                boxShadow: '0 0 8px rgba(212,175,55,0.6)',
+   533→              }}
+   534→            />
+   535→            {/* Side decorative brackets on hover */}
+   536→            {hoveredItem === item.id && (
+   537→              <>
+   538→                <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 text-sm animate-pulse">[</span>
+   539→                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 text-sm animate-pulse">]</span>
+   540→              </>
+   541→            )}
+   542→            {item.label}
+   543→          </button>
+   544→        ))}
+   545→      </div>
+   546→
+   547→      {/* Torch flicker effects (bottom corners) */}
+   548→      <div className="absolute bottom-0 left-0 z-10 pointer-events-none w-32 h-48">
+   549→        <div
+   550→          style={{
+   551→            position: 'absolute',
+   552→            bottom: '10%',
+   553→            left: '20%',
+   554→            width: '30px',
+   555→            height: '50px',
+   556→            background: 'radial-gradient(ellipse at 50% 80%, rgba(255,150,30,0.25) 0%, rgba(255,100,20,0.1) 40%, transparent 70%)',
+   557→            animation: 'torchFlicker 0.15s ease-in-out infinite alternate',
+   558→            filter: 'blur(3px)',
+   559→          }}
+   560→        />
+   561→        <div
+   562→          style={{
+   563→            position: 'absolute',
+   564→            bottom: '15%',
+   565→            left: '25%',
+   566→            width: '12px',
+   567→            height: '20px',
+   568→            background: 'radial-gradient(ellipse at 50% 70%, rgba(255,220,100,0.6) 0%, rgba(255,150,30,0.2) 50%, transparent 80%)',
+   569→            animation: 'torchFlame 0.1s ease-in-out infinite alternate',
+   570→          }}
+   571→        />
+   572→      </div>
+   573→      <div className="absolute bottom-0 right-0 z-10 pointer-events-none w-32 h-48">
+   574→        <div
+   575→          style={{
+   576→            position: 'absolute',
+   577→            bottom: '10%',
+   578→            right: '20%',
+   579→            width: '30px',
+   580→            height: '50px',
+   581→            background: 'radial-gradient(ellipse at 50% 80%, rgba(255,150,30,0.25) 0%, rgba(255,100,20,0.1) 40%, transparent 70%)',
+   582→            animation: 'torchFlicker 0.18s ease-in-out infinite alternate-reverse',
+   583→            filter: 'blur(3px)',
+   584→          }}
+   585→        />
+   586→        <div
+   587→          style={{
+   588→            position: 'absolute',
+   589→            bottom: '15%',
+   590→            right: '25%',
+   591→            width: '12px',
+   592→            height: '20px',
+   593→            background: 'radial-gradient(ellipse at 50% 70%, rgba(255,220,100,0.6) 0%, rgba(255,150,30,0.2) 50%, transparent 80%)',
+   594→            animation: 'torchFlame 0.12s ease-in-out infinite alternate-reverse',
+   595→          }}
+   596→        />
+   597→      </div>
+   598→
+   599→      {/* Loading overlay */}
+   600→      <div
+   601→        className="absolute inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-1000"
+   602→        style={{ opacity: loaded ? 0 : 1, pointerEvents: loaded ? 'none' : 'all' }}
+   603→      >
+   604→        <div className="text-center">
+   605→          <div
+   606→            className="w-16 h-16 border-2 border-t-transparent rounded-full mx-auto mb-4"
+   607→            style={{
+   608→              borderColor: '#D4AF37',
+   609→              borderTopColor: 'transparent',
+   610→              animation: 'spin 1s linear infinite',
+   611→            }}
+   612→          />
+   613→          <p
+   614→            className="font-[var(--font-cinzel)] text-lg tracking-widest"
+   615→            style={{ color: '#C9A84C', textShadow: '0 0 10px rgba(212,175,55,0.4)' }}
+   616→          >
+   617→            ENTERING THE REALM...
+   618→          </p>
+   619→        </div>
+   620→      </div>
+   621→
+   622→      {/* Fade to game transition */}
+   623→      <div
+   624→        className="absolute inset-0 z-50 bg-black pointer-events-none transition-opacity duration-1000"
+   625→        style={{ opacity: fadeToGame ? 1 : 0 }}
+   626→      />
+   627→
+   628→      {/* Image preload + loaded trigger */}
+   629→      {/* eslint-disable-next-line @next/next/no-img-element */}
+   630→      <img
+   631→        src="/game_menu.png"
+   632→        alt=""
+   633→        className="hidden"
+   634→        onLoad={() => {
+   635→          setTimeout(() => setLoaded(true), 400);
+   636→        }}
+   637→        onError={() => setLoaded(true)}
+   638→      />
+   639→
+   640→      {/* Inline keyframes */}
+   641→      <style jsx global>{`
+   642→        @keyframes kenBurns {
+   643→          0% { transform: scale(1) translate(0, 0); }
+   644→          100% { transform: scale(1.06) translate(-0.5%, -0.3%); }
+   645→        }
+   646→        @keyframes titleFloat {
+   647→          0%, 100% { transform: translateY(0); }
+   648→          50% { transform: translateY(-4px); }
+   649→        }
+   650→        @keyframes titleGlow {
+   651→          0% { opacity: 0.2; }
+   652→          100% { opacity: 0.4; }
+   653→        }
+   654→        @keyframes dividerGlow {
+   655→          0% { opacity: 0.6; }
+   656→          100% { opacity: 1; }
+   657→        }
+   658→        @keyframes menuFadeIn {
+   659→          0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+   660→          100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+   661→        }
+   662→        @keyframes torchFlicker {
+   663→          0% { opacity: 0.6; transform: scaleY(1); }
+   664→          100% { opacity: 1; transform: scaleY(1.15); }
+   665→        }
+   666→        @keyframes torchFlame {
+   667→          0% { opacity: 0.7; transform: scaleX(0.9) scaleY(0.95); }
+   668→          100% { opacity: 1; transform: scaleX(1.1) scaleY(1.05); }
+   669→        }
+   670→        @keyframes lightBeam {
+   671→          0% { opacity: 0.5; transform: translateX(-50%) rotate(-1deg); }
+   672→          100% { opacity: 0.8; transform: translateX(-50%) rotate(1deg); }
+   673→        }
+   674→        @keyframes portalPulse {
+   675→          0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+   676→          50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+   677→        }
+   678→        @keyframes spin {
+   679→          to { transform: rotate(360deg); }
+   680→        }
+   681→        @keyframes modeFadeIn {
+   682→          0% { opacity: 0; }
+   683→          100% { opacity: 1; }
+   684→        }
+   685→      `}</style>
+   686→    </div>
+   687→  );
+   688→}
