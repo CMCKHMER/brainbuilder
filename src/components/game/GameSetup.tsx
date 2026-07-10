@@ -16,6 +16,7 @@ export default function GameSetup() {
       colorLight: p.colorLight,
       characterClass: p.characterClass.toLowerCase(),
       icon: p.icon,
+      isAI: i >= 1, // Player 1 is human by default, rest are AI
       active: i < 2,
     }))
   );
@@ -31,6 +32,7 @@ export default function GameSetup() {
         colorLight: c.colorLight,
         characterClass: c.characterClass,
         icon: c.icon,
+        isAI: c.isAI,
       }));
     if (activeConfigs.length >= 2) {
       setupGame(activeConfigs);
@@ -120,6 +122,24 @@ export default function GameSetup() {
                   style={{ color: config.color, fontFamily: 'var(--font-cinzel), serif' }}
                   disabled={!config.active}
                 />
+                {/* AI / Human Toggle */}
+                <button
+                  onClick={() => updateConfig(index, 'isAI', !config.isAI)}
+                  className="px-2 py-1 rounded text-[10px] font-bold transition-all flex-shrink-0"
+                  style={{
+                    background: config.isAI
+                      ? `linear-gradient(135deg, ${config.color}44, ${config.color}22)`
+                      : 'rgba(255,255,255,0.03)',
+                    border: `1.5px solid ${config.isAI ? config.color + '88' : 'rgba(255,255,255,0.08)'}`,
+                    color: config.isAI ? config.color : '#555',
+                    fontFamily: 'var(--font-cinzel), serif',
+                    letterSpacing: '1px',
+                  }}
+                  disabled={!config.active || index === 0}
+                  title={index === 0 ? 'Player 1 is always human' : undefined}
+                >
+                  {config.isAI ? '🤖 AI' : '👤 HUMAN'}
+                </button>
               </div>
               <div className="flex gap-1.5 flex-wrap">
                 {CHARACTER_CLASSES.map(cc => (

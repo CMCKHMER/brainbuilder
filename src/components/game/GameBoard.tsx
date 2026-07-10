@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useState, useCallback } from 'react';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 import { UnitPortrait } from './UnitCards';
+import { useAIController } from '@/hooks/useAIController';
 import dynamic from 'next/dynamic';
 
 const GameMap3D = dynamic(() => import('./GameMap3D'), {
@@ -100,6 +101,9 @@ export default function GameBoard() {
   const selectedTerritory = useGameStore(s => s.selectedTerritory);
   const [hoveredTerritory, setHoveredTerritory] = useState<string | null>(null);
 
+  // AI turn controller
+  useAIController();
+
   // Handle territory hover from 3D map
   const handleTerritoryHover = useCallback((id: string | null) => {
     setHoveredTerritory(id);
@@ -110,6 +114,7 @@ export default function GameBoard() {
   }
 
   const currentPlayer = players[currentPlayerIndex];
+  const isAITurn = currentPlayer?.isAI && !currentPlayer?.eliminated && phase !== 'gameover';
 
   return (
     <div
@@ -167,6 +172,20 @@ export default function GameBoard() {
           >
             🔄 New Game
           </Button>
+          {isAITurn && (
+            <div
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md"
+              style={{
+                background: 'rgba(168,85,247,0.15)',
+                border: '1px solid rgba(168,85,247,0.3)',
+              }}
+            >
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#A855F7' }} />
+              <span className="text-[10px] font-bold" style={{ color: '#A855F7', fontFamily: 'var(--font-cinzel), serif' }}>
+                AI THINKING
+              </span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -180,6 +199,29 @@ export default function GameBoard() {
             </div>
             {/* Territory tooltip */}
             <TerritoryTooltip territoryId={hoveredTerritory || selectedTerritory} />
+            {/* AI thinking overlay - blocks interaction during AI turn */}
+            {isAITurn && (
+              <div
+                className="absolute inset-0 flex items-center justify-center z-20"
+                style={{ background: 'rgba(0,0,0,0.2)', cursor: 'wait' }}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-2" style={{ animation: 'aiPulse 1.5s ease-in-out infinite' }}>🤖</div>
+                  <div
+                    className="text-xs tracking-widest opacity-70"
+                    style={{ fontFamily: 'var(--font-cinzel), serif', color: currentPlayer?.color || '#A855F7' }}
+                  >
+                    {currentPlayer?.name} is commanding...
+                  </div>
+                </div>
+                <style>{`
+                  @keyframes aiPulse {
+                    0%, 100% { opacity: 0.5; transform: scale(1); }
+                    50% { opacity: 1; transform: scale(1.1); }
+                  }
+                `}</style>
+              </div>
+            )}
           </div>
           {/* Game Over Overlay */}
           {phase === 'gameover' && winner && (

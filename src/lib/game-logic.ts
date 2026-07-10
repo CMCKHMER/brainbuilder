@@ -9,6 +9,7 @@ export interface Player {
   colorLight: string;
   characterClass: string;
   icon: string;
+  isAI: boolean;
   territories: string[];
   eliminated: boolean;
 }

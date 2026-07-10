@@ -94,6 +94,7 @@ export default function PlayerPanel() {
                 <span className="text-lg">{player.icon}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold truncate" style={{ color: player.eliminated ? '#666' : player.color }}>
+                    {player.isAI && <span className="opacity-60 mr-0.5">🤖</span>}
                     {player.name}
                     {index === currentPlayerIndex && phase !== 'gameover' && (
                       <span className="ml-1 opacity-60">◀</span>

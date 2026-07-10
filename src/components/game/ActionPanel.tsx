@@ -60,6 +60,7 @@ export default function ActionPanel() {
   const [isRolling, setIsRolling] = useState(false);
 
   const currentPlayer = players[currentPlayerIndex];
+  const isAI = currentPlayer?.isAI && !currentPlayer?.eliminated;
   const selectedTerr = selectedTerritory ? territories[selectedTerritory] : null;
   const targetTerr = targetTerritory ? territories[targetTerritory] : null;
   const maxAttackerDice = selectedTerr ? getMaxAttackerDice(selectedTerr.units.length) : 0;
@@ -89,6 +90,24 @@ export default function ActionPanel() {
   }, [fortifyArmies, selectedTerritory, targetTerritory, executeFortify]);
 
   if (phase === 'setup' || phase === 'gameover') return null;
+
+  // Show a simple AI status bar instead of interactive controls
+  if (isAI) {
+    return (
+      <div
+        className="flex-shrink-0 px-4 py-3 flex items-center justify-center gap-3"
+        style={{
+          background: 'linear-gradient(180deg, rgba(30,20,40,0.95), rgba(20,10,30,0.98))',
+          borderTop: '2px solid rgba(139,115,85,0.2)',
+        }}
+      >
+        <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ background: '#A855F7' }} />
+        <span className="text-xs tracking-widest" style={{ fontFamily: 'var(--font-cinzel), serif', color: currentPlayer?.color || '#A855F7' }}>
+          {currentPlayer?.icon} {currentPlayer?.name} (AI) is {phase === 'deploy' ? 'deploying reinforcements' : phase === 'attack' ? 'planning attacks' : 'fortifying positions'}...
+        </span>
+      </div>
+    );
+  }
 
   const phaseInfo = PHASE_INFO[phase];
   const activeTacticObj = selectedTactic ? TACTICS[selectedTactic] : null;

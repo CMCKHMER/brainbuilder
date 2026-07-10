@@ -157,6 +157,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const players: Player[] = playerConfigs.map((config, index) => ({
       id: `player-${index}`,
       ...config,
+      isAI: config.isAI ?? false,
       territories: [],
       eliminated: false,
     }));

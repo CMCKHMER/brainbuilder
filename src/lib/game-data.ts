@@ -14,6 +14,7 @@ export interface PlayerConfig {
   colorLight: string;
   characterClass: string;
   icon: string;
+  isAI?: boolean;
 }
 
 export const PLAYER_CONFIGS: PlayerConfig[] = [
