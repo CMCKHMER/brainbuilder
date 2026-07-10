@@ -107,6 +107,8 @@ export default function GameBoard() {
   const currentEvent = useGameStore(s => s.currentEvent);
   const dismissStory = useGameStore(s => s.dismissStory);
   const dismissEvent = useGameStore(s => s.dismissEvent);
+  const isCampaignMode = useGameStore(s => s.isCampaignMode);
+  const campaignProgress = useGameStore(s => s.campaignProgress);
 
   // AI turn controller
   useAIController();
@@ -157,6 +159,15 @@ export default function GameBoard() {
           }}>
             Turn {turnNumber}
           </span>
+          {isCampaignMode && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded" style={{
+              background: 'rgba(168,85,247,0.15)',
+              color: '#A78BFA',
+              fontFamily: 'var(--font-cinzel), serif',
+            }}>
+              Ch.{campaignProgress.currentChapter}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           {phase !== 'gameover' && currentPlayer && (

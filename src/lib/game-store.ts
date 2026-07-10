@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { TERRITORIES, PLAYER_CONFIGS, type PlayerConfig, type UnitTypeId, type TacticId, UNIT_TYPES, TACTICS, CHARACTER_CLASSES } from './game-data';
-import { type StoryBeat, PROLOGUE, getCharacterIntro, getEliminationBeat, getVictoryBeat, CAMPAIGN_EVENTS, type CampaignEvent } from './story-data';
+import {
+  type StoryBeat, type CampaignProgress,
+  PROLOGUE, getCharacterIntro, getEliminationBeat, getVictoryBeat,
+  CAMPAIGN_EVENTS, type CampaignEvent,
+  CHAPTERS, getChapterTitleBeat,
+  getFirstBloodBeat, getTerritoryCaptureBeat, getRegionDominanceBeat,
+  getRivalClashBeat, getDesperateHourBeat, getDominantForceBeat,
+  REGION_LORE,
+} from './story-data';
 import {
   type GamePhase,
   type Player,
@@ -50,7 +58,7 @@ interface GameState {
   startGame: () => void;
 
   // Setup
-  setupGame: (playerConfigs: { name: string; color: string; colorLight: string; characterClass: string; icon: string }[]) => void;
+  setupGame: (playerConfigs: { name: string; color: string; colorLight: string; characterClass: string; icon: string; isAI?: boolean }[]) => void;
 
   // Deploy
   deployArmy: (territoryId: string, unitType: UnitTypeId) => void;
@@ -94,6 +102,14 @@ interface GameState {
   rollCampaignEvent: () => void;
   dismissEvent: () => void;
   storySeen: Set<string>;
+
+  // Campaign mode
+  isCampaignMode: boolean;
+  campaignProgress: CampaignProgress;
+  startCampaign: () => void;
+  startSkirmish: () => void;
+  checkStoryTriggers: (conqueredTerritoryId?: string | null, attackerId?: string | null, defenderId?: string | null) => void;
+  advanceChapter: () => void;
 }
 
 let logIdCounter = 0;
@@ -168,6 +184,16 @@ export const useGameStore = create<GameState>((set, get) => ({
   storyQueue: [],
   currentEvent: null,
   storySeen: new Set(),
+  isCampaignMode: false,
+  campaignProgress: {
+    currentChapter: 1,
+    totalConquests: 0,
+    firstBloodFired: false,
+    firedTriggers: new Set(),
+    rivalClashes: new Set(),
+    regionDominanceFired: new Set(),
+    turnStoryFired: new Set(),
+  },
 
   setupGame: (playerConfigs) => {
     const players: Player[] = playerConfigs.map((config, index) => ({
@@ -223,7 +249,15 @@ export const useGameStore = create<GameState>((set, get) => ({
       playerConfig.image
     );
 
+    // Queue story beats: prologue → chapter 1 title → character intro for player 1
     get().showStory(PROLOGUE);
+
+    if (get().isCampaignMode) {
+      const chapter1 = CHAPTERS[0];
+      const chapterBeat = getChapterTitleBeat(chapter1);
+      get().queueStory(chapterBeat);
+    }
+
     get().queueStory(introBeat);
   },
 
@@ -412,6 +446,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       newOwnerPlayer.territories.push(state.targetTerritory);
 
       newLog.push(addLog(state, `🏆 ${attacker.name} conquered ${toTerritory.name} from ${defender.name}!`, 'conquer'));
+
+      // Campaign story triggers on conquest
+      if (get().isCampaignMode) {
+        get().checkStoryTriggers(state.targetTerritory, fromTerritory.ownerId, toTerritory.ownerId);
+      }
     } else {
       newLog.push(addLog(state,
         `⚔️ ${atkTypeName}${advantageLabel} → ${defTypeName}: ATK lost ${result.attackerLosses}, DEF lost ${result.defenderLosses}`,
@@ -693,6 +732,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     // Roll for campaign event on new turn cycle (only for human player's turn)
     if (newTurnNumber > state.turnNumber && !nextPlayer.isAI) {
       get().rollCampaignEvent();
+
+      // Campaign: check chapter advancement and turn-based triggers
+      if (get().isCampaignMode) {
+        get().advanceChapter();
+      }
     }
   },
 
@@ -721,6 +765,16 @@ export const useGameStore = create<GameState>((set, get) => ({
       storyQueue: [],
       currentEvent: null,
       storySeen: new Set(),
+      isCampaignMode: false,
+      campaignProgress: {
+        currentChapter: 1,
+        totalConquests: 0,
+        firstBloodFired: false,
+        firedTriggers: new Set(),
+        rivalClashes: new Set(),
+        regionDominanceFired: new Set(),
+        turnStoryFired: new Set(),
+      },
     });
   },
 
@@ -796,5 +850,182 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   dismissEvent: () => {
     set({ currentEvent: null });
+  },
+
+  // Campaign mode functions
+  startCampaign: () => {
+    set({
+      isCampaignMode: true,
+      campaignProgress: {
+        currentChapter: 1,
+        totalConquests: 0,
+        firstBloodFired: false,
+        firedTriggers: new Set(),
+        rivalClashes: new Set(),
+        regionDominanceFired: new Set(),
+        turnStoryFired: new Set(),
+      },
+    });
+    get().startGame();
+  },
+
+  startSkirmish: () => {
+    set({ isCampaignMode: false });
+    get().startGame();
+  },
+
+  advanceChapter: () => {
+    const state = get();
+    if (!state.isCampaignMode || state.phase === 'gameover' || state.storyBeat) return;
+    if (state.storyQueue.length > 0) return; // Don't advance while story is queued
+
+    const progress = { ...state.campaignProgress };
+    const humanPlayer = state.players.find(p => !p.isAI) || state.players[0];
+    if (!humanPlayer) return;
+
+    const territoryCount = humanPlayer.territories.length;
+    const alivePlayers = state.players.filter(p => !p.eliminated).length;
+
+    let newChapter = progress.currentChapter;
+
+    // Chapter 2: First conquest happened
+    if (newChapter === 1 && progress.totalConquests >= 1) {
+      newChapter = 2;
+    }
+    // Chapter 3: A player has been eliminated OR turn 8+
+    else if (newChapter === 2 && (alivePlayers < state.players.length || state.turnNumber >= 8)) {
+      newChapter = 3;
+    }
+    // Chapter 4: Human has 8+ territories OR only 2 players remain
+    else if (newChapter === 3 && (territoryCount >= 8 || alivePlayers <= 2)) {
+      newChapter = 4;
+    }
+    // Chapter 5: Only 2 players remain
+    else if (newChapter === 4 && alivePlayers <= 2) {
+      newChapter = 5;
+    }
+
+    if (newChapter !== progress.currentChapter) {
+      progress.currentChapter = newChapter;
+      const chapter = CHAPTERS.find(c => c.number === newChapter);
+      if (chapter) {
+        const beat = getChapterTitleBeat(chapter);
+        get().queueStory(beat);
+      }
+      set({ campaignProgress: progress });
+    }
+  },
+
+  checkStoryTriggers: (conqueredTerritoryId, attackerId, defenderId) => {
+    const state = get();
+    if (!state.isCampaignMode || state.phase === 'gameover') return;
+
+    const progress = { ...state.campaignProgress };
+    const firedTriggers = new Set(progress.firedTriggers);
+    const rivalClashes = new Set(progress.rivalClashes);
+    const regionDominanceFired = new Set(progress.regionDominanceFired);
+
+    // Increment conquest counter
+    progress.totalConquests = (progress.totalConquests || 0) + 1;
+
+    if (!conqueredTerritoryId || !attackerId || !defenderId) {
+      set({ campaignProgress: progress });
+      return;
+    }
+
+    const attacker = state.players.find(p => p.id === attackerId);
+    const defender = state.players.find(p => p.id === defenderId);
+    if (!attacker || !defender) return;
+
+    const territory = state.territories[conqueredTerritoryId];
+    if (!territory) return;
+
+    // Get config for portrait lookups
+    const atkConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === attacker.characterClass.toLowerCase()) || PLAYER_CONFIGS[0];
+    const defConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === defender.characterClass.toLowerCase()) || PLAYER_CONFIGS[1];
+
+    // --- FIRST BLOOD ---
+    if (!progress.firstBloodFired) {
+      progress.firstBloodFired = true;
+      const beat = getFirstBloodBeat(
+        attacker.name, attacker.characterClass, attacker.color, attacker.colorLight, atkConfig.image,
+        defender.name, territory.name
+      );
+      get().queueStory(beat);
+    }
+
+    // --- KEY TERRITORY CAPTURE ---
+    const keyTerritoryTriggerId = `territory-${conqueredTerritoryId}`;
+    if (!firedTriggers.has(keyTerritoryTriggerId)) {
+      const captureBeat = getTerritoryCaptureBeat(
+        conqueredTerritoryId, territory.name, attacker.name, attacker.characterClass,
+        attacker.color, attacker.colorLight, atkConfig.image
+      );
+      if (captureBeat) {
+        firedTriggers.add(keyTerritoryTriggerId);
+        get().queueStory(captureBeat);
+      }
+    }
+
+    // --- RIVAL CLASH ---
+    const clashKey = [attackerId, defenderId].sort().join('-');
+    if (!rivalClashes.has(clashKey)) {
+      rivalClashes.add(clashKey);
+      const clashBeat = getRivalClashBeat(
+        attacker.name, attacker.characterClass, attacker.color, atkConfig.image,
+        defender.name, defender.characterClass, defender.color, defConfig.image
+      );
+      get().queueStory(clashBeat);
+    }
+
+    // --- REGION DOMINANCE ---
+    const region = territory.region;
+    if (!regionDominanceFired.has(region)) {
+      // Check if attacker now controls all territories in this region
+      const regionTerritories = TERRITORIES.filter(t => t.region === region);
+      const ownsAll = regionTerritories.every(t => {
+        const tState = state.territories[t.id];
+        return tState && tState.ownerId === attackerId;
+      });
+      if (ownsAll && regionTerritories.length >= 2) {
+        regionDominanceFired.add(region);
+        const lore = REGION_LORE[region] || '';
+        const dominanceBeat = getRegionDominanceBeat(region, attacker.name, attacker.color, lore);
+        get().queueStory(dominanceBeat);
+      }
+    }
+
+    // --- DESPERATE HOUR (check all human players) ---
+    for (const player of state.players) {
+      if (player.isAI || player.eliminated) continue;
+      const pConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === player.characterClass.toLowerCase()) || PLAYER_CONFIGS[0];
+      const desperateId = `desperate-${player.id}`;
+      if (!firedTriggers.has(desperateId) && player.territories.length <= 2 && state.turnNumber >= 3) {
+        firedTriggers.add(desperateId);
+        const desperateBeat = getDesperateHourBeat(
+          player.name, player.characterClass, player.color, player.colorLight, pConfig.image,
+          player.territories.length
+        );
+        get().queueStory(desperateBeat);
+      }
+    }
+
+    // --- DOMINANT FORCE ---
+    for (const player of state.players) {
+      if (player.eliminated) continue;
+      const dominantId = `dominant-${player.id}`;
+      if (!firedTriggers.has(dominantId) && player.territories.length >= 10 && state.turnNumber >= 5) {
+        firedTriggers.add(dominantId);
+        const dominantBeat = getDominantForceBeat(
+          player.name, player.color, player.territories.length, state.players.filter(p => !p.eliminated).length
+        );
+        get().queueStory(dominantBeat);
+      }
+    }
+
+    progress.firedTriggers = firedTriggers;
+    progress.rivalClashes = rivalClashes;
+    progress.regionDominanceFired = regionDominanceFired;
+    set({ campaignProgress: progress });
   },
 }));

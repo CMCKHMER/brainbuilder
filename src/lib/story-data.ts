@@ -380,3 +380,606 @@ export const REGION_LORE: Record<string, string> = {
   'The Eastern Shores': 'Aethermoor\'s gateway to the sea. Port Brighthelm handles all trade with distant continents, while Crystal Lake\'s shimmering waters are said to hold prophetic visions. The Eastern Shores are wealthy, exposed, and perpetually contested.',
   'The Western Reaches': 'Dark, wild, and largely unexplored. The ancient forest of Darkwood has never been fully mapped, and Misthollow\'s perpetually fog-shrouded valleys hide secrets from before the Shattering. Only the desperate or the foolhardy venture deep into the Western Reaches.',
 };
+
+// ========================================
+// CHAPTER SYSTEM
+// ========================================
+
+export interface Chapter {
+  id: string;
+  number: number;
+  title: string;
+  subtitle: string;
+  description: string;        // Short preview text for chapter select
+  bgStyle: StoryBeat['bgStyle'];
+}
+
+export const CHAPTERS: Chapter[] = [
+  {
+    id: 'ch1_assembly',
+    number: 1,
+    title: 'THE ASSEMBLY',
+    subtitle: 'Where Four Become Warlords',
+    description: 'The fragments have chosen their bearers. Four warlords gather their forces as the continent descends into war for the first time in a thousand years.',
+    bgStyle: 'dramatic',
+  },
+  {
+    id: 'ch2_first_blood',
+    number: 2,
+    title: 'FIRST BLOOD',
+    subtitle: 'The Price of Ambition',
+    description: 'Borders are tested. The first battles are fought, and the true cost of the war becomes clear as the first territory falls.',
+    bgStyle: 'battle',
+  },
+  {
+    id: 'ch3_escalation',
+    number: 3,
+    title: 'THE ESCALATION',
+    subtitle: 'Alliances Shatter, Empires Rise',
+    description: 'The war intensifies. One warlord falls, their fragment dimming forever. The remaining three eye each other with growing hunger.',
+    bgStyle: 'dark',
+  },
+  {
+    id: 'ch4_turning_tide',
+    number: 4,
+    title: 'THE TURNING TIDE',
+    subtitle: 'When Hope Flickers',
+    description: 'A dominant power emerges. The continent groans under the weight of endless battle. Ancient powers stir in response to the Aetheric imbalance.',
+    bgStyle: 'dramatic',
+  },
+  {
+    id: 'ch5_final_stand',
+    number: 5,
+    title: 'THE FINAL STAND',
+    subtitle: 'Two Fragments, One Crown',
+    description: 'Only two warlords remain. The fate of Aethermoor hangs in the balance as the final war for the Aetheric Crown begins.',
+    bgStyle: 'battle',
+  },
+];
+
+// ========================================
+// CHAPTER TRANSITION TITLE CARDS
+// ========================================
+
+const CHAPTER_DRAMATIC_LINES: Record<string, string> = {
+  ch1_assembly: 'The fragments have chosen. The die is cast. Aethermoor will never be the same.',
+  ch2_first_blood: 'The first blade has been drawn. There is no turning back now.',
+  ch3_escalation: 'One warlord has fallen. The fragments grow heavier. The hunger deepens.',
+  ch4_turning_tide: 'The balance of power tilts. Ancient forces stir beneath the shattered Throne.',
+  ch5_final_stand: 'Two remain. The abyss watches. The Crown waits for its sovereign.',
+};
+
+export function getChapterTitleBeat(chapter: Chapter): StoryBeat {
+  const dramaticLine = CHAPTER_DRAMATIC_LINES[chapter.id]
+    || 'The war for Aethermoor continues.';
+
+  return {
+    id: `chapter-title-${chapter.id}`,
+    title: chapter.title,
+    subtitle: chapter.subtitle,
+    bgStyle: chapter.bgStyle,
+    skippable: true,
+    pages: [
+      {
+        text: `Chapter ${chapter.number}`,
+      },
+      {
+        text: chapter.title,
+      },
+      {
+        text: chapter.subtitle,
+      },
+      {
+        text: dramaticLine,
+      },
+    ],
+  };
+}
+
+// ========================================
+// MID-GAME STORY TRIGGERS
+// ========================================
+
+export interface StoryTrigger {
+  id: string;
+  type: 'first_blood' | 'territory_capture' | 'region_dominance' | 'rival_clash' | 'desperate_hour' | 'dominant_force' | 'chapter_transition';
+  condition: string; // descriptive
+  minTurn: number;
+  oneTime: boolean;
+}
+
+export function getFirstBloodBeat(
+  attackerName: string,
+  attackerClass: string,
+  attackerColor: string,
+  attackerColorLight: string,
+  attackerPortrait: string,
+  defenderName: string,
+  territoryName: string,
+): StoryBeat {
+  const classTitle = attackerClass.charAt(0).toUpperCase() + attackerClass.slice(1);
+
+  return {
+    id: 'trigger-first-blood',
+    title: 'FIRST BLOOD',
+    subtitle: `${attackerName} Strikes the Opening Blow`,
+    bgStyle: 'battle',
+    skippable: false,
+    pages: [
+      {
+        text: `The first clash of the war for the Aetheric Crown has begun. Across Aethermoor, the very air seems to hold its breath as the four warlords' fragments pulse in eerie unison — sensing, perhaps, that the age of peace has truly ended. Somewhere in the heavens above the floating continent, the ghost of Aldric the Unbroken looks down upon his shattered legacy and weeps.`,
+      },
+      {
+        text: `${attackerName} the ${classTitle} has drawn first blood, seizing ${territoryName} from ${defenderName} in a battle that will echo through the ages. The ground still smolders where the Aetheric fragment's power was unleashed, and the defenders who survived speak of a force that felt less like an army and more like an avalanche given purpose. The other warlords take note. The game has begun in earnest.`,
+        speaker: attackerName,
+        speakerColor: attackerColor,
+        portrait: attackerPortrait,
+      },
+      {
+        text: `But the land pays the price. Where ${territoryName}'s soil was once rich and verdant, thin cracks of golden light now spider across the surface — the aether bleeding out from the violence done upon it. Old scholars knew this sign. They called it the Throne's Sorrow, and they said it meant the continent was sinking. Closer to the Endless Abyss. Closer to the dark.`,
+      },
+    ],
+  };
+}
+
+export function getTerritoryCaptureBeat(
+  territoryId: string,
+  territoryName: string,
+  playerName: string,
+  characterClass: string,
+  color: string,
+  colorLight: string,
+  portrait: string,
+): StoryBeat | null {
+  const classTitle = characterClass.charAt(0).toUpperCase() + characterClass.slice(1);
+
+  const keyTerritories: Record<string, { title: string; subtitle: string; pages: StoryPage[] }> = {
+    ironhold: {
+      title: 'THE GREATEST FORTRESS',
+      subtitle: `${playerName} Claims Ironhold`,
+      pages: [
+        {
+          text: `Ironhold — the unconquerable fortress, the northern bulwark that has stood since the first Warden raised its walls from living granite. For a thousand years, no army has breached its gates. No siege has lasted more than a fortnight against its layered defenses and the fanatical resolve of its garrison. It is a monument to military perfection, and now it has a new master.`,
+        },
+        {
+          text: `${playerName} the ${classTitle} stands atop Ironhold's highest tower, the Aetheric fragment blazing at their chest like a second sun. The fortress stretches below in all directions — curtain walls, watchtowers, killing grounds, and the vast armories that have supplied a thousand campaigns. "This is what power looks like," ${playerName} says, voice carried on the northern wind. "Not a throne. Not a crown. Walls."`,
+          speaker: playerName,
+          speakerColor: color,
+          portrait,
+        },
+        {
+          text: `But within Ironhold's deepest vault, sealed behind doors that have not opened since Aldric's reign, something stirs. Old mechanisms grind. Aetheric conduits buried in the mountain's roots flicker with golden light. Whatever the first Warden hid beneath the fortress is awakening — and it is responding to the fragment's call. The fortress was never just a fortress. It was a lock. And ${playerName} may have just turned the key.`,
+        },
+      ],
+    },
+    dragonspine: {
+      title: 'THE DRAGON WAKES',
+      subtitle: `${playerName} Ascends Dragonspine`,
+      pages: [
+        {
+          text: `The mountain called Dragonspine has always been sacred ground. Shepherds and miners avoid its upper reaches, telling stories of vast shapes moving through the clouds and eyes the color of molten copper watching from caverns too deep for human light. The fragments of the Aetheric Throne were forged in dragonfire, the old texts say — and the dragons never forgave the Wardens for taking their gift.`,
+        },
+        {
+          text: `${playerName} the ${classTitle} has claimed the mountain, planting their banner at the summit where the air is thin and the sky is close enough to touch. The Aetheric fragment howls at the altitude, resonating with something ancient that sleeps beneath the stone. ${playerName} can feel it — a heartbeat, slow and vast, like the pulse of a mountain-sized dream.`,
+          speaker: playerName,
+          speakerColor: color,
+          portrait,
+        },
+        {
+          text: `And then the ground shakes. Not with the tremor of battle, but with something far older. A crack opens in the mountainside, and from within pours a breath of heat so intense it melts the snow for a mile in every direction. Somewhere in the depths, a dragon opens one enormous eye. It has been sleeping since before the Shattering. But the fragment has woken it. And it is hungry.`,
+        },
+      ],
+    },
+    goldshire: {
+      title: 'HEART OF THE HEARTLANDS',
+      subtitle: `${playerName} Seizes Goldshire`,
+      pages: [
+        {
+          text: `Goldshire is the beating heart of Aethermoor — not because of its armies or its magic, but because of its gold. The markets of Goldshire supply every warlord on the continent with the coin needed to fund campaigns, hire mercenaries, and bribe officials. Its fall is never merely a military event; it is an economic earthquake that reshapes the war itself.`,
+        },
+        {
+          text: `${playerName} the ${classTitle} rides through Goldshire's gilded gates as merchants scatter and the great trading houses lower their flags. The Aetheric fragment hums with something almost like satisfaction — the Throne understood the value of gold, once. "Wealth is not power," ${playerName} declares, surveying the captured treasury. "But it is the shadow of power. And where the shadow falls, the substance follows."`,
+          speaker: playerName,
+          speakerColor: color,
+          portrait,
+        },
+        {
+          text: `The fall of Goldshire sends shockwaves across all five realms. Supply lines falter. Mercenary contracts are renegotiated. The three remaining warlords must now reckon with a ${classTitle.toLowerCase()} who controls the purse strings of the continent. The Heartlands have a new master, and the price of everything — from bread to blood — has just changed.`,
+        },
+      ],
+    },
+    misthollow: {
+      title: 'SECRETS OF THE MIST',
+      subtitle: `${playerName} Dares the Misthollow`,
+      pages: [
+        {
+          text: `Misthollow is not a place that welcomes conquerors. The perpetual fog that gives the valley its name is not natural — it is the exhalation of something vast and ancient that lies beneath the earth, breathing in slow, geologic rhythms. Those who enter the mist speak of voices, of visions, of memories that are not their own. Many do not return at all.`,
+        },
+        {
+          text: `${playerName} the ${classTitle} pushes through the fog, the Aetheric fragment blazing like a lantern against the unnatural darkness. The mist recoils from the fragment's light — but only for a moment. Then it closes in again, thicker, hungrier, as if it recognizes a kindred power. "The Throne was built on secrets," ${playerName} whispers, eyes straining into the white void. "Let us see what it was trying to hide."`,
+          speaker: playerName,
+          speakerColor: color,
+          portrait,
+        },
+        {
+          text: `Deep within the hollow, the fog clears to reveal ruins that predate the Aetheric Wardens by millennia. Stone pillars covered in writing that no living scholar can read. A pit that descends into absolute darkness, from which a cold wind rises endlessly. And at the center, a pedestal where a fifth fragment-shaped depression sits empty — as if the Throne was never meant to have only four pieces. ${playerName} has found something that changes everything.`,
+        },
+      ],
+    },
+    port_brighthelm: {
+      title: 'THE GATEWAY OPENS',
+      subtitle: `${playerName} Takes Port Brighthelm`,
+      pages: [
+        {
+          text: `Port Brighthelm is Aethermoor's window to the world beyond the Endless Abyss — the only harbor capable of receiving ships from distant continents, and the lifeline through which exotic weapons, rare reagents, and foreign mercenaries flow. Control the port, and you control the flow of the outside world into the war.`,
+        },
+        {
+          text: `${playerName} the ${classTitle} watches the foreign merchant fleet from Brighthelm's lighthouse, the Aetheric fragment casting long shadows across the harbor below. The captured ships bring news: the continents across the Abyss have felt the Shattering too. The magical shockwave rippled through reality itself, and distant kingdoms are sending envoys — some to help, some to conquer, all to claim a piece of the Aetheric Throne's legacy.`,
+          speaker: playerName,
+          speakerColor: color,
+          portrait,
+        },
+        {
+          text: `With Brighthelm under their control, ${playerName} can now choose which foreign powers gain access to Aethermoor — and which are turned away. It is a different kind of power than the fragment provides: the power of connection, of trade, of a world that is suddenly much larger than four warlords and their private war. The Eastern Shores have a new admiral, and the tides of the conflict are about to shift.`,
+        },
+      ],
+    },
+    darkwood: {
+      title: 'THE UNCHARTED DEPTHS',
+      subtitle: `${playerName} Claims Darkwood`,
+      pages: [
+        {
+          text: `Darkwood has never been fully mapped. The ancient forest stretches across the Western Reaches like a living wall, its canopy so thick that noon looks like midnight beneath the boughs. Paths appear and vanish. Trees move when no one is watching. The wood elves who once lived here vanished centuries ago, and no one knows where they went — though some say they never left, and that the forest itself is their body, grown vast and strange with age.`,
+        },
+        {
+          text: `${playerName} the ${classTitle} presses deeper into Darkwood than any army has dared before, the Aetheric fragment pulsing in rhythm with the forest's heartbeat. The trees lean in, curious. The shadows lengthen, watchful. "The Throne's power came from the land itself," ${playerName} realizes, hand resting on the bark of a tree older than human civilization. "And the land remembers."`,
+          speaker: playerName,
+          speakerColor: color,
+          portrait,
+        },
+        {
+          text: `At the forest's heart, ${playerName} finds a clearing that should not exist — a perfect circle of grass and wildflowers, lit by a sunbeam that has no source. In the center grows a single tree, white as bone, its roots intertwined with veins of pure aetheric crystal. This is the Worldtree, the oldest living thing on Aethermoor, the source from which the first Warden drew the power to create the Throne. And it is still alive. Still growing. Still waiting.`,
+        },
+      ],
+    },
+  };
+
+  const beat = keyTerritories[territoryId];
+  if (!beat) return null;
+
+  return {
+    id: `trigger-capture-${territoryId}`,
+    title: beat.title,
+    subtitle: beat.subtitle,
+    bgStyle: 'battle',
+    skippable: false,
+    pages: beat.pages,
+  };
+}
+
+export function getRegionDominanceBeat(
+  regionName: string,
+  playerName: string,
+  color: string,
+  regionLore: string,
+): StoryBeat {
+  return {
+    id: `trigger-dominance-${regionName.replace(/\s+/g, '_').toLowerCase()}`,
+    title: 'REGION DOMINANCE',
+    subtitle: `${playerName} Controls ${regionName}`,
+    bgStyle: 'dramatic',
+    skippable: false,
+    pages: [
+      {
+        text: `The last banner of resistance in ${regionName} has fallen. Every territory, every fortress, every village now answers to a single warlord — and that warlord is ${playerName}. The Aetheric fragment blazes with fierce approval, drinking deep of the region's concentrated aetheric energy. For a moment, the very sky above ${regionName} turns the color of ${playerName}'s banner.`,
+      },
+      {
+        text: `${regionLore}`,
+      },
+      {
+        text: `But dominion is a double-edged sword. With total control of ${regionName} comes total responsibility — and total vulnerability. Every rival warlord now sees ${playerName} as the threat to be destroyed, and the fragment's surge of power has not gone unnoticed. The other bearers feel it in their blood, a primal alarm that says: one of us has grown too strong. The hunt begins.`,
+      },
+    ],
+  };
+}
+
+export function getRivalClashBeat(
+  attackerName: string,
+  attackerClass: string,
+  attackerColor: string,
+  attackerPortrait: string,
+  defenderName: string,
+  defenderClass: string,
+  defenderColor: string,
+  defenderPortrait: string,
+): StoryBeat {
+  const attackerTitle = `${attackerName} the ${attackerClass.charAt(0).toUpperCase() + attackerClass.slice(1)}`;
+  const defenderTitle = `${defenderName} the ${defenderClass.charAt(0).toUpperCase() + defenderClass.slice(1)}`;
+
+  return {
+    id: `trigger-rival-clash-${attackerName}-${defenderName}`,
+    title: 'THE RIVALS CLASH',
+    subtitle: `${attackerName} vs. ${defenderName}`,
+    bgStyle: 'battle',
+    skippable: false,
+    pages: [
+      {
+        text: `There are wars of convenience, and then there are wars of destiny. When ${attackerTitle} first turned their armies toward ${defenderTitle}'s territory, every oracle and seer on Aethermoor felt the shift — two Aetheric fragments resonating in violent harmony, their frequencies clashing like the grinding of tectonic plates. The air between their territories crackled with golden lightning, and soldiers on both sides reported the same vision: two thrones, side by side, one of them empty.`,
+        speaker: attackerName,
+        speakerColor: attackerColor,
+        portrait: attackerPortrait,
+      },
+      {
+        text: `"So we finally meet on the field of honor," ${defenderName} says, ${defenderClass === 'paladin' || defenderClass === 'knight' ? 'shield raised and resolve unbroken' : defenderClass === 'mage' ? 'fingers already weaving defensive wards' : 'materializing from shadows with a predator\'s grace'}. "I have watched you grow stronger from a distance. Let us see if your strength is matched by your wisdom." The fragment at ${defenderName}'s chest flares — not in attack, but in acknowledgment. A worthy foe, at last.`,
+        speaker: defenderName,
+        speakerColor: defenderColor,
+        portrait: defenderPortrait,
+      },
+      {
+        text: `The battle that follows is unlike any other in the war. Two fragments of the Aetheric Throne, each amplifying their bearer's will, collide with a force that reshapes the terrain itself. Hills flatten. Rivers change course. The sky tears open, and for one brief, terrifying instant, both warlords catch a glimpse of the completed Crown — whole, radiant, impossibly beautiful — before the vision shatters and the war continues. Aethermoor shudders. The abyss below grows a little closer.`,
+      },
+    ],
+  };
+}
+
+export function getDesperateHourBeat(
+  playerName: string,
+  characterClass: string,
+  color: string,
+  colorLight: string,
+  portrait: string,
+  territoryCount: number,
+): StoryBeat {
+  const classTitle = characterClass.charAt(0).toUpperCase() + characterClass.slice(1);
+
+  const classSpecificPages: Record<string, StoryPage[]> = {
+    knight: [
+      {
+        text: `${playerName} surveys the map with the cold precision of a general who has lost too many battles to indulge in hope. ${territoryCount} territories. That is all that remains of the northern empire. The great fortresses have fallen, the armies are scattered, and the crimson banners that once flew from every watchtower now gather dust in abandoned armories.`,
+        portrait,
+        speaker: playerName,
+        speakerColor: color,
+      },
+      {
+        text: `But a knight does not surrender. Not when the walls are breached. Not when the odds are impossible. ${playerName} rallies the last loyal soldiers — barely a company, scarred and weary, but still standing. "A fortress can be rebuilt," ${playerName} declares, sword drawn. "An army can be raised again. But the will to fight? That either lives in you or it doesn't. And mine is burning."`,
+        speaker: playerName,
+        speakerColor: color,
+        portrait,
+      },
+      {
+        text: `The fragment flickers uncertainly at ${playerName}'s chest, its light guttering like a candle in a storm. It senses the desperation of its bearer — and responds in the only way it knows how. It burns brighter, feeding on ${playerName}'s defiance, transforming desperation into something harder and sharper than steel. The war is not over. Not while the ${classTitle.toLowerCase()} still draws breath.`,
+      },
+    ],
+    mage: [
+      {
+        text: `The arcana chambers are dark. The floating glyphs that once illuminated ${playerName}'s sanctum have dimmed to barely visible embers, starved of the aetheric energy that ${playerName} can no longer spare. ${territoryCount} territories remain — barely enough to sustain the fragment's connection to the land, and nowhere near enough to fuel the spells that once bent reality to ${playerName}'s will.`,
+        portrait,
+        speaker: playerName,
+        speakerColor: color,
+      },
+      {
+        text: `"Seventeen futures," ${playerName} murmurs, gazing into a scrying pool that shows nothing but static. "I once saw seventeen futures. Now I see only one — and it ends in darkness." The Mage's fingers trace the fragment's surface, seeking the patterns, the equations, the hidden variables. There must be something. Some possibility unaccounted for. Some thread of fate that has not yet been pulled.`,
+        speaker: playerName,
+        speakerColor: color,
+        portrait,
+      },
+      {
+        text: `And then ${playerName} finds it — a sliver of probability so thin it almost doesn't exist. A path through seventeen billion possible outcomes that leads not to survival, but to victory. The fragment responds, flooding ${playerName}'s mind with forbidden knowledge and terrible clarity. The cost will be enormous. But the Mage has never been afraid of knowledge, no matter how dark its source.`,
+      },
+    ],
+    rogue: [
+      {
+        text: `${playerName} crouches in the ruins of a watchtower, the last of the shadows offering what little concealment remains. ${territoryCount} territories. The shadows are shrinking — fewer places to hide, fewer paths to escape, fewer allies willing to harbor a warlord on the run. The game that was supposed to be won through cunning and stealth has become a desperate scramble for survival.`,
+        portrait,
+        speaker: playerName,
+        speakerColor: color,
+      },
+      {
+        text: `"Everyone runs out of shadows eventually," ${playerName} says to no one, testing the edge of a blade that has lost its fragment-enhanced sheen. "But they always forget — the shadow doesn't just hide you. It shows you things. And I have seen things in the dark that would make the other warlords weep."`,
+        speaker: playerName,
+        speakerColor: color,
+        portrait,
+      },
+      {
+        text: `The fragment stirs — not with power, but with something older and more dangerous. It whispers of the spaces between heartbeats, the moments when reality blinks, the instants when a shadow-walker can step between worlds. ${playerName} has never used this ability before. The cost is steep: a piece of the bearer's soul for every shadow-step. But with ${territoryCount} territories remaining, the Rogue is running out of options — and running out of soul is better than running out of time.`,
+      },
+    ],
+    paladin: [
+      {
+        text: `${playerName} kneels in the rubble of what was once a temple, hands clasped in prayer, fragment casting its fading holy light across broken pews and shattered stained glass. ${territoryCount} territories. The faithful are scattered, the temples desecrated, and the light that once guided ${playerName}'s armies has dimmed to a flicker. The continent groans under the weight of war, and the abyss below grows ever closer.`,
+        portrait,
+        speaker: playerName,
+        speakerColor: color,
+      },
+      {
+        text: `"You test me," ${playerName} whispers to the fragment, to the sky, to whatever force shaped the Aetheric Throne and then shattered it. "You test my faith when everything I built lies in ruins. But faith is not a tower — it does not crumble when the wind blows. Faith is the wind itself." The fragment hears. And for the first time since the war began, it does not demand — it gives.`,
+        speaker: playerName,
+        speakerColor: color,
+        portrait,
+      },
+      {
+        text: `The light swells. Not the cold, analytical glow of the Mage's aether, nor the hungry crimson of the Knight's fragment, but something warmer — something that feels like absolution. The Paladin rises, shield reforming from pure light, and the last ${territoryCount} territories pulse with renewed holy energy. ${playerName} will not win through strength or cunning. ${playerName} will win because the light refuses to go out.`,
+      },
+    ],
+  };
+
+  const pages = classSpecificPages[characterClass] || classSpecificPages.knight;
+
+  return {
+    id: `trigger-desperate-${playerName}`,
+    title: 'THE DESPERATE HOUR',
+    subtitle: `${playerName}'s Back Against the Wall`,
+    bgStyle: 'dark',
+    skippable: false,
+    pages,
+  };
+}
+
+export function getDominantForceBeat(
+  playerName: string,
+  color: string,
+  territoryCount: number,
+  totalPlayers: number,
+): StoryBeat {
+  const remainingRivals = totalPlayers - 1;
+
+  return {
+    id: `trigger-dominant-${playerName}`,
+    title: 'THE TIDE OF WAR',
+    subtitle: `${playerName} Controls ${territoryCount} Territories`,
+    bgStyle: 'victory',
+    skippable: false,
+    pages: [
+      {
+        text: `The map of Aethermoor has been redrawn. Where once four warlords held roughly equal sway, a single power now dominates — and that power is ${playerName}. With ${territoryCount} territories under their banner and ${remainingRivals} rival${remainingRivals !== 1 ? 's' : ''} left to challenge them, the war for the Aetheric Crown is approaching its endgame.`,
+      },
+      {
+        text: `The Aetheric fragment responds to this dominance with terrifying enthusiasm. It burns hotter, pulses stronger, and whispers more insistently — urging its bearer onward, promising ultimate power, unity, the reforged Crown. The land itself seems to lean toward ${playerName}'s territories, aetheric currents flowing like rivers toward a dominant gravitational center. The other fragments grow dimmer in comparison, their bearers weakened by the imbalance.`,
+      },
+      {
+        text: `But ${remainingRivals > 1 ? 'the remaining warlords' : 'the last rival'} will not surrender quietly. Desperation is a potent fuel, and those who fight with nothing to lose are often the most dangerous. Across the continent, alliances of convenience form, last-ditch strategies are hatched, and ancient weapons are dragged from vaults sealed since before the Shattering. The end of the war is near — but the bloodiest chapter may yet be unwritten.`,
+      },
+    ],
+  };
+}
+
+// ========================================
+// RIVAL DIALOGUE SYSTEM
+// ========================================
+
+export interface RivalDialogue {
+  id: string;
+  speakerClass: string;   // Which class speaks this
+  context: 'turn_start' | 'attacking' | 'defending' | 'losing' | 'winning';
+  minTurn: number;
+  lines: string[];
+}
+
+export const RIVAL_DIALOGUES: RivalDialogue[] = [
+  // Knight dialogue lines
+  { id: 'knight_turn_early', speakerClass: 'knight', context: 'turn_start', minTurn: 1, lines: [
+    'My armies stand ready. The north does not wait for the hesitant.',
+    'Steel and discipline. That is all Aethermoor needs now.',
+    'The fragment pulses. It hungers for order.',
+  ]},
+  { id: 'knight_attacking', speakerClass: 'knight', context: 'attacking', minTurn: 1, lines: [
+    'Charge! Let them feel the weight of true resolve!',
+    'For the north! For order! Break their lines!',
+    'No retreat. No surrender. Forward!',
+  ]},
+  { id: 'knight_defending', speakerClass: 'knight', context: 'defending', minTurn: 1, lines: [
+    'Hold the line! Not one step back!',
+    'Let them come. Our walls have never fallen.',
+    'A shield wall does not break. It only grows stronger.',
+  ]},
+  // Mage dialogue lines
+  { id: 'mage_turn_early', speakerClass: 'mage', context: 'turn_start', minTurn: 1, lines: [
+    'The aetheric currents shift... interesting. The threads of fate are tangled.',
+    'I have seen seventeen possible futures today. In twelve of them, I win.',
+    'Knowledge is the sharpest blade. And I have an entire library.',
+  ]},
+  { id: 'mage_attacking', speakerClass: 'mage', context: 'attacking', minTurn: 1, lines: [
+    'Let them burn. Arcane fire cares nothing for armor.',
+    'The equations of war are simple. I have already solved them.',
+    'Witness the power that shattered a throne!',
+  ]},
+  { id: 'mage_defending', speakerClass: 'mage', context: 'defending', minTurn: 1, lines: [
+    'My wards are unbreakable. Try and see.',
+    'Every spell I cast is a calculation. They cannot outthink the inevitable.',
+    'The aether bends to my will. Your armies will not.',
+  ]},
+  // Rogue dialogue lines
+  { id: 'rogue_turn_early', speakerClass: 'rogue', context: 'turn_start', minTurn: 1, lines: [
+    'They think they see me coming. They are wrong.',
+    'The shadows are full of secrets. I know all of them.',
+    'Every warlord here has a weakness. I intend to find them all.',
+  ]},
+  { id: 'rogue_attacking', speakerClass: 'rogue', context: 'attacking', minTurn: 1, lines: [
+    'You never saw it coming. None of them ever do.',
+    'From the darkness, swift and certain.',
+    'Why fight fair when you can fight smart?',
+  ]},
+  { id: 'rogue_defending', speakerClass: 'rogue', context: 'defending', minTurn: 1, lines: [
+    'You think you have me cornered? I am exactly where I want to be.',
+    'The shadows protect their own.',
+    'Catch me if you can.',
+  ]},
+  // Paladin dialogue lines
+  { id: 'paladin_turn_early', speakerClass: 'paladin', context: 'turn_start', minTurn: 1, lines: [
+    'The light guides my path. Even in this darkness, I do not waver.',
+    'Faith is not a weapon. It is a shield. And mine is unbreakable.',
+    'Aethermoor will be saved — not by conquest, but by conviction.',
+  ]},
+  { id: 'paladin_attacking', speakerClass: 'paladin', context: 'attacking', minTurn: 1, lines: [
+    'In the name of the light, I strike!',
+    'Your darkness ends here. Justice comes for all.',
+    'Holy fire cleanses all. Even the battlefield.',
+  ]},
+  { id: 'paladin_defending', speakerClass: 'paladin', context: 'defending', minTurn: 1, lines: [
+    'The light shall not be extinguished!',
+    'My faith is my fortress. You cannot breach it.',
+    'Even in defeat, I do not yield. For I know the truth.',
+  ]},
+  // Losing dialogue (any class)
+  { id: 'knight_losing', speakerClass: 'knight', context: 'losing', minTurn: 5, lines: [
+    'The walls are crumbling... but I will fight from the rubble.',
+    'A knight does not beg. But I admit... the situation is dire.',
+  ]},
+  { id: 'mage_losing', speakerClass: 'mage', context: 'losing', minTurn: 5, lines: [
+    'This outcome was... not in my calculations. Fascinating.',
+    'The aether... is draining. I must conserve what remains.',
+  ]},
+  { id: 'rogue_losing', speakerClass: 'rogue', context: 'losing', minTurn: 5, lines: [
+    'Everyone runs out of shadows eventually.',
+    'I always have an exit strategy. ...I think.',
+  ]},
+  { id: 'paladin_losing', speakerClass: 'paladin', context: 'losing', minTurn: 5, lines: [
+    'Even now, I do not doubt. The light tests those who are worthy.',
+    'A guardian falls... but the light endures.',
+  ]},
+  // Winning dialogue (any class)
+  { id: 'knight_winning', speakerClass: 'knight', context: 'winning', minTurn: 5, lines: [
+    'The pieces are in place. Aethermoor will know order once more.',
+    'One by one, the banners fall. Soon, only mine will remain.',
+  ]},
+  { id: 'mage_winning', speakerClass: 'mage', context: 'winning', minTurn: 5, lines: [
+    'The pattern is becoming clear. Victory is simply the next logical step.',
+    'I have calculated every variable. The outcome is no longer in doubt.',
+  ]},
+  { id: 'rogue_winning', speakerClass: 'rogue', context: 'winning', minTurn: 5, lines: [
+    'The game is almost over. And they never even saw me playing.',
+    'Checkmate. Though I prefer the term... shadow-check.',
+  ]},
+  { id: 'paladin_winning', speakerClass: 'paladin', context: 'winning', minTurn: 5, lines: [
+    'The light grows stronger with every territory freed from darkness.',
+    'Soon, this war will end. And peace will finally reign.',
+  ]},
+];
+
+export function getRivalDialogue(characterClass: string, context: RivalDialogue['context'], turnNumber: number): { text: string } | null {
+  const cls = characterClass.toLowerCase();
+  const eligible = RIVAL_DIALOGUES.filter(d => {
+    if (d.speakerClass !== cls) return false;
+    if (d.context !== context) return false;
+    if (turnNumber < d.minTurn) return false;
+    return true;
+  });
+  if (eligible.length === 0) return null;
+  const dialogue = eligible[Math.floor(Math.random() * eligible.length)];
+  const line = dialogue.lines[Math.floor(Math.random() * dialogue.lines.length)];
+  return { text: line };
+}
+
+// ========================================
+// CAMPAIGN PROGRESS STATE
+// ========================================
+
+export interface CampaignProgress {
+  currentChapter: number;       // 1-5
+  totalConquests: number;        // territories captured by human player
+  firstBloodFired: boolean;
+  firedTriggers: Set<string>;    // IDs of one-time triggers that have fired
+  rivalClashes: Set<string>;     // "playerA-playerB" pairs that have clashed
+  regionDominanceFired: Set<string>; // region names already triggered
+  turnStoryFired: Set<number>;   // turn numbers where story already fired
+}

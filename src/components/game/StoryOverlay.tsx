@@ -50,6 +50,8 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
   const page = beat.pages[pageIndex];
   const totalPages = beat.pages.length;
   const style = BG_STYLES[beat.bgStyle] || BG_STYLES.dark;
+  // Detect chapter title pages (short text, no speaker, chapter-title prefix in ID)
+  const isChapterTitlePage = !page?.speaker && page && page.text.length < 60 && beat.id.includes('chapter-title');
 
   // Skip hint after delay
   useEffect(() => {
@@ -197,7 +199,8 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
           animation: fadeState === 'in' ? 'storyFadeIn 0.5s ease forwards' : fadeState === 'out' ? 'storyFadeOut 0.4s ease forwards' : 'none',
         }}
       >
-        {/* Title area */}
+        {/* Title area — hide for chapter title pages to let text shine */}
+        {!isChapterTitlePage && (
         <div className="text-center mb-8">
           {beat.subtitle && (
             <div
@@ -228,6 +231,7 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
             }}
           />
         </div>
+        )}
 
         {/* Speaker area (portrait + name) */}
         {page?.speaker && (
@@ -265,11 +269,14 @@ export default function StoryOverlay({ beat, onDismiss, onLastPage }: StoryOverl
 
         {/* Story text */}
         <div
-          className="min-h-[140px] text-sm md:text-base leading-relaxed"
+          className={`min-h-[140px] text-sm md:text-base leading-relaxed ${isChapterTitlePage ? 'text-center' : ''}`}
           style={{
             color: 'rgba(220,210,190,0.9)',
             fontFamily: 'var(--font-cinzel), serif',
             textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+            fontSize: isChapterTitlePage ? 'clamp(1.1rem, 3vw, 1.8rem)' : undefined,
+            fontWeight: isChapterTitlePage ? 700 : undefined,
+            letterSpacing: isChapterTitlePage ? '0.15em' : undefined,
           }}
         >
           {displayedText}

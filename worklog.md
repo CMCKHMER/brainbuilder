@@ -120,3 +120,24 @@ Stage Summary:
 - GameMap3D.tsx: Complete 3D rotational world map with structures, lighting, particles, and full game interaction
 - GameBoard.tsx: Updated to use 3D map via dynamic import (SSR-safe)
 - 3D structures per territory: Ironhold/Fortress, Wintermere/Ice, Frostpeak/Dragonspine/Mountains, Goldshire/Castle, Silverdale/Ravencrest/Towers, Ashenvale/Darkwood/Forests, Sunforge/Moonhaven/Temples, Crystal Lake/Crystals, Port Brighthelm/Port, Stormhold/Thornwall/Fortresses, Misthollow/Ruins
+---
+Task ID: 1
+Agent: main
+Task: Build story/campaign mode for Warlords of Aethermoor
+
+Work Log:
+- Read full codebase: game-data.ts (524 lines), game-store.ts (800 lines), GameBoard.tsx (347 lines), StoryOverlay.tsx (367 lines), TitleScreen.tsx (574 lines), story-data.ts (382 lines), GameSetup.tsx (470 lines), page.tsx (20 lines)
+- Identified existing story foundation: prologue, character intros, elimination beats, victory epilogues, random campaign events, region lore
+- Expanded story-data.ts from 382 → 985 lines with: Chapter system (5 chapters), chapter title card generator, 6 mid-game trigger functions (first blood, territory capture, region dominance, rival clash, desperate hour, dominant force), 21 rival dialogue entries across 4 classes × 5 contexts, CampaignProgress interface
+- Updated game-store.ts with: isCampaignMode flag, campaignProgress state, startCampaign/startSkirmish functions, advanceChapter (checks conditions for chapter 2-5), checkStoryTriggers (fires on territory conquest with 6 trigger types), integrated trigger call in executeAttack and chapter check in endTurn
+- Updated TitleScreen.tsx: Replaced "NEW CAMPAIGN" with Campaign/Skirmish mode selection overlay with descriptions, changed "EXIT" to "CREDITS"
+- Updated StoryOverlay.tsx: Added chapter title card detection (large centered text, hides title/subtitle area), isChapterTitlePage logic
+- Updated GameBoard.tsx: Added chapter indicator badge (Ch.1-5) in header during campaign mode
+- Build verification: `npx tsc --noEmit --project tsconfig.json` → 0 errors, `npx next build` → compiled successfully
+
+Stage Summary:
+- Story/campaign mode is now fully integrated
+- Title screen offers Campaign (full narrative with chapters, triggers, dialogue) vs Skirmish (pure strategy) 
+- Campaign flow: Prologue → Chapter 1 Title → Character Intro → Gameplay (with mid-game triggers) → Chapter transitions → Victory
+- 6 types of mid-game story triggers fire contextually during gameplay
+- 5-chapter structure advances based on conquests, eliminations, and territory control

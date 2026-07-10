@@ -39,15 +39,29 @@ export default function TitleScreen() {
   }, []);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [fadeToGame, setFadeToGame] = useState(false);
+  const [showModeSelect, setShowModeSelect] = useState(false);
+  const startCampaign = useGameStore((s) => s.startCampaign);
+  const startSkirmish = useGameStore((s) => s.startSkirmish);
   const startGame = useGameStore((s) => s.startGame);
 
   const menuItems = [
-    { id: 'new', label: 'NEW CAMPAIGN', action: () => handleStart() },
+    { id: 'campaign', label: 'NEW CAMPAIGN', action: () => { setShowModeSelect(true); } },
+    { id: 'skirmish', label: 'SKIRMISH MODE', action: () => handleModeSelect(false) },
     { id: 'multi', label: 'MULTIPLAYER', action: () => {} },
-    { id: 'settings', label: 'SETTINGS', action: () => {} },
     { id: 'credits', label: 'CREDITS', action: () => {} },
-    { id: 'exit', label: 'EXIT', action: () => {} },
   ];
+
+  const handleModeSelect = useCallback((isCampaign: boolean) => {
+    setShowModeSelect(false);
+    setFadeToGame(true);
+    setTimeout(() => {
+      if (isCampaign) {
+        startCampaign();
+      } else {
+        startSkirmish();
+      }
+    }, 1200);
+  }, [startCampaign, startSkirmish]);
 
   const handleStart = useCallback(() => {
     setFadeToGame(true);
@@ -378,6 +392,102 @@ export default function TitleScreen() {
         </p>
       </div>
 
+      {/* Mode Selection Overlay */}
+      {showModeSelect && (
+        <div
+          className="absolute inset-0 z-30 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', animation: 'modeFadeIn 0.3s ease forwards' }}
+        >
+          <div
+            className="p-8 rounded-xl max-w-md w-[90%]"
+            style={{
+              background: 'linear-gradient(180deg, rgba(30,20,8,0.95), rgba(15,10,5,0.98))',
+              border: '1.5px solid rgba(212,175,55,0.3)',
+              boxShadow: '0 0 40px rgba(212,175,55,0.1), 0 16px 48px rgba(0,0,0,0.6)',
+            }}
+          >
+            <h2
+              className="text-xl font-bold tracking-widest text-center mb-2"
+              style={{
+                fontFamily: 'var(--font-cinzel), serif',
+                color: '#D4AF37',
+                textShadow: '0 0 12px rgba(212,175,55,0.4)',
+              }}
+            >
+              CHOOSE YOUR PATH
+            </h2>
+            <p className="text-[11px] text-center opacity-40 mb-6" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+              How will you wage war for the Aetheric Crown?
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => handleModeSelect(true)}
+                onMouseEnter={() => setHoveredItem('mode-campaign')}
+                onMouseLeave={() => setHoveredItem(null)}
+                className="p-4 rounded-lg text-left transition-all"
+                style={{
+                  background: hoveredItem === 'mode-campaign' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
+                  border: `1.5px solid ${hoveredItem === 'mode-campaign' ? 'rgba(212,175,55,0.5)' : 'rgba(139,115,85,0.2)'}`,
+                }}
+              >
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-2xl">📜</span>
+                  <span
+                    className="text-base font-bold tracking-wider"
+                    style={{
+                      fontFamily: 'var(--font-cinzel), serif',
+                      color: hoveredItem === 'mode-campaign' ? '#F5E6A3' : '#D4AF37',
+                    }}
+                  >
+                    CAMPAIGN
+                  </span>
+                </div>
+                <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+                  Experience the full story of Aethermoor's war. Chapter transitions, narrative triggers on key territory captures, rival dialogues, and an epic 5-chapter saga from assembly to final stand.
+                </p>
+              </button>
+              <button
+                onClick={() => handleModeSelect(false)}
+                onMouseEnter={() => setHoveredItem('mode-skirmish')}
+                onMouseLeave={() => setHoveredItem(null)}
+                className="p-4 rounded-lg text-left transition-all"
+                style={{
+                  background: hoveredItem === 'mode-skirmish' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
+                  border: `1.5px solid ${hoveredItem === 'mode-skirmish' ? 'rgba(212,175,55,0.5)' : 'rgba(139,115,85,0.2)'}`,
+                }}
+              >
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-2xl">⚔️</span>
+                  <span
+                    className="text-base font-bold tracking-wider"
+                    style={{
+                      fontFamily: 'var(--font-cinzel), serif',
+                      color: hoveredItem === 'mode-skirmish' ? '#F5E6A3' : '#D4AF37',
+                    }}
+                  >
+                    SKIRMISH
+                  </span>
+                </div>
+                <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+                  Jump straight into battle. Pure strategy with no story interruptions. Conquer Aethermoor at your own pace with random events and full tactical gameplay.
+                </p>
+              </button>
+            </div>
+            <button
+              onClick={() => setShowModeSelect(false)}
+              className="w-full mt-4 py-2 rounded text-[10px] tracking-widest uppercase transition-all opacity-50 hover:opacity-100"
+              style={{
+                fontFamily: 'var(--font-cinzel), serif',
+                color: '#8B7355',
+                border: '1px solid rgba(139,115,85,0.2)',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Menu panel */}
       <div
         className="absolute z-20 flex flex-col items-center gap-3"
@@ -567,6 +677,10 @@ export default function TitleScreen() {
         }
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+        @keyframes modeFadeIn {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
         }
       `}</style>
     </div>
