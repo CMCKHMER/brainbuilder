@@ -72,6 +72,78 @@ export default function GameSetup() {
           <div className="w-48 h-0.5 mx-auto mt-3" style={{ background: 'linear-gradient(90deg, transparent, #D4A01766, transparent)' }} />
         </div>
 
+        {/* Faction Characters Showcase */}
+        <div className="mb-8">
+          <div className="text-center mb-4">
+            <div className="text-[10px] uppercase tracking-[4px] opacity-30" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+              The Warlords of Aethermoor
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {PLAYER_CONFIGS.map((p, i) => {
+              const charClass = CHARACTER_CLASSES.find(cc => cc.id === p.characterClass.toLowerCase());
+              return (
+                <div
+                  key={i}
+                  className="relative p-4 rounded-xl text-center transition-all duration-300 group"
+                  style={{
+                    background: `linear-gradient(180deg, ${p.color}18 0%, ${p.color}06 50%, rgba(0,0,0,0.3) 100%)`,
+                    border: `1.5px solid ${p.color}33`,
+                  }}
+                >
+                  {/* Character glow */}
+                  <div
+                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: `radial-gradient(ellipse at center, ${p.color}15 0%, transparent 70%)`,
+                    }}
+                  />
+                  {/* Character icon / avatar */}
+                  <div className="relative z-10">
+                    <div
+                      className="w-16 h-16 mx-auto mb-2 rounded-full flex items-center justify-center text-3xl"
+                      style={{
+                        background: `linear-gradient(135deg, ${p.color}30, ${p.color}10)`,
+                        border: `2px solid ${p.color}55`,
+                        boxShadow: `0 0 20px ${p.color}22, inset 0 0 15px ${p.color}11`,
+                      }}
+                    >
+                      {p.icon}
+                    </div>
+                    {/* Name */}
+                    <div
+                      className="text-sm font-bold tracking-wide mb-0.5"
+                      style={{
+                        color: p.color,
+                        fontFamily: 'var(--font-cinzel), serif',
+                        textShadow: `0 1px 6px ${p.color}44`,
+                      }}
+                    >
+                      {p.name}
+                    </div>
+                    {/* Class badge */}
+                    <div
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold mt-1"
+                      style={{
+                        background: `${p.color}20`,
+                        border: `1px solid ${p.color}33`,
+                        color: p.colorLight,
+                        fontFamily: 'var(--font-cinzel), serif',
+                      }}
+                    >
+                      {charClass?.icon} {charClass?.name}
+                    </div>
+                    {/* Class description */}
+                    <div className="text-[9px] opacity-40 mt-1.5 leading-relaxed px-1">
+                      {charClass?.desc}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Player Count Selector */}
         <div className="flex justify-center gap-3 mb-6">
           {[2, 3, 4].map(n => (

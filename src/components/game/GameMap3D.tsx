@@ -11,11 +11,11 @@ import { getUnitComposition, getDominantUnit, getUnitCost } from '@/lib/game-log
 // ========================
 // Constants
 // ========================
-const SCALE = 0.025;
+const SCALE = 0.034;
 const CENTER_X = 500;
 const CENTER_Y = 325;
-const PLATFORM_RX = 14.5;  // Elliptical - wider
-const PLATFORM_RZ = 10;    // Elliptical - shorter depth
+const PLATFORM_RX = 18;
+const PLATFORM_RZ = 12.5;
 
 type StructureType = 'mountain' | 'tower' | 'castle' | 'forest' | 'temple' | 'crystal' | 'port' | 'ruins' | 'fortress' | 'ice';
 
@@ -801,7 +801,7 @@ function Ocean() {
 
   return (
     <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.5, 0]}>
-      <planeGeometry args={[120, 90, 32, 32]} />
+      <planeGeometry args={[160, 120, 32, 32]} />
       <meshStandardMaterial
         color="#0A2A3A"
         transparent
@@ -823,9 +823,9 @@ function MagicalParticles() {
   const [positions] = useState(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 34;
-      pos[i * 3 + 1] = Math.random() * 8 + 0.5;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 24;
+      pos[i * 3] = (Math.random() - 0.5) * 44;
+      pos[i * 3 + 1] = Math.random() * 10 + 0.5;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 32;
     }
     return pos;
   });
@@ -921,13 +921,13 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
   return (
     <>
       <color attach="background" args={['#060810']} />
-      <fog attach="fog" args={['#060810', 28, 65]} />
+      <fog attach="fog" args={['#060810', 35, 80]} />
 
       <SceneLighting />
       <OrbitControls
         enablePan={true}
-        minDistance={7}
-        maxDistance={38}
+        minDistance={8}
+        maxDistance={45}
         minPolarAngle={Math.PI / 8}
         maxPolarAngle={Math.PI / 2.1}
         enableDamping
@@ -953,7 +953,7 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
       <MagicalParticles />
 
       {/* Map title in 3D space */}
-      <Html position={[0, -0.1, 6.5]} center>
+      <Html position={[0, -0.1, 9]} center>
         <div style={{
           pointerEvents: 'none',
           fontSize: '10px',
@@ -1019,7 +1019,7 @@ export default function GameMap3D({ onTerritoryHover = () => {} }: GameMap3DProp
   return (
     <Suspense fallback={<LoadingScreen />}>
       <Canvas
-        camera={{ position: [0, 16, 16], fov: 55, near: 0.1, far: 150 }}
+        camera={{ position: [0, 13, 12], fov: 62, near: 0.1, far: 200 }}
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         style={{ background: '#060810' }}
         onPointerMissed={() => {
