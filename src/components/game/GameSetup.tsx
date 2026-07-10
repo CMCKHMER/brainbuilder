@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useGameStore } from '@/lib/game-store';
 import { PLAYER_CONFIGS, CHARACTER_CLASSES, UNIT_TYPE_LIST, UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 import { UnitCard, UnitPortrait } from './UnitCards';
+import Image from 'next/image';
 
 export default function GameSetup() {
   const setupGame = useGameStore(s => s.setupGame);
@@ -101,14 +102,20 @@ export default function GameSetup() {
                   {/* Character icon / avatar */}
                   <div className="relative z-10">
                     <div
-                      className="w-16 h-16 mx-auto mb-2 rounded-full flex items-center justify-center text-3xl"
+                      className="w-20 h-20 mx-auto mb-2 rounded-xl overflow-hidden"
                       style={{
-                        background: `linear-gradient(135deg, ${p.color}30, ${p.color}10)`,
                         border: `2px solid ${p.color}55`,
-                        boxShadow: `0 0 20px ${p.color}22, inset 0 0 15px ${p.color}11`,
+                        boxShadow: `0 0 24px ${p.color}33, 0 4px 16px rgba(0,0,0,0.5)`,
                       }}
                     >
-                      {p.icon}
+                      <Image
+                        src={p.image}
+                        alt={p.name}
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-cover"
+                        unoptimized
+                      />
                     </div>
                     {/* Name */}
                     <div

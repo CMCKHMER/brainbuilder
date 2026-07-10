@@ -14,14 +14,15 @@ export interface PlayerConfig {
   colorLight: string;
   characterClass: string;
   icon: string;
+  image: string;
   isAI?: boolean;
 }
 
 export const PLAYER_CONFIGS: PlayerConfig[] = [
-  { name: "Lord Ashford", color: "#DC2626", colorLight: "#FCA5A5", characterClass: "Knight", icon: "⚔️" },
-  { name: "Lady Elara", color: "#D4A017", colorLight: "#FDE68A", characterClass: "Mage", icon: "🔮" },
-  { name: "Shadow Vex", color: "#166534", colorLight: "#86EFAC", characterClass: "Rogue", icon: "🗡️" },
-  { name: "Sir Gideon", color: "#7E22CE", colorLight: "#D8B4FE", characterClass: "Paladin", icon: "🛡️" },
+  { name: "Lord Ashford", color: "#DC2626", colorLight: "#FCA5A5", characterClass: "Knight", icon: "⚔️", image: "/game/heroes/hero_knight.png" },
+  { name: "Lady Elara", color: "#D4A017", colorLight: "#FDE68A", characterClass: "Mage", icon: "🔮", image: "/game/heroes/hero_mage.png" },
+  { name: "Shadow Vex", color: "#166534", colorLight: "#86EFAC", characterClass: "Rogue", icon: "🗡️", image: "/game/heroes/hero_rogue.png" },
+  { name: "Sir Gideon", color: "#7E22CE", colorLight: "#D8B4FE", characterClass: "Paladin", icon: "🛡️", image: "/game/heroes/hero_paladin.png" },
 ];
 
 export const CHARACTER_CLASSES = [
