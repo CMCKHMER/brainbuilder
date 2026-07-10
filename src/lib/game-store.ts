@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { TERRITORIES, PLAYER_CONFIGS, type PlayerConfig, type UnitTypeId, type TacticId, UNIT_TYPES, TACTICS } from './game-data';
+import { TERRITORIES, PLAYER_CONFIGS, type PlayerConfig, type UnitTypeId, type TacticId, UNIT_TYPES, TACTICS, CHARACTER_CLASSES } from './game-data';
+import { type StoryBeat, PROLOGUE, getCharacterIntro, getEliminationBeat, getVictoryBeat, CAMPAIGN_EVENTS, type CampaignEvent } from './story-data';
 import {
   type GamePhase,
   type Player,
@@ -82,6 +83,17 @@ interface GameState {
   getCurrentPlayer: () => Player;
   getTerritory: (id: string) => TerritoryState;
   getPlayerById: (id: string) => Player | undefined;
+
+  // Story system
+  storyBeat: StoryBeat | null;
+  storyQueue: StoryBeat[];
+  currentEvent: CampaignEvent | null;
+  showStory: (beat: StoryBeat) => void;
+  queueStory: (beat: StoryBeat) => void;
+  dismissStory: () => void;
+  rollCampaignEvent: () => void;
+  dismissEvent: () => void;
+  storySeen: Set<string>;
 }
 
 let logIdCounter = 0;
@@ -152,6 +164,10 @@ export const useGameStore = create<GameState>((set, get) => ({
   deployUnitType: 'swordsman',
   activeTactics: [],
   selectedTactic: null,
+  storyBeat: null,
+  storyQueue: [],
+  currentEvent: null,
+  storySeen: new Set(),
 
   setupGame: (playerConfigs) => {
     const players: Player[] = playerConfigs.map((config, index) => ({
@@ -193,6 +209,22 @@ export const useGameStore = create<GameState>((set, get) => ({
       activeTactics: [],
       selectedTactic: null,
     });
+
+    // Queue story beats: prologue → character intro for player 1
+    const humanPlayer = players.find(p => !p.isAI) || players[0];
+    const charClass = humanPlayer.characterClass.toLowerCase();
+    const playerConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === charClass) || PLAYER_CONFIGS[0];
+
+    const introBeat = getCharacterIntro(
+      charClass,
+      humanPlayer.name,
+      humanPlayer.color,
+      humanPlayer.colorLight,
+      playerConfig.image
+    );
+
+    get().showStory(PROLOGUE);
+    get().queueStory(introBeat);
   },
 
   deployArmy: (territoryId, unitType) => {
@@ -366,6 +398,14 @@ export const useGameStore = create<GameState>((set, get) => ({
         if (oldPlayer.territories.length === 0) {
           oldPlayer.eliminated = true;
           newLog.push(addLog(state, `💀 ${oldPlayer.name} has been eliminated!`, 'info'));
+
+          // Queue elimination story for AI players
+          if (oldPlayer.isAI) {
+            const elimClass = oldPlayer.characterClass.toLowerCase();
+            const elimConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === elimClass) || PLAYER_CONFIGS[0];
+            const elimBeat = getEliminationBeat(oldPlayer.name, elimClass, oldPlayer.color);
+            get().queueStory(elimBeat);
+          }
         }
       }
       const newOwnerPlayer = newPlayers.find(p => p.id === newOwner)!;
@@ -389,6 +429,14 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     // Check win condition
     const winner = newPlayers.find(p => !p.eliminated && p.territories.length === 16) || null;
+
+    // Queue victory story if game ends
+    if (winner) {
+      const winClass = winner.characterClass.toLowerCase();
+      const winConfig = PLAYER_CONFIGS.find(p => p.characterClass.toLowerCase() === winClass) || PLAYER_CONFIGS[0];
+      const victoryBeat = getVictoryBeat(winner.name, winClass, winner.color, winner.colorLight, winConfig.image);
+      get().queueStory(victoryBeat);
+    }
 
     const maxAttack = getMaxAttackerDice(newTerritories[state.selectedTerritory].units.length);
     const maxDefend = getMaxDefenderDice(newTerritories[state.targetTerritory].units.length);
@@ -641,6 +689,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       activeTactics: newActiveTactics,
       deployUnitType: 'swordsman',
     });
+
+    // Roll for campaign event on new turn cycle (only for human player's turn)
+    if (newTurnNumber > state.turnNumber && !nextPlayer.isAI) {
+      get().rollCampaignEvent();
+    }
   },
 
   startGame: () => set({ phase: 'setup' }),
@@ -664,6 +717,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       deployUnitType: 'swordsman',
       activeTactics: [],
       selectedTactic: null,
+      storyBeat: null,
+      storyQueue: [],
+      currentEvent: null,
+      storySeen: new Set(),
     });
   },
 
@@ -680,5 +737,64 @@ export const useGameStore = create<GameState>((set, get) => ({
   getPlayerById: (id) => {
     const state = get();
     return state.players.find(p => p.id === id);
+  },
+
+  // Story system
+  showStory: (beat) => {
+    const state = get();
+    if (!state.storyBeat) {
+      set({ storyBeat: beat });
+    } else {
+      set({ storyQueue: [...state.storyQueue, beat] });
+    }
+  },
+
+  queueStory: (beat) => {
+    const state = get();
+    set({ storyQueue: [...state.storyQueue, beat] });
+  },
+
+  dismissStory: () => {
+    const state = get();
+    const queue = [...state.storyQueue];
+    const seen = new Set(state.storySeen);
+    if (state.storyBeat) {
+      seen.add(state.storyBeat.id);
+    }
+    if (queue.length > 0) {
+      const next = queue.shift()!;
+      // Don't replay seen beats
+      if (seen.has(next.id)) {
+        // Skip this one and try the next
+        set({ storyBeat: queue.length > 0 ? queue.shift()! : null, storyQueue: queue, storySeen: seen });
+      } else {
+        set({ storyBeat: next, storyQueue: queue, storySeen: seen });
+      }
+    } else {
+      set({ storyBeat: null, storyQueue: queue, storySeen: seen });
+    }
+  },
+
+  rollCampaignEvent: () => {
+    const state = get();
+    if (state.phase === 'gameover' || state.storyBeat) return;
+
+    const eligible = CAMPAIGN_EVENTS.filter(e => {
+      if (state.turnNumber < e.minTurn) return false;
+      if (e.maxTurn && state.turnNumber > e.maxTurn) return false;
+      if (state.storySeen.has(e.id)) return false;
+      return Math.random() < e.triggerChance;
+    });
+
+    if (eligible.length > 0) {
+      const event = eligible[Math.floor(Math.random() * eligible.length)];
+      const seen = new Set(state.storySeen);
+      seen.add(event.id);
+      set({ currentEvent: event, storySeen: seen });
+    }
+  },
+
+  dismissEvent: () => {
+    set({ currentEvent: null });
   },
 }));

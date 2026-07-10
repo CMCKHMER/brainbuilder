@@ -9,6 +9,7 @@ import { useState, useCallback } from 'react';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 import { UnitPortrait } from './UnitCards';
 import { useAIController } from '@/hooks/useAIController';
+import StoryOverlay from './StoryOverlay';
 import dynamic from 'next/dynamic';
 
 const GameMap3D = dynamic(() => import('./GameMap3D'), {
@@ -100,6 +101,12 @@ export default function GameBoard() {
   const territories = useGameStore(s => s.territories);
   const selectedTerritory = useGameStore(s => s.selectedTerritory);
   const [hoveredTerritory, setHoveredTerritory] = useState<string | null>(null);
+
+  // Story system
+  const storyBeat = useGameStore(s => s.storyBeat);
+  const currentEvent = useGameStore(s => s.currentEvent);
+  const dismissStory = useGameStore(s => s.dismissStory);
+  const dismissEvent = useGameStore(s => s.dismissEvent);
 
   // AI turn controller
   useAIController();
@@ -276,6 +283,65 @@ export default function GameBoard() {
 
       {/* Action Panel (Bottom) */}
       <ActionPanel />
+
+      {/* Campaign Event Banner */}
+      {currentEvent && !storyBeat && (
+        <div
+          className="fixed top-16 left-1/2 -translate-x-1/2 z-50 max-w-lg w-[90%] p-4 rounded-lg"
+          style={{
+            background: 'linear-gradient(135deg, rgba(20,15,8,0.95), rgba(15,10,5,0.98))',
+            border: '1px solid rgba(212,175,55,0.3)',
+            boxShadow: '0 0 30px rgba(212,175,55,0.1), 0 8px 32px rgba(0,0,0,0.6)',
+            animation: 'eventSlideIn 0.5s ease forwards',
+          }}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <div
+                className="text-xs font-bold tracking-widest mb-1.5"
+                style={{
+                  fontFamily: 'var(--font-cinzel), serif',
+                  color: '#D4A017',
+                  textShadow: '0 0 8px rgba(212,160,23,0.3)',
+                }}
+              >
+                {currentEvent.title}
+              </div>
+              <p
+                className="text-[11px] leading-relaxed opacity-70"
+                style={{ fontFamily: 'var(--font-cinzel), serif' }}
+              >
+                {currentEvent.text}
+              </p>
+              {currentEvent.effect && (
+                <p className="text-[9px] mt-1.5 opacity-40 italic" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+                  {currentEvent.effect}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={dismissEvent}
+              className="text-xs px-2 py-1 rounded flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity"
+              style={{
+                fontFamily: 'var(--font-cinzel), serif',
+                color: '#D4A017',
+                border: '1px solid rgba(212,160,23,0.2)',
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+          <style jsx global>{`
+            @keyframes eventSlideIn {
+              0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+              100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      {/* Story Overlay */}
+      {storyBeat && <StoryOverlay beat={storyBeat} onDismiss={dismissStory} />}
     </div>
   );
 }
