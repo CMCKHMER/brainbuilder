@@ -11,10 +11,11 @@ import { getUnitComposition, getDominantUnit, getUnitCost } from '@/lib/game-log
 // ========================
 // Constants
 // ========================
-const SCALE = 0.012;
+const SCALE = 0.016;
 const CENTER_X = 500;
 const CENTER_Y = 325;
-const PLATFORM_RADIUS = 7.5;
+const PLATFORM_RX = 9.2;  // Elliptical - wider
+const PLATFORM_RZ = 6.5;  // Elliptical - shorter depth
 
 type StructureType = 'mountain' | 'tower' | 'castle' | 'forest' | 'temple' | 'crystal' | 'port' | 'ruins' | 'fortress' | 'ice';
 
@@ -735,43 +736,49 @@ function FloatingPlatform() {
 
   return (
     <group ref={platformRef}>
-      {/* Main disc top */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[7.8, 8.2, 0.3, 64]} />
+      {/* Main elliptical disc top */}
+      <mesh position={[0, 0, 0]} scale={[PLATFORM_RX / 8, 1, PLATFORM_RZ / 8]}>
+        <cylinderGeometry args={[8, 8.3, 0.3, 64]} />
         <meshStandardMaterial color="#3D2B1F" roughness={0.9} metalness={0.05} />
       </mesh>
       {/* Surface layer */}
-      <mesh position={[0, 0.16, 0]}>
-        <cylinderGeometry args={[7.7, 7.7, 0.04, 64]} />
+      <mesh position={[0, 0.16, 0]} scale={[PLATFORM_RX / 8, 1, PLATFORM_RZ / 8]}>
+        <cylinderGeometry args={[7.9, 7.9, 0.04, 64]} />
         <meshStandardMaterial color="#4A3828" roughness={0.85} metalness={0.02} />
       </mesh>
-      {/* Top edge ring */}
-      <mesh position={[0, 0.19, 0]}>
-        <torusGeometry args={[7.75, 0.08, 8, 64]} />
+      {/* Top edge ring - elliptical */}
+      <mesh position={[0, 0.19, 0]} scale={[PLATFORM_RX / 7.9, 1, PLATFORM_RZ / 7.9]}>
+        <torusGeometry args={[7.9, 0.08, 8, 64]} />
         <meshStandardMaterial color="#5A4A3A" roughness={0.7} metalness={0.1} />
       </mesh>
-      {/* Bottom taper - upper section */}
-      <mesh position={[0, -0.8, 0]}>
-        <cylinderGeometry args={[8.2, 5.5, 1.2, 64]} />
+      {/* Outer decorative ring */}
+      <mesh position={[0, 0.12, 0]} scale={[PLATFORM_RX / 8.2, 1, PLATFORM_RZ / 8.2]}>
+        <torusGeometry args={[8.2, 0.04, 6, 64]} />
+        <meshStandardMaterial color="#D4A01744" roughness={0.3} metalness={0.5} />
+      </mesh>
+      {/* Bottom taper - upper section (elliptical) */}
+      <mesh position={[0, -0.8, 0]} scale={[PLATFORM_RX / 7, 1, PLATFORM_RZ / 7]}>
+        <cylinderGeometry args={[7, 5, 1.2, 64]} />
         <meshStandardMaterial color="#2A1A0E" roughness={1} />
       </mesh>
-      {/* Bottom taper - lower section */}
-      <mesh position={[0, -2.0, 0]}>
+      {/* Bottom taper - lower section (elliptical) */}
+      <mesh position={[0, -2.0, 0]} scale={[PLATFORM_RX / 5.5, 1, PLATFORM_RZ / 5.5]}>
         <cylinderGeometry args={[5.5, 2.5, 1.8, 64]} />
         <meshStandardMaterial color="#1A0E06" roughness={1} />
       </mesh>
       {/* Bottom point */}
-      <mesh position={[0, -3.2, 0]}>
-        <coneGeometry args={[2.5, 1.2, 64]} />
+      <mesh position={[0, -3.2, 0]} scale={[PLATFORM_RX / 3, 1, PLATFORM_RZ / 3]}>
+        <coneGeometry args={[3, 1.2, 64]} />
         <meshStandardMaterial color="#150A04" roughness={1} />
       </mesh>
-      {/* Rocky protrusions on the bottom */}
-      {[0, 1, 2, 3, 4, 5].map((i) => {
-        const angle = (i / 6) * Math.PI * 2;
-        const r = 6.5 + Math.sin(i * 2.3) * 1.2;
+      {/* Rocky protrusions on the bottom - elliptical placement */}
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const rx = (PLATFORM_RX - 1.5) + Math.sin(i * 2.3) * 1.2;
+        const rz = (PLATFORM_RZ - 1.5) + Math.cos(i * 1.7) * 0.8;
         const y = -1.5 - Math.random() * 1.5;
         return (
-          <mesh key={i} position={[Math.cos(angle) * r, y, Math.sin(angle) * r]} rotation={[Math.random(), Math.random(), Math.random()]}>
+          <mesh key={i} position={[Math.cos(angle) * rx, y, Math.sin(angle) * rz]} rotation={[Math.random(), Math.random(), Math.random()]}>
             <dodecahedronGeometry args={[0.3 + Math.random() * 0.4, 0]} />
             <meshStandardMaterial color="#2A1A0E" roughness={1} />
           </mesh>
@@ -794,7 +801,7 @@ function Ocean() {
 
   return (
     <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.5, 0]}>
-      <planeGeometry args={[60, 60, 32, 32]} />
+      <planeGeometry args={[80, 60, 32, 32]} />
       <meshStandardMaterial
         color="#0A2A3A"
         transparent
@@ -816,9 +823,9 @@ function MagicalParticles() {
   const [positions] = useState(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 16;
-      pos[i * 3 + 1] = Math.random() * 5 + 0.5;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 12;
+      pos[i * 3] = (Math.random() - 0.5) * 22;
+      pos[i * 3 + 1] = Math.random() * 6 + 0.5;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 16;
     }
     return pos;
   });
@@ -914,13 +921,13 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
   return (
     <>
       <color attach="background" args={['#060810']} />
-      <fog attach="fog" args={['#060810', 14, 35]} />
+      <fog attach="fog" args={['#060810', 18, 45]} />
 
       <SceneLighting />
       <OrbitControls
         enablePan={true}
-        minDistance={4}
-        maxDistance={22}
+        minDistance={5}
+        maxDistance={28}
         minPolarAngle={Math.PI / 8}
         maxPolarAngle={Math.PI / 2.1}
         enableDamping
@@ -1012,7 +1019,7 @@ export default function GameMap3D({ onTerritoryHover = () => {} }: GameMap3DProp
   return (
     <Suspense fallback={<LoadingScreen />}>
       <Canvas
-        camera={{ position: [0, 10, 10], fov: 42, near: 0.1, far: 100 }}
+        camera={{ position: [0, 11, 12], fov: 50, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         style={{ background: '#060810' }}
         onPointerMissed={() => {
