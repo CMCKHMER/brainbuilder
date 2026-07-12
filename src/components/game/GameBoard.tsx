@@ -23,7 +23,7 @@ const GameMap3D = dynamic(() => import('./GameMap3D'), {
   loading: () => (
     <div className="w-full h-full flex items-center justify-center" style={{ background: '#060810' }}>
       <span style={{ fontFamily: 'var(--font-cinzel), serif', color: '#D4A017', fontSize: '13px', letterSpacing: '3px', opacity: 0.6 }}>
-        LOADING AETHERMOOR...
+        LOADING THE KHMER EMPIRE...
       </span>
     </div>
   ),
@@ -214,7 +214,7 @@ export default function GameBoard() {
               textShadow: '0 1px 4px rgba(212,160,23,0.3)',
             }}
           >
-            REALM OF AETHERMOOR
+            REALM OF THE KHMER EMPIRE
           </h1>
           <span className="text-[10px] px-1.5 py-0.5 rounded" style={{
             background: 'rgba(212,160,23,0.15)',
@@ -322,7 +322,7 @@ export default function GameBoard() {
                   {winner.name} Wins!
                 </h2>
                 <p className="text-sm opacity-50 mb-6" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
-                  The continent of Aethermoor has been conquered
+                  The Khmer Empire has been united
                 </p>
                 <Button
                   onClick={resetGame}

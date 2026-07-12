@@ -67,7 +67,7 @@ export default function PlayerPanel() {
           <div className="text-xl font-bold mt-1" style={{ color: winner.color, fontFamily: 'var(--font-cinzel), serif' }}>
             {winner.name}
           </div>
-          <div className="text-xs opacity-60 mt-1">has conquered Aethermoor!</div>
+          <div className="text-xs opacity-60 mt-1">has united the Khmer Empire!</div>
         </div>
       )}
 

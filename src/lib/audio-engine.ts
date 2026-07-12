@@ -1,5 +1,5 @@
 // ========================================
-// AETHERMOOR AUDIO ENGINE
+// KHMER EMPIRE AUDIO ENGINE
 // ========================================
 // Procedural audio using Web Audio API — no external files needed.
 // Provides battle sounds, ambient music, story narration cues, and UI sounds.

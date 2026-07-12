@@ -8,28 +8,148 @@ export interface TerritoryDef {
   adjacentTo: string[];
 }
 
+export interface KingdomData {
+  name: string;
+  capital: string;
+  terrain: string;
+  culture: string;
+  militaryDoctrine: string;
+  symbol: string;
+  symbolMeaning: string;
+  motto: string;
+}
+
 export interface PlayerConfig {
   name: string;
+  fullName?: string;
   color: string;
   colorLight: string;
   characterClass: string;
   icon: string;
   image: string;
   isAI?: boolean;
+  symbol?: string;
+  origin?: string;
+  bio?: string;
+  kingdom?: KingdomData;
 }
 
 export const PLAYER_CONFIGS: PlayerConfig[] = [
-  { name: "Lord Ashford", color: "#DC2626", colorLight: "#FCA5A5", characterClass: "Knight", icon: "⚔️", image: "/game/heroes/hero_knight.png" },
-  { name: "Lady Elara", color: "#D4A017", colorLight: "#FDE68A", characterClass: "Mage", icon: "🔮", image: "/game/heroes/hero_mage.png" },
-  { name: "Shadow Vex", color: "#166534", colorLight: "#86EFAC", characterClass: "Rogue", icon: "🗡️", image: "/game/heroes/hero_rogue.png" },
-  { name: "Sir Gideon", color: "#7E22CE", colorLight: "#D8B4FE", characterClass: "Paladin", icon: "🛡️", image: "/game/heroes/hero_paladin.png" },
+  {
+    name: "King Soryan",
+    fullName: "King Soryan the Iron Strategist",
+    color: "#DC2626",
+    colorLight: "#FCA5A5",
+    characterClass: "knight",
+    icon: "🗡️",
+    image: "/game/heroes/hero_knight.png",
+    symbol: "Curved Blade of Jade",
+    origin: "Angkor Wat",
+    bio: "Born within the sacred corridors of Angkor Wat, King Soryan was raised among the temple's warrior-scholars who studied the ancient art of war carved into the bas-reliefs. He dons bronze armor inscribed with Khmer runes that glow faintly in moonlight \u2014 protective wards passed down from the temple's founding ancestors. His mind is a labyrinth of strategy; he sees ten moves ahead, anticipating every feint, flank, and retreat as though watching a dance he has already choreographed. His weapon, the Curved Blade of Jade, was pulled from the roots of the sacred banyan tree that grows at the heart of the temple complex \u2014 a blade that cuts not just flesh but fate itself.",
+    kingdom: {
+      name: "Kingdom of Soryanthar",
+      capital: "Ironhold Citadel",
+      terrain: "Dense forests and temple plains surrounding Angkor Wat",
+      culture: "Scholars and tacticians who value discipline and foresight. Their warriors train in ancient formations inspired by temple carvings.",
+      militaryDoctrine: "Defensive mastery \u2014 they build fortresses and use terrain advantage to outthink enemies.",
+      symbol: "The Jade Blade",
+      symbolMeaning: "Wisdom through strength.",
+      motto: "\u201CVictory is carved before battle begins.\u201D",
+    },
+  },
+  {
+    name: "Queen Veasna",
+    fullName: "Queen Veasna of Shadows",
+    color: "#166534",
+    colorLight: "#86EFAC",
+    characterClass: "rogue",
+    icon: "🐍",
+    image: "/game/heroes/hero_rogue.png",
+    symbol: "Serpent Crown",
+    origin: "Temple of the Naga",
+    bio: "Queen Veasna is the daughter of the high priestess of the Temple of the Seven-Headed Naga, where the boundary between the mortal world and the spirit realm is thinnest. Raised among serpent chants and ritual dances performed in the flickering light of lotus-oil lamps, she learned to walk between worlds \u2014 seeing the unseen and hearing the whispers of ancestors that drift through the temple's stone corridors. She wears the Serpent Crown, a circlet of woven gold and jade shaped like coiled nagas, each gem containing a bound spirit that grants her dominion over shadow and illusion.",
+    kingdom: {
+      name: "Veasna's Shadowlands",
+      capital: "Naga Sanctuary",
+      terrain: "Misty swamps and serpent-infested jungles",
+      culture: "Mystics and assassins who worship naga spirits. They believe death is a passage, not an end.",
+      militaryDoctrine: "Stealth and illusion \u2014 their warriors strike unseen, guided by whispers of the dead.",
+      symbol: "The Serpent Crown",
+      symbolMeaning: "Eternal vigilance.",
+      motto: "\u201CFrom shadow we strike, from silence we rule.\u201D",
+    },
+  },
+  {
+    name: "Lord Chanreth",
+    fullName: "Lord Chanreth the Stormcaller",
+    color: "#D4A017",
+    colorLight: "#FDE68A",
+    characterClass: "mage",
+    icon: "⚡",
+    image: "/game/heroes/hero_mage.png",
+    symbol: "Storm-Spear",
+    origin: "The Monsoon Lands",
+    bio: "Lord Chanreth was born during the great monsoon of the Dragon Year, when the sky split with lightning so fierce it carved new rivers into the earth. The village elders proclaimed him blessed by the storm gods \u2014 Preah Paya Akas, the Lords of the Sky. As a child, he could summon gentle rains to water the rice paddies; as a man, he learned to channel the full fury of the monsoon through the Storm-Spear, a weapon forged from a single bolt of lightning trapped in enchanted obsidian.",
+    kingdom: {
+      name: "Stormrealm of Chanreth",
+      capital: "Thunderspire Keep",
+      terrain: "Mountainous highlands and storm-swept cliffs",
+      culture: "Warriors who revere the storm gods. They see lightning as divine judgment and rain as purification.",
+      militaryDoctrine: "Shock warfare \u2014 fast strikes, thunderous charges, and elemental weaponry.",
+      symbol: "The Storm-Spear",
+      symbolMeaning: "Divine wrath.",
+      motto: "\u201CLet thunder be our war cry.\u201D",
+    },
+  },
+  {
+    name: "Emperor Kiriath",
+    fullName: "Emperor Kiriath the Eternal Flame",
+    color: "#7E22CE",
+    colorLight: "#D8B4FE",
+    characterClass: "paladin",
+    icon: "🔥",
+    image: "/game/heroes/hero_paladin.png",
+    symbol: "Sun-Disk Crown",
+    origin: "Fire Temples of Phnom Kulen",
+    bio: "Emperor Kiriath is the last living master of the Fire Temples of Phnom Kulen, where the sacred flames have burned without interruption for a thousand years \u2014 fed by spiritual energy channeled through rituals of destruction and rebirth. As a boy, he plunged his hands into the eternal flames and pulled them forth unburned, the fire spiraling around his arms like living serpents of light. He wears the Sun-Disk Crown, a golden circlet with a ruby center that blazes with captured sunlight.",
+    kingdom: {
+      name: "Empire of Kiriath",
+      capital: "Sunfire Citadel",
+      terrain: "Volcanic deserts and scorched plains",
+      culture: "Fire priests and zealots who believe destruction brings renewal. Their rituals ignite both spirit and battlefield.",
+      militaryDoctrine: "Relentless offense \u2014 burning through enemy lines with flame and fury.",
+      symbol: "The Sun-Disk Crown",
+      symbolMeaning: "Rebirth through fire.",
+      motto: "\u201CFrom ashes, we rise eternal.\u201D",
+    },
+  },
 ];
 
 export const CHARACTER_CLASSES = [
-  { id: "knight", name: "Knight", icon: "⚔️", desc: "Swordsmen gain +1 ATK, Cavalry +1 ATK" },
-  { id: "mage", name: "Mage", icon: "🔮", desc: "Mages cost 1 fewer to deploy" },
-  { id: "rogue", name: "Rogue", icon: "🗡️", desc: "Reroll one die per attack" },
-  { id: "paladin", name: "Paladin", icon: "🛡️", desc: "Shield Bearers & Paladins gain +1 DEF" },
+  {
+    id: "knight",
+    name: "Iron Strategist",
+    icon: "🗡️",
+    desc: "Swordsmen gain +1 ATK, Cavalry +1 ATK. The wisdom of Angkor's war temples, where every battle is already won in the mind.",
+  },
+  {
+    id: "mage",
+    name: "Stormcaller",
+    icon: "⚡",
+    desc: "Mages cost 1 fewer to deploy. Blessed by Preah Paya Akas, the storm gods who grant dominion over sky and lightning.",
+  },
+  {
+    id: "rogue",
+    name: "Shadow Queen",
+    icon: "🐍",
+    desc: "Reroll one die per attack. Commands the naga's unseen arts \u2014 walking between worlds, striking from shadow.",
+  },
+  {
+    id: "paladin",
+    name: "Eternal Flame",
+    icon: "🔥",
+    desc: "Shield Bearers & Paladins gain +1 DEF. The sacred flames of Phnom Kulen forge unbreakable resolve.",
+  },
 ];
 
 // ========================================
@@ -346,7 +466,7 @@ export const TACTIC_LIST: Tactic[] = Object.values(TACTICS);
 // MAP DATA
 // ========================================
 
-// Fantasy continent "Aethermoor" - 16 territories as SVG polygon paths
+// Khmer Empire - 16 territories as SVG polygon paths
 // viewBox: 0 0 1000 650
 export const TERRITORIES: TerritoryDef[] = [
   // === THE FROSTLANDS (North) ===

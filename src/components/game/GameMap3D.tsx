@@ -980,7 +980,7 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
           letterSpacing: '4px',
           whiteSpace: 'nowrap',
         }}>
-          THE CONTINENT OF AETHERMOOR
+          THE KHMER EMPIRE
         </div>
       </Html>
     </>
@@ -1009,7 +1009,7 @@ function LoadingScreen() {
         letterSpacing: '3px',
         animation: 'pulse 2s ease-in-out infinite',
       }}>
-        ENTERING AETHERMOOR...
+        ENTERING THE KHMER EMPIRE...
       </div>
       <style>{`
         @keyframes pulse {

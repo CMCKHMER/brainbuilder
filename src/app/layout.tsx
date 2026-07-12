@@ -20,8 +20,8 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  title: "Realm of Aethermoor - Medieval Strategy Game",
-  description: "A playable medieval Risk-style strategy board game. Conquer the continent of Aethermoor!",
+  title: "Realm of the Khmer Empire - Medieval Strategy Game",
+  description: "A playable medieval Risk-style strategy board game set in the Khmer Empire. Reunite the Broken Crown!",
   keywords: ["game", "strategy", "board game", "medieval", "Risk"],
 };
 

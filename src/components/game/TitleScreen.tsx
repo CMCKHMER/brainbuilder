@@ -364,7 +364,7 @@ export default function TitleScreen() {
             animation: 'titleFloat 6s ease-in-out infinite reverse',
           }}
         >
-          AETHERMOORE
+          THE KHMER EMPIRE
         </h1>
 
         {/* Decorative divider */}
@@ -443,7 +443,7 @@ export default function TitleScreen() {
                   </span>
                 </div>
                 <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
-                  Experience the full story of Aethermoor's war. Chapter transitions, narrative triggers on key territory captures, rival dialogues, and an epic 5-chapter saga from assembly to final stand.
+                  Experience the full story of the War of the Broken Crown. Chapter transitions, narrative triggers on key territory captures, rival dialogues, and an epic 5-chapter saga from assembly to final stand.
                 </p>
               </button>
               <button
@@ -469,7 +469,7 @@ export default function TitleScreen() {
                   </span>
                 </div>
                 <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
-                  Jump straight into battle. Pure strategy with no story interruptions. Conquer Aethermoor at your own pace with random events and full tactical gameplay.
+                  Jump straight into battle. Pure strategy with no story interruptions. Conquer the Khmer Empire at your own pace with random events and full tactical gameplay.
                 </p>
               </button>
             </div>

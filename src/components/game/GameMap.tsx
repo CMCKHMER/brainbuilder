@@ -309,7 +309,7 @@ export default function GameMap() {
         fill="rgba(212,160,23,0.5)"
         letterSpacing="4"
       >
-        THE CONTINENT OF AETHERMOOR
+        THE KHMER EMPIRE
       </text>
     </svg>
   );

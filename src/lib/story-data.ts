@@ -1,5 +1,5 @@
 // ========================================
-// AETHERMOOR STORY SYSTEM
+// KHMER EMPIRE STORY SYSTEM
 // ========================================
 
 export interface StoryPage {
@@ -19,27 +19,27 @@ export interface StoryBeat {
 }
 
 // ========================================
-// PROLOGUE — Why the war began
+// PROLOGUE — The War of the Broken Crown
 // ========================================
 
 export const PROLOGUE: StoryBeat = {
   id: 'prologue',
-  title: 'THE SHATTERING',
-  subtitle: 'A History of Aethermoor',
+  title: 'THE WAR OF THE BROKEN CROWN',
+  subtitle: 'A Chronicle of the Khmer Empire',
   bgStyle: 'dramatic',
   skippable: true,
   pages: [
     {
-      text: 'In ages past, the continent of Aethermoor was unified beneath the Aetheric Throne — a seat of power that channeled the raw magical essence of the land itself. For a thousand years, the Aetheric Wardens maintained peace across the five realms, and the people flourished under the Throne\'s golden light.',
+      text: 'Long ago, the land was united under the Golden Crown of Angkor — a divine relic forged in the fire temples of Phnom Kulen, said to hold the blessings of the gods themselves. Its bearer ruled with divine wisdom, keeping peace among the temples and tribes for a thousand years. The temples of Angkor Wat stood as beacons of celestial order, their spires reaching toward the heavens. The naga serpents guarded the rivers, the monsoons came in their season, and the boundary between the living world and the spirit realm remained intact.',
     },
     {
-      text: 'But the last Warden, Aldric the Unbroken, died without an heir. As his final breath faded, the Aetheric Throne cracked — then shattered into four fragments, each hurtling across the continent to bond with a different soul. The land groaned. The skies darkened. The age of peace was over.',
+      text: `But when the Crown's light began to fade, four champions rose — each claiming they alone could restore its power. King Soryan, the Iron Strategist, sought to preserve order through reason and discipline. Queen Veasna, keeper of the serpent shrines, saw the fading as divine punishment and turned to forbidden naga rituals. Lord Chanreth, born of thunder, declared the gods had abandoned the weak. And Emperor Kiriath, the fire priest, saw destruction as salvation itself.`,
     },
     {
-      text: 'Now four warlords rise, each wielding a fragment of the Throne\'s ancient power. They wage war across the Frostlands, the Heartlands, the Southern Realms, the Eastern Shores, and the Western Reaches — each believing that only by reuniting the fragments can the Aetheric Crown be reforged.',
+      text: 'Soryan forged alliances and built fortresses, but his ambition to control the Crown\'s wisdom led him to betray the council of unity. His armies marched under banners of jade and bronze, believing intellect could rule destiny. Veasna summoned spirits from the deep rivers through forbidden rituals, and her rebellion spread through the jungles like mist — unseen, unstoppable, and whispered in fear. Chanreth struck first, unleashing storms upon both allies and foes. His lightning armies shattered temples and flooded valleys, believing chaos would cleanse the land for rebirth. And Kiriath burned the sacred archives, forging the Sunfire Citadel from molten stone. His followers called him the Phoenix King — the one who would ignite the world to start anew.',
     },
     {
-      text: 'But the fragments twist their bearers. With every battle fought upon the land, Aethermoor itself suffers. The floating continent drifts lower toward the Endless Abyss with each drop of blood spilled upon its soil. The war must end — one way or another — before Aethermoor falls into darkness forever.',
+      text: 'The Golden Crown shattered into four fragments, each infused with the essence of its claimant — wisdom, shadow, storm, and flame. The land divided, temples fell silent, and the gods withdrew. Now, centuries later, the fragments stir again, calling warriors from every realm to reclaim the legacy of Angkor. The war must end — one way or another — before the Khmer Empire falls into darkness forever.',
     },
   ],
 };
@@ -49,82 +49,86 @@ export const PROLOGUE: StoryBeat = {
 // ========================================
 
 export function getCharacterIntro(characterClass: string, playerName: string, color: string, colorLight: string, portrait: string): StoryBeat {
-  const intros: Record<string, { pages: StoryPage[] }> = {
+  const intros: Record<string, { title: string; pages: StoryPage[] }> = {
     knight: {
+      title: 'THE IRON STRATEGIST',
       pages: [
         {
-          text: `${playerName} stands upon the battlements of Ironhold, the northern wind whipping crimson banners against a sky the color of old iron. The fragment of the Aetheric Throne pulses warm against their chest — a constant reminder of the duty that fell upon them when the old world died.`,
+          text: `${playerName} stands upon the ancient temple battlements of Angkor Wat, the monsoon wind whipping crimson banners against a sky dark with rain clouds. The fragment of the Sacred Crown pulses warm against their chest — a constant reminder of the duty that fell upon them when the last council of unity was shattered. Below, the moat reflects the temple spires like a mirror of jade and gold, and the stone apsara dancers carved into every wall seem to watch, waiting for the empire to be made whole again.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"There is no peace in hesitation," ${playerName} declares, gauntleted fist clenched around a sword that hums with fragment energy. "The people need order. They need walls. They need someone willing to bear the weight of command \u2014 and the cost of war."`,
+          text: `"There is no peace in hesitation," ${playerName} declares, gauntleted fist clenched around a jade blade that hums with fragment energy. "The temples need order. The people need walls. They need someone willing to bear the weight of command — and the cost of war." The stone naga serpents along the causeway seem to nod, their ancient eyes gleaming with approval.`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `The Knight's fragment amplifies the strength of every soldier who marches under their banner. Swordsmen strike harder. Cavalry charges with devastating force. But the fragment feeds on conflict — the longer the war rages, the more it demands. ${playerName} knows this, and fights anyway.`,
+          text: `The Knight's fragment amplifies the strength of every soldier who marches under their banner. Swordsmen strike harder. War elephants charge with devastating force. But the fragment feeds on conflict — the longer the war rages, the more it demands. ${playerName} knows this, and fights anyway, believing that the discipline of Angkor's greatest generals will be enough to unite the fractured empire once more.`,
           speaker: playerName,
           speakerColor: color,
         },
       ],
     },
     mage: {
+      title: 'THE STORMCALLER',
       pages: [
         {
-          text: `${playerName} sits cross-legged in the Sunforge arcana chamber, surrounded by floating glyphs that spiral in slow, golden orbits. The Aetheric fragment hovers before them, rotating, whispering secrets in a language that predates the written word.`,
+          text: `${playerName} sits cross-legged atop Thunderspire, the highest peak of the Cardamom Mountains, surrounded by crackling lightning that spirals in slow, electric orbits. The Sacred Crown fragment hovers before them, rotating, whispering secrets in a language that predates the stone inscriptions of Angkor. The monsoon clouds churn below like a living sea, and the air tastes of ozone and ancient power.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"The Throne was never meant to be one," ${playerName} murmurs, fingers tracing the fragment\u2019s crystalline surface. "It was four pillars holding up reality itself. When it shattered, the pillars scattered \u2014 and the weight of the world fell on us all."`,
+          text: `"The Crown was never meant to be one," ${playerName} murmurs, fingers tracing the fragment's storm-wracked surface. "It was four pillars holding up the sky itself. When it shattered, the monsoons lost their master — and the rivers forgot their course." Lightning arcs between their fingertips, illuminating the desperate beauty of the storm-lashed landscape below.`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `The Mage's fragment grants boundless arcane insight and reduces the cost of conjuring magical allies. Mages under ${playerName}'s command deploy in greater numbers, their spells weaving barriers of raw aether. But the fragment whispers forbidden knowledge — secrets that could unmake the world if spoken aloud.`,
+          text: `The Mage's fragment grants boundless elemental insight and reduces the cost of conjuring magical allies. Mages under ${playerName}'s command deploy in greater numbers, their spells weaving barriers of living lightning and thunder. But the fragment whispers of the great flood — the deluge that drowned the old world and from which only Phnom Kulen rose. Some knowledge is too dangerous even for a Stormcaller.`,
           speaker: playerName,
           speakerColor: color,
         },
       ],
     },
     rogue: {
+      title: 'THE SHADOW QUEEN',
       pages: [
         {
-          text: `${playerName} materializes from the shadows of Darkwood's ancient canopy, the Aetheric fragment concealed beneath a cloak woven from living darkness. The forest itself seems to lean away — trees creaking, roots shifting, as if the land recognizes the danger that walks among it.`,
+          text: `${playerName} materializes from the mist of the Mekong delta, the Sacred Crown fragment concealed beneath a cloak woven from river reeds and shadow. The jungle itself seems to lean away — ancient banyan trees creaking, their roots shifting through the flooded earth, as if the land recognizes the danger that walks among it. Naga spirits coil in the murky water, watching with unblinking serpent eyes.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"Honor is a luxury the strong afford themselves," ${playerName} says with a thin smile, producing a blade that seems to absorb light rather than reflect it. "I learned that in the shadows of the old court. Trust no one. Strike first. And never \u2014 ever \u2014 fight fair."`,
+          text: `"Honor is a luxury the strong afford themselves," ${playerName} says with a thin smile, producing a blade that seems to drink the light rather than reflect it. A serpent crown of dark jade rests upon their brow, gift of the naga lords who dwell in the deepest reaches of the Mekong. "I learned that in the shadow of the great temples. Trust no one. Strike from the mist. And never — ever — fight where they expect you."`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `The Rogue's fragment grants preternatural luck — dice fall in their favor, impossible shots find their mark, and defeats transform into narrow escapes. Each battle, ${playerName} can reroll fate itself. But the fragment consumes its bearer's humanity, and the shadows grow longer with every use.`,
+          text: `The Rogue's fragment grants preternatural luck — dice fall in their favor, impossible shots find their mark, and defeats transform into narrow escapes through the mist. Each battle, ${playerName} can reroll fate itself. But the fragment draws power from the naga spirits of the deep rivers, and with every use, the mist grows thicker, the boundary between the living and spirit realms thins, and something ancient stirs in the flooded ruins below.`,
           speaker: playerName,
           speakerColor: color,
         },
       ],
     },
     paladin: {
+      title: 'THE ETERNAL FLAME',
       pages: [
         {
-          text: `${playerName} kneels in the ruins of what was once Aethermoor's grandest cathedral, now little more than shattered columns and moss-covered stone. The Aetheric fragment rests in the center of a broken altar, pulsing with a light that is almost painful to behold.`,
+          text: `${playerName} kneels in the sacred fire temples of Phnom Kulen, where the first Khmer kings were anointed by the gods. The Sacred Crown fragment rests in the center of an ancient altar carved with lotus blossoms and sacred Sanskrit, pulsing with a light that is almost painful to behold — the eternal flame that has burned since the empire's founding. River spirits gather at the temple's edge, drawn by the fragment's divine resonance.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"The Shattering was not a tragedy \u2014 it was a judgment," ${playerName} intones, rising to full height. A shield of pure light materializes at their left arm, radiating warmth. "We sinned in our complacency. Now we must earn salvation through sacrifice and unwavering faith."`,
+          text: `"The shattering was not a tragedy — it was a judgment," ${playerName} intones, rising to full height. A shield of pure flame materializes at their left arm, and a sun-disk crown blazes above their head, radiating warmth like a second dawn. "We turned from the sacred fire. We forgot the rituals. We allowed the naga to be dishonored. Now we must earn salvation through sacrifice and unwavering faith — and I shall be the phoenix that rises from Angkor's ashes."`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `The Paladin's fragment creates unbreakable defenses — Shield Bearers and Paladins under ${playerName}'s command gain preternatural resilience, turning aside blows that would fell lesser warriors. But the fragment demands absolute faith, and doubt is punished with crushing weakness.`,
+          text: `The Paladin's fragment creates unbreakable defenses — Shield Bearers and Paladins under ${playerName}'s command gain preternatural resilience, turning aside blows that would fell lesser warriors, their armor glowing with sacred fire. But the fragment demands absolute faith, and doubt is punished with crushing weakness. The eternal flame of Phnom Kulen burns only for those who believe without question.`,
           speaker: playerName,
           speakerColor: color,
         },
@@ -137,7 +141,7 @@ export function getCharacterIntro(characterClass: string, playerName: string, co
   return {
     id: `intro-${characterClass}`,
     title: `${playerName.toUpperCase()}`,
-    subtitle: `The ${characterClass.charAt(0).toUpperCase() + characterClass.slice(1)} Rises`,
+    subtitle: intro.title,
     bgStyle: 'dramatic',
     skippable: true,
     pages: intro.pages,
@@ -150,10 +154,10 @@ export function getCharacterIntro(characterClass: string, playerName: string, co
 
 export function getEliminationBeat(playerName: string, characterClass: string, color: string): StoryBeat {
   const narratives: Record<string, string> = {
-    knight: `${playerName}'s armies have been shattered. The crimson banners that once flew over the Frostlands now lie trampled in mud and ash. ${playerName} kneels on a blood-soaked battlefield, sword broken, fragment flickering weakly. "I... failed them," they whisper, watching the last of their soldiers fall. The fragment dims — then goes dark. ${playerName} collapses, another casualty of Aethermoor's endless war.`,
-    mage: `The arcana chamber crumbles around ${playerName} as enemy forces breach the final wards. Glyphs shatter like glass, and the floating tomes of Sunforge erupt into arcane fire. "The knowledge... it's all burning..." ${playerName} reaches for the fragment, but it slips through fingers turned translucent with magical exhaustion. The aether that sustained them drains away, and ${playerName} fades — not dying, but simply... ceasing, like a spell that has run its course.`,
-    rogue: `${playerName} tries to shadow-walk one last time, but the darkness rejects them. The fragment — their passport through the shadows — sputters and dies. "No. No, I always have an exit. I ALWAYS have an exit—" But the shadows close in, and for the first time, ${playerName} has nowhere to hide. The final blow comes from behind, the way ${playerName} would have wanted it. At least, that's what they tell themselves.`,
-    paladin: `${playerName} stands alone in the ruins of their last stronghold, shield cracked, armor dented, but still on their feet. "Even now... I do not waver." The fragment's holy light pulses one final time — blinding, defiant, magnificent. Then silence. ${playerName} falls to their knees, the last light of faith extinguished. The battlefield falls quiet. Even the enemy soldiers lower their weapons for a moment, honoring the fallen guardian.`,
+    knight: `${playerName}'s armies have been shattered. The crimson banners that once flew above Angkor Wat's temple battlements now lie trampled in the mud of the Mekong floodplains. ${playerName} kneels on a blood-soaked battlefield, jade blade broken in two, the Sacred Crown fragment flickering weakly like a dying ember. "I... failed the temples," they whisper, watching the last of their war elephants fall. The ancestral spirits that once guided Angkor's generals are silent. The fragment dims — then goes dark. ${playerName} collapses beside the broken jade, another casualty of the empire's endless civil war.`,
+    mage: `The Thunderspire crumbles around ${playerName} as enemy forces breach the final storm wards. Lightning glyphs shatter like glass, and the monsoon clouds that once obeyed their command scatter into lifeless wisps. "The storms... they're all dying..." ${playerName} reaches for the fragment, but it slips through fingers turned translucent with elemental exhaustion. The sky goes still — not a single breeze, not a whisper of thunder. The storm-spear that once commanded the monsoon falls from nerveless fingers. ${playerName} fades into the wind they once controlled — not dying, but simply becoming one with the silent, empty sky.`,
+    rogue: `${playerName} tries to slip into the mist one last time, but the naga spirits reject them. The fragment — their passport through the spirit veils — sputters and dies in their palm. The serpent crown of dark jade crumbles to dust. "No. No, I always have an exit. I ALWAYS have an exit—" But the mist of the Mekong delta closes in like a living thing, and for the first time, ${playerName} has nowhere to hide. The naga spirits coil in the deep water, their eyes cold and ancient, and they do not intervene. The final blow comes from the mist itself — the way ${playerName} would have wanted it. At least, that's what they tell themselves.`,
+    paladin: `${playerName} stands alone in the ruins of Phnom Kulen's greatest fire temple, shield cracked, sun-disk crown extinguished, but still on their feet. "Even now... I do not waver." The fragment's eternal flame pulses one final time — blinding, defiant, magnificent, a phoenix in its last moment of glory. Then silence. Then darkness. ${playerName} falls to their knees, the last light of the sacred fire extinguished. The battlefield falls quiet. Even the enemy soldiers lower their weapons for a moment, honoring the fallen guardian of the eternal flame. The temple fires of Phnom Kulen go dark for the first time in a thousand years.`,
   };
 
   const text = narratives[characterClass] || narratives.knight;
@@ -177,18 +181,18 @@ export function getVictoryBeat(playerName: string, characterClass: string, color
     knight: {
       pages: [
         {
-          text: `The final fortress falls. The last enemy banner is torn from its pole. Across all five realms of Aethermoor, silence descends — the silence that follows the end of all things. ${playerName} stands at the summit of the Aetheric Spire, four fragments now fused into a single, blazing crown of crimson gold.`,
+          text: `The final fortress falls. The last enemy banner is torn from its pole above a burning temple. Across the lands of the Khmer Empire, silence descends — the silence that follows the end of all things. ${playerName} stands at the summit of Angkor Wat's central tower, four fragments now fused into a single, blazing Golden Crown that casts light across the entire temple complex. The naga serpents rise from the moat, bowing their ancient heads. The monsoon clouds part, and for the first time in centuries, the sun touches the spires of Angkor with its full, undiminished glory.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"I told you," ${playerName} says quietly, placing the Aetheric Crown upon their brow. The continent shudders — then stabilizes, rising slightly from the abyss. "Order. Discipline. Strength. That is what Aethermoor needed. Not magic. Not shadows. Not faith. Steel."`,
+          text: `"I told you," ${playerName} says quietly, placing the Golden Crown upon their brow. The land shudders — then stabilizes, rivers finding their ancient courses, temples humming with renewed power. "Order. Discipline. Strength. That is what the Khmer Empire needed. Not storms. Not shadows. Not fire. Jade and bronze and the will to build." The apsara dancers carved into the temple walls seem to move, celebrating the return of divine rule.`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `And so ${playerName} takes the Aetheric Throne, ruling as the first of a new line of Wardens. The armies disband. The people rebuild. The continent heals. But in the darkest hours of the night, the Crown whispers to its new bearer — and ${playerName} listens, and is afraid.`,
+          text: `And so ${playerName} takes the throne of Angkor, ruling as the first of a new line of Khmer kings. The armies disband. The temples reopen. The naga return to their rivers. But in the darkest hours of the monsoon night, the Crown whispers to its new bearer — ancient secrets of Phnom Kulen, the names of forgotten gods, the location of deeper crowns buried beneath the jungle — and ${playerName} listens, and is afraid, and does not stop listening.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
@@ -198,18 +202,18 @@ export function getVictoryBeat(playerName: string, characterClass: string, color
     mage: {
       pages: [
         {
-          text: `The last enemy army dissolves as ${playerName} unleashes the combined might of all four Aetheric fragments in a single, devastating spell. The sky tears open, revealing the raw aetheric substrate beneath reality — and for one terrifying moment, everyone on Aethermoor sees the truth of the world.`,
+          text: `The last enemy army dissolves as ${playerName} unleashes the combined might of all four Sacred Crown fragments in a single, devastating storm. The sky tears open, revealing the raw monsoon substrate beneath reality — and for one terrifying moment, everyone in the empire sees the truth of the world: that the storms are not weather, but memory, and the lightning is the language the gods used before they had words.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"Now I understand," ${playerName} breathes, eyes wide with revelation. "The Throne was never a weapon. It was a key. A key to something far greater than any of us imagined." The four fragments spiral upward, fusing not into a crown, but into a doorway — a portal to something beyond the veil of stars.`,
+          text: `"Now I understand," ${playerName} breathes, eyes wide with revelation as lightning arcs between all four fragments. "The Crown was never a weapon. It was a key — a key to the sky itself." The four fragments spiral upward into the monsoon clouds, fusing not into a crown, but into something far greater — a permanent storm that encircles the empire like a living shield, the eternal monsoon that will protect the Khmer lands for a thousand years more.`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `${playerName} steps through the portal, and the Aetheric Crown hovers behind, waiting. Whether the Mage returns is a question only time will answer. But in their absence, Aethermoor enters an age of peace — guided not by a ruler, but by the arcane wisdom ${playerName} left behind in every stone, every river, every whispering wind.`,
+          text: `${playerName} ascends into the storm, becoming one with the monsoon itself — not a king upon a throne, but the sky above it. The people of the empire speak of the Stormcaller who guards them from above, whose lightning illuminates the temples during the darkest nights, and whose thunder reminds every would-be conqueror that the Khmer Empire is protected by forces older than stone. Whether the Mage ever returns to walk among mortals is a question only the monsoon can answer.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
@@ -219,18 +223,18 @@ export function getVictoryBeat(playerName: string, characterClass: string, color
     rogue: {
       pages: [
         {
-          text: `Nobody sees ${playerName} when it happens. The last enemy warlord simply... falls, in the middle of their own throne room, with no witnesses and no explanation. The fragment-shadows retreat into the corners, and ${playerName} emerges from the darkness with four Aetheric fragments in hand and a smile that doesn't reach their eyes.`,
+          text: `Nobody sees ${playerName} when it happens. The last enemy warlord simply... falls, in the middle of their own throne room deep within a jungle temple, with no witnesses and no explanation. The naga shadows retreat into the corners, and ${playerName} emerges from the mist with four Sacred Crown fragments in hand and a smile that doesn't reach their eyes. The serpent crown of dark jade gleams atop their brow, and the mist of the Mekong delta swirls around them like a living cloak.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"The smart ones never fight the last battle themselves," ${playerName} says to no one, letting the fragments dissolve into motes of shadow-light that sink into their skin. "You find the moment. You take it. You don't announce it with trumpets and banners."`,
+          text: `"The smart ones never fight the last battle themselves," ${playerName} says to no one, letting the fragments dissolve into motes of shadow-light that sink into their skin. "You find the moment in the mist. You take it. You don't announce it with war elephants and temple gongs." The naga spirits coil at their feet, nodding in approval. The shadow queen has won — and no one will ever know how.`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `${playerName} vanishes the same day, leaving no trace, no throne, no crown. Some say the Rogue became the shadow of Aethermoor itself — a guardian who watches from the darkness, striking only when necessary. Others say ${playerName} simply grew tired of winning. Either way, the continent is at peace. And somewhere, in a shadow that has no source, someone is smiling.`,
+          text: `${playerName} vanishes into the mist the same day, leaving no trace, no throne, no crown. Some say the Rogue became the fog of the Mekong delta itself — a guardian who watches from the mist, striking only when the empire is threatened. Others say ${playerName} simply grew tired of winning and went to dwell among the naga in the deep rivers. Either way, the empire is at peace. And somewhere in the mist that has no source, a serpent crown gleams in the dark, and someone is smiling.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
@@ -240,18 +244,18 @@ export function getVictoryBeat(playerName: string, characterClass: string, color
     paladin: {
       pages: [
         {
-          text: `The final battle is not won with strength or cunning, but with faith. ${playerName} walks unarmed through the enemy gates, the four Aetheric fragments orbiting like holy satellites, and every soldier who raises a weapon against them finds their arms too heavy to lift. Not by magic — by conviction.`,
+          text: `The final battle is not won with strength or cunning, but with faith. ${playerName} walks unarmed through the enemy gates, the four Sacred Crown fragments orbiting like sacred satellites, and every soldier who raises a weapon against them finds their arms too heavy to lift. Not by magic — by conviction. The eternal flame of Phnom Kulen blazes at their brow, and the sun-disk crown casts a light that makes the jungle itself bow.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `"Lay down your arms," ${playerName} commands, and the voice carries not just sound but weight — the weight of absolute certainty. "The war is over. Not because I have defeated you, but because you know — in your hearts — that this was never the answer." One by one, weapons clatter to the ground.`,
+          text: `"Lay down your arms," ${playerName} commands, and the voice carries not just sound but weight — the weight of absolute certainty, the faith of a thousand years of Khmer kings. "The war is over. Not because I have defeated you, but because you know — in your hearts, in the temples where you prayed as children — that this was never the answer." One by one, weapons clatter to the ground. The naga rise from the rivers and watch in silence.`,
           speaker: playerName,
           speakerColor: color,
         },
         {
-          text: `${playerName} reforges the Aetheric Crown not as a symbol of power, but as a relic of remembrance. It is placed in the center of a new temple — not to be worn, but to be contemplated. "The Crown does not choose a ruler," ${playerName} declares. "It chooses a guardian. And I will be the last." Aethermoor enters an age of peace, protected by a Paladin whose faith never wavered — and never will.`,
+          text: `${playerName} reforges the Golden Crown not as a symbol of power, but as a sacred relic. It is placed in the heart of Angkor Wat's central sanctuary — not to be worn, but to be contemplated, a beacon of the eternal flame. "The Crown does not choose a ruler," ${playerName} declares, kneeling before it one final time. "It chooses a guardian. And I will be the last." The phoenix fire settles into the Crown, and ${playerName} becomes the eternal guardian of Angkor — a spirit of flame that will protect the temple and the empire for as long as the sacred fire burns. Which, by the gods' grace, will be forever.`,
           portrait,
           speaker: playerName,
           speakerColor: color,
@@ -265,7 +269,7 @@ export function getVictoryBeat(playerName: string, characterClass: string, color
   return {
     id: `victory-${playerName}`,
     title: 'THE CROWN REFORGED',
-    subtitle: `${playerName} Has Conquered Aethermoor`,
+    subtitle: `${playerName} Has United the Khmer Empire`,
     bgStyle: 'victory',
     skippable: false,
     pages: epilogue.pages,
@@ -273,7 +277,7 @@ export function getVictoryBeat(playerName: string, characterClass: string, color
 }
 
 // ========================================
-// TURN NARRATIVE EVENTS — Random events that fire during gameplay
+// CAMPAIGN EVENTS — Random events that fire during gameplay
 // ========================================
 
 export interface CampaignEvent {
@@ -288,97 +292,113 @@ export interface CampaignEvent {
 
 export const CAMPAIGN_EVENTS: CampaignEvent[] = [
   {
-    id: 'aether_storm',
-    title: 'AETHER STORM',
-    text: 'The fragmented Aetheric energy surges across the continent, crackling through the air like golden lightning. Soldiers on both sides report hearing whispers — the voices of the ancient Wardens, warning of the abyss below.',
-    effect: 'The storm passes, but the land groans. All warlords feel the continent sink slightly lower.',
-    triggerChance: 0.12,
+    id: 'spirit_storm',
+    title: 'ANCESTRAL SPIRITS MARCH',
+    text: 'The mist thickens across the jungle as ancestral spirits rise from their temple shrines and march in silent procession. Temple bells ring on their own, and the air fills with the scent of lotus and incense. Soldiers on all sides report hearing the voices of long-dead Khmer kings whispering warnings from beyond the veil. The boundary between the living world and the spirit realm grows thin.',
+    effect: 'The spirit procession passes, but the land trembles. All warlords feel the weight of ancestral judgment.',
+    triggerChance: 0.10,
     minTurn: 3,
   },
   {
     id: 'merchant_caravan',
-    title: 'TRAVELING MERCHANTS',
-    text: 'A caravan of neutral merchants braves the war-torn roads, offering supplies to any warlord willing to pay in aether-shards. Their wagons are laden with weapons, armor, and provisions.',
-    effect: 'Reinforcements are plentiful this turn.',
+    title: 'MEKONG RIVER TRADERS',
+    text: 'A caravan of Mekong river traders navigates the contested waterways, offering sacred jade, weapon-grade bronze, and provisions to any warlord willing to pay in rice or gold. Their longboats are laden with goods from distant kingdoms, and their captains speak of strange omens seen upstream — waters running backward, fish leaping onto temple steps, and the ghostly sound of ancient war drums echoing from beneath the river.',
+    effect: 'The traders offer plentiful supplies. Reinforcements are easier to raise this turn.',
     triggerChance: 0.15,
     minTurn: 2,
   },
   {
-    id: 'ancient_ruins',
-    title: 'RUINS AWAKEN',
-    text: 'Deep within Misthollow, ancient ruins pulse with forgotten power. The stone walls glow with faded runes, and the air smells of ozone and old magic. Something stirs beneath the rubble — something that has slept since before the Shattering.',
-    effect: 'The awakening energy grants additional tactical options.',
+    id: 'naga_awakening',
+    title: 'NAGA SERPENTS STIR',
+    text: 'Deep beneath the Mekong, the great naga serpents awaken from their centuries-long slumber. Rivers surge and flood without warning, and enormous serpent shapes are glimpsed beneath the muddy water. The naga — ancient guardians of the Khmer rivers — are restless, disturbed by the fragment-bearers\' war. Temple priests warn that the naga\'s wrath could swallow entire territories if the fighting does not cease.',
+    effect: 'The naga flooding disrupts supply lines across the Mekong delta region.',
     triggerChance: 0.08,
     minTurn: 4,
   },
   {
-    id: 'dragon_sighting',
-    title: 'DRAGON IN THE FROSTLANDS',
-    text: 'Shepherds in the northern Frostlands report seeing a vast shape moving through the clouds above Dragonspine. Scales glint in the pale light. The mountain itself seems to tremble. It has been centuries since a dragon was last sighted in Aethermoor.',
-    effect: 'The dragon\'s presence unsettles all forces. Attacks in the Frostlands are more cautious this turn.',
-    triggerChance: 0.06,
+    id: 'temple_flicker',
+    title: 'SACRED FLAMES DIM',
+    text: 'The eternal flames of Phnom Kulen\'s fire temples flicker and dim, casting ominous shadows across the sacred stone altars. Priests perform emergency rituals, chanting the old hymns in Sanskrit, but the flames refuse to steady. This has happened only twice before in the empire\'s history — once before the great flood, and once before the Crown shattered. The omens are clear: the gods are watching, and they are not pleased.',
+    effect: 'The flickering flames weaken all spiritual defenses. Temples provide less protection this turn.',
+    triggerChance: 0.10,
+    minTurn: 2,
+  },
+  {
+    id: 'monsoon_fury',
+    title: 'MONSOON FURY',
+    text: 'The monsoons arrive with unprecedented violence, lashing the Khmer lands with wind and rain that threaten to wash away temples, fortresses, and armies alike. Rivers overflow their banks, roads become impassable quagmires, and the jungle itself seems to conspire against movement. Only the naga shrines remain untouched, their ancient serpent guardians holding back the worst of the flooding.',
+    effect: 'Devastating floods ravage the lowlands. Territories near rivers are vulnerable to attack this turn.',
+    triggerChance: 0.09,
     minTurn: 5,
   },
   {
-    id: 'plague_outbreak',
-    title: 'BLOOD FEVER',
-    text: 'A mysterious illness sweeps through the Southern Realms. Healers are overwhelmed, and soldiers fall sick in their camps. Moonhaven\'s temples are filled with the dying, and even the strongest warriors weaken.',
-    effect: 'Units across the Southern Realms are weakened by the fever.',
-    triggerChance: 0.07,
-    minTurn: 6,
-  },
-  {
-    id: 'rebel_uprising',
-    title: 'PEASANT REVOLT',
-    text: 'The common people have had enough. Farmers and craftsmen take up pitchforks and torches, marching against the nearest garrison. "We feed your armies! We die in your wars! We will be silent no more!" their leader shouts.',
-    effect: 'Fortifications in the Heartlands are temporarily weakened by the uprising.',
-    triggerChance: 0.08,
-    minTurn: 4,
-  },
-  {
-    id: 'eclipse',
-    title: 'THE DARKENING',
-    text: 'Without warning, the sun dims. Not slowly — instantly, as if something vast has passed between Aethermoor and the light. For three heartbeats, absolute darkness. Then the light returns, but everything feels... different. The Aetheric fragments all pulse in unison.',
-    effect: 'The Darkening\'s aftermath leaves all forces disoriented. No tactical advantage can be gained this turn.',
-    triggerChance: 0.05,
-    minTurn: 8,
-  },
-  {
-    id: 'berserker_rage',
-    title: 'BLOOD FRENZY',
-    text: 'A strange red mist rolls across the battlefield, and soldiers on all sides feel an inexplicable surge of fury. Reason flees. Commands go unheeded. Warriors charge with reckless abandon, howling like beasts.',
-    effect: 'Attack power surges, but defenses crumble in the frenzy.',
-    triggerChance: 0.09,
+    id: 'jade_vein',
+    title: 'SACRED JADE DISCOVERED',
+    text: 'Miners in the Cardamom Mountains unearth a vein of sacred jade of extraordinary quality — stones that glow with inner light and hum with fragment energy. Word spreads quickly, and every warlord in the empire dispatches agents to claim the deposit. The jade is said to resonate with the Golden Crown itself, and whoever controls it may gain insight into the fragments\' hidden powers.',
+    effect: 'The sacred jade grants additional tactical options to the warlord who claims it first.',
+    triggerChance: 0.12,
     minTurn: 3,
   },
   {
-    id: 'holy_light',
-    title: 'DIVINE INTERVENTION',
-    text: 'A column of brilliant white light descends from the heavens, illuminating a random territory with blinding radiance. Those within it feel their wounds close and their spirits lift. The light is warm, protective, and absolutely undeniable.',
-    effect: 'The blessed territory\'s defenders gain extraordinary protection this turn.',
-    triggerChance: 0.06,
+    id: 'spirit_channeler',
+    title: 'ROGUE SPIRIT CHANNELER',
+    text: 'A mysterious figure emerges from the deepest reaches of the Mekong delta — a spirit channeler who claims to speak with the naga and the ancestral dead. Their eyes are milky white, their skin marked with serpent tattoos that seem to move on their own. "The spirits offer a bargain," they say, voice like water over stones. "Power for a price. Always a price." They offer their services to any warlord desperate enough to accept.',
+    effect: 'The channeler\'s dark power grants a temporary advantage — but at a hidden cost.',
+    triggerChance: 0.08,
+    minTurn: 6,
+  },
+  {
+    id: 'elephant_charge',
+    title: 'WILD ELEPHANTS STAMPEDE',
+    text: 'A herd of wild war elephants — enormous beasts with tusks like ivory spears and hides scarred by ancient battles — stampedes through the contested territories, trampling fortifications and scattering armies on all sides. These are no ordinary elephants; their eyes glow with fragment energy, and they move with the purposeful fury of beasts guided by ancestral spirits. The great elephant spirits of the Khmer kings have awoken.',
+    effect: 'The stampede disrupts all forces equally. Fortifications in the stampede\'s path are damaged.',
+    triggerChance: 0.10,
+    minTurn: 4,
+  },
+  {
+    id: 'ancestral_dream',
+    title: 'DREAMS OF THE ANCESTORS',
+    text: 'Across the empire, warlords and soldiers alike are visited by the same dream: they stand in the throne room of ancient Angkor, whole and magnificent, and a faceless king sits upon the Golden Throne. The king speaks in a language older than Khmer, older than Sanskrit, and the dreamers wake with tears on their faces and a single word on their lips: "Unite." The ancestors are growing impatient.',
+    effect: 'The ancestral dream shakes all warlords\' resolve. Reinforcements are reduced as soldiers question the war.',
+    triggerChance: 0.09,
     minTurn: 5,
   },
   {
-    id: 'fragment_whisper',
-    title: 'THE THRONE WHISPERS',
-    text: 'Every Aetheric fragment-bearing warlord hears the same voice at the same moment: a voice like grinding stone and flowing water, ancient and impossibly vast. "You fight for unity, but you bring only division. The Crown cannot be reforged in blood." Then — silence. The voice does not come again.',
-    effect: 'The whisper shakes all warlords\' confidence. Reinforcements are reduced this turn.',
-    triggerChance: 0.04,
-    minTurn: 10,
+    id: 'crown_resonance',
+    title: 'CROWN FRAGMENT RESONANCE',
+    text: 'Without warning, every Sacred Crown fragment across the empire pulses in perfect unison, sending a shockwave of golden light rippling outward from each bearer. The temples of Angkor Wat briefly illuminate as if the sun had risen at midnight. Naga serpents raise their heads from every river in the land. The fragments are communicating — sensing each other, yearning to be whole — and the land itself responds to their ancient call.',
+    effect: 'The resonance empowers all fragment-bearers equally. All armies fight with renewed vigor this turn.',
+    triggerChance: 0.12,
+    minTurn: 3,
+  },
+  {
+    id: 'monsoon_cease',
+    title: 'THE MONSOONS STOP',
+    text: 'The monsoon rains cease without warning. Not gradually — instantly, as if the sky itself has forgotten how to weep. The rivers begin to recede. The rice paddies crack. The jungle wilts. Temple priests burn incense and pray, but the gods do not answer. Without the monsoon, the Khmer Empire cannot survive. This is not a natural drought — it is a punishment, a withdrawal of divine favor, and every warlord knows it.',
+    effect: 'The drought weakens all territories. Forces without access to deep rivers suffer greatly.',
+    triggerChance: 0.08,
+    minTurn: 6,
+  },
+  {
+    id: 'hollow_whisper',
+    title: 'THE HOLLOW KING\'S WHISPER',
+    text: 'A whisper spreads through the empire — not through words, but through the very stones of the temples and the roots of the banyan trees. It is the voice of the Hollow King, a spirit from before the Crown was forged, who ruled the Khmer lands when they were still wild jungle and untamed river. "The Crown was a lie," the whisper says. "The fragments are chains. Break them, and the old power returns." Some listen. Most are afraid.',
+    effect: 'The Hollow King\'s influence sows doubt. Units may falter under the weight of ancient whispers.',
+    triggerChance: 0.08,
+    minTurn: 8,
   },
 ];
 
 // ========================================
-// REGION LORE — for potential future use
+// REGION LORE — Khmer Empire territories
 // ========================================
 
 export const REGION_LORE: Record<string, string> = {
-  'The Frostlands': 'The northernmost region of Aethermoor, where eternal winter grips the mountains and ancient fortresses guard the frontier. Ironhold, the greatest fortress in the known world, anchors the north against whatever horrors lurk beyond the ice. The Frostlands breed hard people — soldiers, miners, and dragon hunters who laugh at the cold.',
-  'The Heartlands': 'The fertile center of Aethermoor, where the majority of the population lives and farms. Goldshire\'s markets, Silverdale\'s vineyards, Thornwall\'s military academy, and Ashenvale\'s ancient forests form the economic and cultural heart of the continent. Control the Heartlands, and you control Aethermoor.',
-  'The Southern Realms': 'A land of extremes — the scorching forges of Sunforge, the haunted ruins of Misthollow, the storm-wracked towers of Ravencrest, and the sacred temples of Moonhaven. The Southern Realms are where old magic still lingers in the stones, and the dead do not always stay buried.',
-  'The Eastern Shores': 'Aethermoor\'s gateway to the sea. Port Brighthelm handles all trade with distant continents, while Crystal Lake\'s shimmering waters are said to hold prophetic visions. The Eastern Shores are wealthy, exposed, and perpetually contested.',
-  'The Western Reaches': 'Dark, wild, and largely unexplored. The ancient forest of Darkwood has never been fully mapped, and Misthollow\'s perpetually fog-shrouded valleys hide secrets from before the Shattering. Only the desperate or the foolhardy venture deep into the Western Reaches.',
+  'Angkor Heartlands': 'The sacred center of the Khmer Empire, where the towering spires of Angkor Wat pierce the monsoon clouds and the Golden Throne once unified all the lands. The Angkor Heartlands are home to the greatest concentration of temples, the largest population, and the deepest reserves of sacred jade. Every stone here is inscribed with prayers, and every shadow holds the memory of divine kings. Control the Heartlands, and you control the soul of the empire.',
+  'Mekong Delta': 'A vast network of rivers, marshes, and flooded plains where the great Mekong River meets the sea. The Delta is the empire\'s breadbasket and its greatest natural fortress — a maze of waterways that only the naga-born can navigate with certainty. Spirit channelers and rogue warlords thrive in the Delta\'s perpetual mist, and the deep rivers are said to hold treasures from sunken temples older than Angkor itself.',
+  'Cardamom Highlands': 'The rugged mountain range that forms the empire\'s western spine, rich in sacred jade, iron ore, and ancient hermitages carved into sheer cliff faces. The Highlands breed hard people — miners, elephant handlers, and storm priests who commune with the monsoon clouds. Hidden valleys contain temples untouched since the empire\'s founding, their altars still burning with eternal flame.',
+  'Tonle Sap Basin': 'The great inland sea that swells and contracts with the monsoon seasons, home to floating villages and ancient fishing communities who have served the empire for generations. The Basin is both a lifeline and a vulnerability — whoever controls the waters controls the movement of troops and supplies across the heart of the empire. The lake is said to be the eye of a sleeping naga, and disturbing it carries terrible consequences.',
+  'Eastern Jungle': 'Dark, wild, and largely unexplored. The ancient jungle of the east has never been fully tamed, and its depths hide ruined temples from forgotten kingdoms that predate the Khmer Empire by millennia. Only spirit channelers and the truly desperate venture into the Eastern Jungle, where the boundary between the living and spirit realms is thin, and the naga still rule as they did before the first king was crowned.',
 };
 
 // ========================================
@@ -398,9 +418,9 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'ch1_assembly',
     number: 1,
-    title: 'THE ASSEMBLY',
+    title: 'THE FRAGMENTS AWAKEN',
     subtitle: 'Where Four Become Warlords',
-    description: 'The fragments have chosen their bearers. Four warlords gather their forces as the continent descends into war for the first time in a thousand years.',
+    description: 'The Sacred Crown fragments have chosen their bearers. Four champions gather their forces across the Khmer Empire as the temples fall silent and the naga stir from their ancient slumber.',
     bgStyle: 'dramatic',
   },
   {
@@ -408,15 +428,15 @@ export const CHAPTERS: Chapter[] = [
     number: 2,
     title: 'FIRST BLOOD',
     subtitle: 'The Price of Ambition',
-    description: 'Borders are tested. The first battles are fought, and the true cost of the war becomes clear as the first territory falls.',
+    description: 'Temple grounds are tested. The first battles are fought, and the true cost of the war becomes clear as the first territory falls and ancestral spirits weep.',
     bgStyle: 'battle',
   },
   {
     id: 'ch3_escalation',
     number: 3,
-    title: 'THE ESCALATION',
+    title: 'THE MONSOON RAGES',
     subtitle: 'Alliances Shatter, Empires Rise',
-    description: 'The war intensifies. One warlord falls, their fragment dimming forever. The remaining three eye each other with growing hunger.',
+    description: 'The war intensifies. One warlord falls, their fragment dimming forever. The remaining three eye each other with growing hunger as the monsoon storms reflect the chaos below.',
     bgStyle: 'dark',
   },
   {
@@ -424,7 +444,7 @@ export const CHAPTERS: Chapter[] = [
     number: 4,
     title: 'THE TURNING TIDE',
     subtitle: 'When Hope Flickers',
-    description: 'A dominant power emerges. The continent groans under the weight of endless battle. Ancient powers stir in response to the Aetheric imbalance.',
+    description: 'A dominant power emerges. The temples groan under the weight of endless battle. Ancient naga spirits and forgotten gods stir in response to the Crown\'s growing imbalance.',
     bgStyle: 'dramatic',
   },
   {
@@ -432,7 +452,7 @@ export const CHAPTERS: Chapter[] = [
     number: 5,
     title: 'THE FINAL STAND',
     subtitle: 'Two Fragments, One Crown',
-    description: 'Only two warlords remain. The fate of Aethermoor hangs in the balance as the final war for the Aetheric Crown begins.',
+    description: 'Only two warlords remain. The fate of the Khmer Empire hangs in the balance as the final war for the Golden Crown begins at the steps of Angkor Wat.',
     bgStyle: 'battle',
   },
 ];
@@ -442,16 +462,16 @@ export const CHAPTERS: Chapter[] = [
 // ========================================
 
 const CHAPTER_DRAMATIC_LINES: Record<string, string> = {
-  ch1_assembly: 'The fragments have chosen. The die is cast. Aethermoor will never be the same.',
-  ch2_first_blood: 'The first blade has been drawn. There is no turning back now.',
-  ch3_escalation: 'One warlord has fallen. The fragments grow heavier. The hunger deepens.',
-  ch4_turning_tide: 'The balance of power tilts. Ancient forces stir beneath the shattered Throne.',
-  ch5_final_stand: 'Two remain. The abyss watches. The Crown waits for its sovereign.',
+  ch1_assembly: 'The fragments have chosen their bearers. The naga stir. The Khmer Empire will never be the same.',
+  ch2_first_blood: 'The first jade blade has been drawn. The monsoon clouds gather. There is no turning back now.',
+  ch3_escalation: 'One warlord has fallen. The fragments grow heavier. The spirits grow restless.',
+  ch4_turning_tide: 'The balance of power tilts. Ancient naga forces stir beneath the shattered Crown.',
+  ch5_final_stand: 'Two remain. The ancestral spirits watch. The Golden Crown waits for its sovereign.',
 };
 
 export function getChapterTitleBeat(chapter: Chapter): StoryBeat {
   const dramaticLine = CHAPTER_DRAMATIC_LINES[chapter.id]
-    || 'The war for Aethermoor continues.';
+    || 'The war for the Khmer Empire continues.';
 
   return {
     id: `chapter-title-${chapter.id}`,
@@ -507,16 +527,16 @@ export function getFirstBloodBeat(
     skippable: false,
     pages: [
       {
-        text: `The first clash of the war for the Aetheric Crown has begun. Across Aethermoor, the very air seems to hold its breath as the four warlords' fragments pulse in eerie unison — sensing, perhaps, that the age of peace has truly ended. Somewhere in the heavens above the floating continent, the ghost of Aldric the Unbroken looks down upon his shattered legacy and weeps.`,
+        text: 'The first clash of the war for the Sacred Crown has begun. Across the Khmer Empire, the very air seems to hold its breath as the four warlords\' fragments pulse in eerie unison — sensing, perhaps, that the age of temple-born peace has truly ended. Somewhere in the spirit realm, the ancestral kings look down upon their shattered legacy and weep. The naga raise their heads from the rivers, watching.',
       },
       {
-        text: `${attackerName} the ${classTitle} has drawn first blood, seizing ${territoryName} from ${defenderName} in a battle that will echo through the ages. The ground still smolders where the Aetheric fragment's power was unleashed, and the defenders who survived speak of a force that felt less like an army and more like an avalanche given purpose. The other warlords take note. The game has begun in earnest.`,
+        text: `${attackerName} the ${classTitle} has drawn first blood, seizing ${territoryName} from ${defenderName} in a battle that will echo through the temple corridors for generations. The ground still smolders where the Sacred Crown fragment\'s power was unleashed, and the defenders who survived speak of a force that felt less like an army and more like a monsoon given purpose. The other warlords take note. The game has begun in earnest.`,
         speaker: attackerName,
         speakerColor: attackerColor,
         portrait: attackerPortrait,
       },
       {
-        text: `But the land pays the price. Where ${territoryName}'s soil was once rich and verdant, thin cracks of golden light now spider across the surface — the aether bleeding out from the violence done upon it. Old scholars knew this sign. They called it the Throne's Sorrow, and they said it meant the continent was sinking. Closer to the Endless Abyss. Closer to the dark.`,
+        text: `But the land pays the price. Where ${territoryName}'s soil was once rich with rice and lotus, thin cracks of golden light now spider across the surface — the Crown's energy bleeding out from the violence done upon sacred ground. Old temple priests knew this sign. They called it the Throne's Sorrow, and they said it meant the boundary between worlds was thinning. Closer to the spirit realm. Closer to the dark.`,
       },
     ],
   };
@@ -534,111 +554,93 @@ export function getTerritoryCaptureBeat(
   const classTitle = characterClass.charAt(0).toUpperCase() + characterClass.slice(1);
 
   const keyTerritories: Record<string, { title: string; subtitle: string; pages: StoryPage[] }> = {
-    ironhold: {
-      title: 'THE GREATEST FORTRESS',
-      subtitle: `${playerName} Claims Ironhold`,
+    angkor_wat: {
+      title: 'THE HEART OF THE EMPIRE',
+      subtitle: `${playerName} Claims Angkor Wat`,
       pages: [
         {
-          text: `Ironhold — the unconquerable fortress, the northern bulwark that has stood since the first Warden raised its walls from living granite. For a thousand years, no army has breached its gates. No siege has lasted more than a fortnight against its layered defenses and the fanatical resolve of its garrison. It is a monument to military perfection, and now it has a new master.`,
+          text: 'Angkor Wat — the greatest temple ever built by human hands, the celestial mountain where the Golden Crown was first placed upon the head of the first Khmer king. For a thousand years, its five spires have reached toward the heavens like the petals of a lotus, and its moat has reflected the stars with perfect clarity. No army has breached its inner sanctuary in living memory. It is a monument to divine order, and now it has a new master.',
         },
         {
-          text: `${playerName} the ${classTitle} stands atop Ironhold's highest tower, the Aetheric fragment blazing at their chest like a second sun. The fortress stretches below in all directions — curtain walls, watchtowers, killing grounds, and the vast armories that have supplied a thousand campaigns. "This is what power looks like," ${playerName} says, voice carried on the northern wind. "Not a throne. Not a crown. Walls."`,
+          text: `${playerName} the ${classTitle} stands atop Angkor Wat's central tower, the Sacred Crown fragment blazing at their chest like a second sun. The temple complex stretches below in all directions — causeways, galleries, libraries of stone inscriptions, and the vast reservoirs that have sustained the empire through a thousand monsoons. "This is what power looks like," ${playerName} says, voice carried on the warm wind. "Not a crown. Not a throne. Stone and faith and the will to build."`,
           speaker: playerName,
           speakerColor: color,
           portrait,
         },
         {
-          text: `But within Ironhold's deepest vault, sealed behind doors that have not opened since Aldric's reign, something stirs. Old mechanisms grind. Aetheric conduits buried in the mountain's roots flicker with golden light. Whatever the first Warden hid beneath the fortress is awakening — and it is responding to the fragment's call. The fortress was never just a fortress. It was a lock. And ${playerName} may have just turned the key.`,
+          text: `But within Angkor Wat's deepest chamber, sealed behind stone doors that have not opened since the Crown shattered, something stirs. Ancient mechanisms grind. Sacred conduits buried in the temple's foundations flicker with golden light. Whatever the first king hid beneath the sanctuary is awakening — and it is responding to the fragment's call. Angkor Wat was never just a temple. It was a lock. And ${playerName} may have just turned the key.`,
         },
       ],
     },
-    dragonspine: {
-      title: 'THE DRAGON WAKES',
-      subtitle: `${playerName} Ascends Dragonspine`,
+    phnom_kulen: {
+      title: 'THE SACRED MOUNTAIN',
+      subtitle: `${playerName} Ascends Phnom Kulen`,
       pages: [
         {
-          text: `The mountain called Dragonspine has always been sacred ground. Shepherds and miners avoid its upper reaches, telling stories of vast shapes moving through the clouds and eyes the color of molten copper watching from caverns too deep for human light. The fragments of the Aetheric Throne were forged in dragonfire, the old texts say — and the dragons never forgave the Wardens for taking their gift.`,
+          text: 'Phnom Kulen — the sacred mountain where the first Khmer king received the Golden Crown from the gods themselves, where the eternal flames still burn in hidden fire temples, and where the rivers of a thousand lingas carve their prayers into the living stone. The mountain has always been holy ground, forbidden to those without divine purpose. The naga are said to sleep in its caves, and the spirits of every Khmer king walk its slopes at midnight.',
         },
         {
-          text: `${playerName} the ${classTitle} has claimed the mountain, planting their banner at the summit where the air is thin and the sky is close enough to touch. The Aetheric fragment howls at the altitude, resonating with something ancient that sleeps beneath the stone. ${playerName} can feel it — a heartbeat, slow and vast, like the pulse of a mountain-sized dream.`,
+          text: `${playerName} the ${classTitle} has claimed the sacred peak, planting their banner where the first king once stood. The Sacred Crown fragment howls with resonance, responding to the mountain's ancient power. ${playerName} can feel it — a heartbeat beneath the stone, vast and slow, like the pulse of a sleeping god. The eternal flames flicker in acknowledgment, casting long shadows across the riverbed lingas.`,
           speaker: playerName,
           speakerColor: color,
           portrait,
         },
         {
-          text: `And then the ground shakes. Not with the tremor of battle, but with something far older. A crack opens in the mountainside, and from within pours a breath of heat so intense it melts the snow for a mile in every direction. Somewhere in the depths, a dragon opens one enormous eye. It has been sleeping since before the Shattering. But the fragment has woken it. And it is hungry.`,
+          text: `And then the ground shakes. Not with the tremor of battle, but with something far older. A crack opens in the mountainside, and from within pours a river of molten jade — the same sacred material from which the Golden Crown was forged. The naga stir in their caves, scales scraping against ancient stone. Phnom Kulen is not merely a mountain. It is the forge of the gods, and it remembers every crown it has ever made. Including this one.`,
         },
       ],
     },
-    goldshire: {
-      title: 'HEART OF THE HEARTLANDS',
-      subtitle: `${playerName} Seizes Goldshire`,
+    mekong_delta: {
+      title: 'THE SERPENT\'S DOMAIN',
+      subtitle: `${playerName} Seizes the Mekong Delta`,
       pages: [
         {
-          text: `Goldshire is the beating heart of Aethermoor — not because of its armies or its magic, but because of its gold. The markets of Goldshire supply every warlord on the continent with the coin needed to fund campaigns, hire mercenaries, and bribe officials. Its fall is never merely a military event; it is an economic earthquake that reshapes the war itself.`,
+          text: 'The Mekong Delta is not a territory that welcomes conquerors. Its labyrinth of rivers, canals, and flooded rice paddies is a natural fortress that has repelled invaders since before the Khmer Empire existed. The mist that rises from the warm water is not natural — it is the breath of the naga, the ancient serpent guardians who dwell in the deepest channels and have protected the Delta since the world was young.',
         },
         {
-          text: `${playerName} the ${classTitle} rides through Goldshire's gilded gates as merchants scatter and the great trading houses lower their flags. The Aetheric fragment hums with something almost like satisfaction — the Throne understood the value of gold, once. "Wealth is not power," ${playerName} declares, surveying the captured treasury. "But it is the shadow of power. And where the shadow falls, the substance follows."`,
+          text: `${playerName} the ${classTitle} navigates the treacherous waterways, the Sacred Crown fragment blazing like a lantern against the perpetual mist. The naga rear from the murky water — not in attack, but in assessment. "The rivers remember who ruled them first," ${playerName} declares, standing at the prow of their war boat. "And they will remember again." The fragment hums with agreement, its light reflecting off the water in rippling patterns that look, for a moment, like serpent scales.`,
           speaker: playerName,
           speakerColor: color,
           portrait,
         },
         {
-          text: `The fall of Goldshire sends shockwaves across all five realms. Supply lines falter. Mercenary contracts are renegotiated. The three remaining warlords must now reckon with a ${classTitle.toLowerCase()} who controls the purse strings of the continent. The Heartlands have a new master, and the price of everything — from bread to blood — has just changed.`,
+          text: `The fall of the Mekong Delta sends shockwaves across the entire empire. Supply lines along the great river falter. Floating villages shift their allegiances. The three remaining warlords must now reckon with a ${classTitle.toLowerCase()} who controls the empire's greatest waterway and the naga spirits that guard it. The Delta has a new lord, and the tides of the war have turned.`,
         },
       ],
     },
-    misthollow: {
-      title: 'SECRETS OF THE MIST',
-      subtitle: `${playerName} Dares the Misthollow`,
+    thunderspire: {
+      title: 'THE STORM THRONE',
+      subtitle: `${playerName} Claims Thunderspire`,
       pages: [
         {
-          text: `Misthollow is not a place that welcomes conquerors. The perpetual fog that gives the valley its name is not natural — it is the exhalation of something vast and ancient that lies beneath the earth, breathing in slow, geologic rhythms. Those who enter the mist speak of voices, of visions, of memories that are not their own. Many do not return at all.`,
+          text: 'Thunderspire, the highest peak of the Cardamom Highlands, is where the monsoon clouds are born. Lightning strikes its summit a hundred times per storm, and the thunder that rolls down its slopes is said to be the voice of the sky god himself. No structure has ever been built at its peak — the forces are too violent, the winds too fierce. Only the Sacred Crown fragment-bearers can survive here, and even they feel the mountain testing their worth.',
         },
         {
-          text: `${playerName} the ${classTitle} pushes through the fog, the Aetheric fragment blazing like a lantern against the unnatural darkness. The mist recoils from the fragment's light — but only for a moment. Then it closes in again, thicker, hungrier, as if it recognizes a kindred power. "The Throne was built on secrets," ${playerName} whispers, eyes straining into the white void. "Let us see what it was trying to hide."`,
+          text: `${playerName} the ${classTitle} stands at the summit where the air crackles with raw elemental power, the Sacred Crown fragment blazing in harmony with the endless lightning. The sky above is not a sky at all — it is a ceiling of churning monsoon clouds, alive with electrical energy that responds to every movement, every thought, every heartbeat of the fragment-bearer. "The storms have always chosen their masters," ${playerName} whispers into the wind. "Today, they choose again."`,
           speaker: playerName,
           speakerColor: color,
           portrait,
         },
         {
-          text: `Deep within the hollow, the fog clears to reveal ruins that predate the Aetheric Wardens by millennia. Stone pillars covered in writing that no living scholar can read. A pit that descends into absolute darkness, from which a cold wind rises endlessly. And at the center, a pedestal where a fifth fragment-shaped depression sits empty — as if the Throne was never meant to have only four pieces. ${playerName} has found something that changes everything.`,
+          text: `Deep within the mountain's crystalline heart, a storm older than the Khmer Empire rages in eternal confinement — the First Monsoon, the primordial deluge from which Phnom Kulen rose like a lotus from the flood. The fragment resonates with it, and ${playerName} glimpses a terrifying truth: the storms are not weather. They are memory. And the First Monsoon remembers everything.`,
         },
       ],
     },
-    port_brighthelm: {
-      title: 'THE GATEWAY OPENS',
-      subtitle: `${playerName} Takes Port Brighthelm`,
+    tonle_sap: {
+      title: 'THE EYE OF THE NAGA',
+      subtitle: `${playerName} Controls Tonle Sap`,
       pages: [
         {
-          text: `Port Brighthelm is Aethermoor's window to the world beyond the Endless Abyss — the only harbor capable of receiving ships from distant continents, and the lifeline through which exotic weapons, rare reagents, and foreign mercenaries flow. Control the port, and you control the flow of the outside world into the war.`,
+          text: 'Tonle Sap, the great inland sea, is the lifeblood of the Khmer Empire — a vast lake that swells to five times its size during the monsoon season, flooding the surrounding plains with nutrient-rich silt that feeds millions. The lake is said to be the eye of the greatest naga, a serpent so vast that its body forms the entire Mekong river system. To control Tonle Sap is to control the empire\'s food supply, its trade routes, and the rhythms of its seasons.',
         },
         {
-          text: `${playerName} the ${classTitle} watches the foreign merchant fleet from Brighthelm's lighthouse, the Aetheric fragment casting long shadows across the harbor below. The captured ships bring news: the continents across the Abyss have felt the Shattering too. The magical shockwave rippled through reality itself, and distant kingdoms are sending envoys — some to help, some to conquer, all to claim a piece of the Aetheric Throne's legacy.`,
+          text: `${playerName} the ${classTitle} surveys the great lake from the deck of a war barge, the Sacred Crown fragment casting long reflections across the water's surface. The floating villages that dot the lake lower their flags in submission, and fishermen offer tribute of the day's catch. "The naga's eye sees everything," ${playerName} observes, watching the water ripple with patterns that seem almost intentional. "And now, so do I."`,
           speaker: playerName,
           speakerColor: color,
           portrait,
         },
         {
-          text: `With Brighthelm under their control, ${playerName} can now choose which foreign powers gain access to Aethermoor — and which are turned away. It is a different kind of power than the fragment provides: the power of connection, of trade, of a world that is suddenly much larger than four warlords and their private war. The Eastern Shores have a new admiral, and the tides of the conflict are about to shift.`,
-        },
-      ],
-    },
-    darkwood: {
-      title: 'THE UNCHARTED DEPTHS',
-      subtitle: `${playerName} Claims Darkwood`,
-      pages: [
-        {
-          text: `Darkwood has never been fully mapped. The ancient forest stretches across the Western Reaches like a living wall, its canopy so thick that noon looks like midnight beneath the boughs. Paths appear and vanish. Trees move when no one is watching. The wood elves who once lived here vanished centuries ago, and no one knows where they went — though some say they never left, and that the forest itself is their body, grown vast and strange with age.`,
-        },
-        {
-          text: `${playerName} the ${classTitle} presses deeper into Darkwood than any army has dared before, the Aetheric fragment pulsing in rhythm with the forest's heartbeat. The trees lean in, curious. The shadows lengthen, watchful. "The Throne's power came from the land itself," ${playerName} realizes, hand resting on the bark of a tree older than human civilization. "And the land remembers."`,
-          speaker: playerName,
-          speakerColor: color,
-          portrait,
-        },
-        {
-          text: `At the forest's heart, ${playerName} finds a clearing that should not exist — a perfect circle of grass and wildflowers, lit by a sunbeam that has no source. In the center grows a single tree, white as bone, its roots intertwined with veins of pure aetheric crystal. This is the Worldtree, the oldest living thing on Aethermoor, the source from which the first Warden drew the power to create the Throne. And it is still alive. Still growing. Still waiting.`,
+          text: `With Tonle Sap under their control, ${playerName} commands the empire's most strategic waterway. The lake's seasonal flooding can be weaponized — opening new attack routes during the wet season, revealing hidden fords during the dry. The other warlords must now reckon with a ${classTitle.toLowerCase()} who holds the empire's food supply and the naga's vigilance. The eye of the serpent has a new master, and it sees everything.`,
         },
       ],
     },
@@ -671,13 +673,13 @@ export function getRegionDominanceBeat(
     skippable: false,
     pages: [
       {
-        text: `The last banner of resistance in ${regionName} has fallen. Every territory, every fortress, every village now answers to a single warlord — and that warlord is ${playerName}. The Aetheric fragment blazes with fierce approval, drinking deep of the region's concentrated aetheric energy. For a moment, the very sky above ${regionName} turns the color of ${playerName}'s banner.`,
+        text: `The last banner of resistance in ${regionName} has fallen. Every territory, every temple, every village now answers to a single warlord — and that warlord is ${playerName}. The Sacred Crown fragment blazes with fierce approval, drinking deep of the region's concentrated spiritual energy. For a moment, the very sky above ${regionName} turns the color of ${playerName}'s banner, and the naga of the local rivers bow their heads in acknowledgment.`,
       },
       {
         text: `${regionLore}`,
       },
       {
-        text: `But dominion is a double-edged sword. With total control of ${regionName} comes total responsibility — and total vulnerability. Every rival warlord now sees ${playerName} as the threat to be destroyed, and the fragment's surge of power has not gone unnoticed. The other bearers feel it in their blood, a primal alarm that says: one of us has grown too strong. The hunt begins.`,
+        text: `But dominion is a double-edged jade blade. With total control of ${regionName} comes total responsibility — and total vulnerability. Every rival warlord now sees ${playerName} as the threat to be destroyed, and the fragment's surge of power has not gone unnoticed. The other bearers feel it in their blood, a primal alarm that says: one of us has grown too strong. The naga grow restless. The hunt begins.`,
       },
     ],
   };
@@ -704,19 +706,19 @@ export function getRivalClashBeat(
     skippable: false,
     pages: [
       {
-        text: `There are wars of convenience, and then there are wars of destiny. When ${attackerTitle} first turned their armies toward ${defenderTitle}'s territory, every oracle and seer on Aethermoor felt the shift — two Aetheric fragments resonating in violent harmony, their frequencies clashing like the grinding of tectonic plates. The air between their territories crackled with golden lightning, and soldiers on both sides reported the same vision: two thrones, side by side, one of them empty.`,
+        text: `There are wars of convenience, and then there are wars of destiny. When ${attackerTitle} turned their armies toward ${defenderTitle}'s territory, every temple oracle and spirit channeler in the Khmer Empire felt the shift — two Sacred Crown fragments resonating in violent harmony, their frequencies clashing like the grinding of tectonic plates beneath Phnom Kulen. The air between their territories crackled with golden lightning, and soldiers on both sides reported the same vision: two thrones of jade, side by side, one of them empty, and a naga coiled between them, weeping.`,
         speaker: attackerName,
         speakerColor: attackerColor,
         portrait: attackerPortrait,
       },
       {
-        text: `"So we finally meet on the field of honor," ${defenderName} says, ${defenderClass === 'paladin' || defenderClass === 'knight' ? 'shield raised and resolve unbroken' : defenderClass === 'mage' ? 'fingers already weaving defensive wards' : 'materializing from shadows with a predator\'s grace'}. "I have watched you grow stronger from a distance. Let us see if your strength is matched by your wisdom." The fragment at ${defenderName}'s chest flares — not in attack, but in acknowledgment. A worthy foe, at last.`,
+        text: `"So we finally meet on the field of honor," ${defenderName} says, ${defenderClass === 'paladin' || defenderClass === 'knight' ? 'sacred shield raised and resolve unbroken' : defenderClass === 'mage' ? 'fingers already weaving monsoon wards and lightning crackling at their fingertips' : 'materializing from the mist with a serpent crown gleaming and a predator\'s grace'}. "I have watched you grow stronger from across the Mekong. Let us see if your strength is matched by your wisdom." The fragment at ${defenderName}'s chest flares — not in attack, but in acknowledgment. A worthy foe, at last.`,
         speaker: defenderName,
         speakerColor: defenderColor,
         portrait: defenderPortrait,
       },
       {
-        text: `The battle that follows is unlike any other in the war. Two fragments of the Aetheric Throne, each amplifying their bearer's will, collide with a force that reshapes the terrain itself. Hills flatten. Rivers change course. The sky tears open, and for one brief, terrifying instant, both warlords catch a glimpse of the completed Crown — whole, radiant, impossibly beautiful — before the vision shatters and the war continues. Aethermoor shudders. The abyss below grows a little closer.`,
+        text: `The battle that follows is unlike any other in the war. Two fragments of the Sacred Crown, each amplifying their bearer's will, collide with a force that reshapes the terrain itself. Hills flatten. Rivers change course. The monsoon clouds tear open, and for one brief, terrifying instant, both warlords catch a glimpse of the completed Golden Crown — whole, radiant, impossibly beautiful, its light warm as the eternal flame of Phnom Kulen — before the vision shatters and the war continues. The naga plunge into the deep rivers, afraid. The land shudders. The spirit realm trembles.`,
       },
     ],
   };
@@ -735,70 +737,70 @@ export function getDesperateHourBeat(
   const classSpecificPages: Record<string, StoryPage[]> = {
     knight: [
       {
-        text: `${playerName} surveys the map with the cold precision of a general who has lost too many battles to indulge in hope. ${territoryCount} territories. That is all that remains of the northern empire. The great fortresses have fallen, the armies are scattered, and the crimson banners that once flew from every watchtower now gather dust in abandoned armories.`,
+        text: `${playerName} surveys the war map with the cold precision of a general who has lost too many battles to indulge in hope. ${territoryCount} territories. That is all that remains of the Angkor Heartlands empire. The great temple fortresses have fallen, the war elephant battalions are scattered, and the crimson banners that once flew from every watchtower now gather dust in abandoned armories.`,
         portrait,
         speaker: playerName,
         speakerColor: color,
       },
       {
-        text: `But a knight does not surrender. Not when the walls are breached. Not when the odds are impossible. ${playerName} rallies the last loyal soldiers — barely a company, scarred and weary, but still standing. "A fortress can be rebuilt," ${playerName} declares, sword drawn. "An army can be raised again. But the will to fight? That either lives in you or it doesn't. And mine is burning."`,
+        text: `But a knight of Angkor does not surrender. Not when the temple walls are breached. Not when the odds are impossible. ${playerName} rallies the last loyal soldiers — barely a company, scarred and weary, but still standing. "A temple can be rebuilt," ${playerName} declares, jade blade drawn. "An army can be raised again. But the will to fight? That either lives in you or it doesn't. And mine burns like the eternal flame of Phnom Kulen."`,
         speaker: playerName,
         speakerColor: color,
         portrait,
       },
       {
-        text: `The fragment flickers uncertainly at ${playerName}'s chest, its light guttering like a candle in a storm. It senses the desperation of its bearer — and responds in the only way it knows how. It burns brighter, feeding on ${playerName}'s defiance, transforming desperation into something harder and sharper than steel. The war is not over. Not while the ${classTitle.toLowerCase()} still draws breath.`,
+        text: `The fragment flickers uncertainly at ${playerName}'s chest, its light guttering like a temple flame in a storm. It senses the desperation of its bearer — and responds in the only way it knows how. It burns brighter, feeding on ${playerName}'s defiance, transforming desperation into something harder and sharper than sacred jade. The war is not over. Not while the ${classTitle.toLowerCase()} still draws breath. Not while Angkor Wat still stands.`,
       },
     ],
     mage: [
       {
-        text: `The arcana chambers are dark. The floating glyphs that once illuminated ${playerName}'s sanctum have dimmed to barely visible embers, starved of the aetheric energy that ${playerName} can no longer spare. ${territoryCount} territories remain — barely enough to sustain the fragment's connection to the land, and nowhere near enough to fuel the spells that once bent reality to ${playerName}'s will.`,
+        text: `The storm sanctums are dark. The lightning glyphs that once illuminated ${playerName}'s mountain stronghold have dimmed to barely visible embers, starved of the fragment energy that ${playerName} can no longer spare. ${territoryCount} territories remain — barely enough to sustain the fragment's connection to the monsoon, and nowhere near enough to fuel the storms that once bent the sky to ${playerName}'s will.`,
         portrait,
         speaker: playerName,
         speakerColor: color,
       },
       {
-        text: `"Seventeen futures," ${playerName} murmurs, gazing into a scrying pool that shows nothing but static. "I once saw seventeen futures. Now I see only one — and it ends in darkness." The Mage's fingers trace the fragment's surface, seeking the patterns, the equations, the hidden variables. There must be something. Some possibility unaccounted for. Some thread of fate that has not yet been pulled.`,
+        text: `"The storm patterns are collapsing," ${playerName} murmurs, gazing into a scrying pool that shows only still, lifeless water. "I once commanded seventeen lightning strikes in a single breath. Now the clouds ignore me." The Mage's fingers trace the fragment's surface, seeking the patterns, the equations, the hidden variables in the wind. There must be something. Some current unaccounted for. Some monsoon that has not yet been called.`,
         speaker: playerName,
         speakerColor: color,
         portrait,
       },
       {
-        text: `And then ${playerName} finds it — a sliver of probability so thin it almost doesn't exist. A path through seventeen billion possible outcomes that leads not to survival, but to victory. The fragment responds, flooding ${playerName}'s mind with forbidden knowledge and terrible clarity. The cost will be enormous. But the Mage has never been afraid of knowledge, no matter how dark its source.`,
+        text: `And then ${playerName} finds it — a sliver of storm energy so faint it almost doesn't exist. A convergence of wind and water and fragment power that leads not to survival, but to victory. The fragment responds, flooding ${playerName}'s mind with the language of thunder and the memory of the First Monsoon. The cost will be enormous. But the Stormcaller has never been afraid of power, no matter how wild its source.`,
       },
     ],
     rogue: [
       {
-        text: `${playerName} crouches in the ruins of a watchtower, the last of the shadows offering what little concealment remains. ${territoryCount} territories. The shadows are shrinking — fewer places to hide, fewer paths to escape, fewer allies willing to harbor a warlord on the run. The game that was supposed to be won through cunning and stealth has become a desperate scramble for survival.`,
+        text: `${playerName} crouches in the ruins of a Mekong river shrine, the last of the mist offering what little concealment remains. ${territoryCount} territories. The mist is shrinking — fewer places to hide, fewer river channels to escape through, fewer naga spirits willing to harbor a warlord on the run. The game that was supposed to be won through cunning and stealth has become a desperate scramble for survival in the flooded delta.`,
         portrait,
         speaker: playerName,
         speakerColor: color,
       },
       {
-        text: `"Everyone runs out of shadows eventually," ${playerName} says to no one, testing the edge of a blade that has lost its fragment-enhanced sheen. "But they always forget — the shadow doesn't just hide you. It shows you things. And I have seen things in the dark that would make the other warlords weep."`,
+        text: `"Everyone runs out of mist eventually," ${playerName} says to no one, testing the edge of a blade that has lost its fragment-enhanced sheen. The serpent crown of dark jade feels heavy upon their brow. "But they always forget — the mist doesn't just hide you. It shows you things. And I have seen things in the spirit realm that would make the other warlords weep like temple priests."`,
         speaker: playerName,
         speakerColor: color,
         portrait,
       },
       {
-        text: `The fragment stirs — not with power, but with something older and more dangerous. It whispers of the spaces between heartbeats, the moments when reality blinks, the instants when a shadow-walker can step between worlds. ${playerName} has never used this ability before. The cost is steep: a piece of the bearer's soul for every shadow-step. But with ${territoryCount} territories remaining, the Rogue is running out of options — and running out of soul is better than running out of time.`,
+        text: `The fragment stirs — not with power, but with something older and more dangerous. It whispers of the spaces between heartbeats, the moments when the mist between worlds thins, the instants when a shadow-walker can step through the veil into the spirit realm itself. ${playerName} has never used this ability before. The cost is steep: a piece of the bearer's soul for every spirit-step. But with ${territoryCount} territories remaining, the Shadow Queen is running out of options — and running out of soul is better than running out of mist.`,
       },
     ],
     paladin: [
       {
-        text: `${playerName} kneels in the rubble of what was once a temple, hands clasped in prayer, fragment casting its fading holy light across broken pews and shattered stained glass. ${territoryCount} territories. The faithful are scattered, the temples desecrated, and the light that once guided ${playerName}'s armies has dimmed to a flicker. The continent groans under the weight of war, and the abyss below grows ever closer.`,
+        text: `${playerName} kneels in the rubble of what was once a Phnom Kulen fire temple, hands clasped in prayer, fragment casting its fading eternal light across broken altars and shattered lotus carvings. ${territoryCount} territories. The faithful are scattered, the sacred fires desecrated, and the light that once guided ${playerName}'s armies has dimmed to a flicker. The empire groans under the weight of war, and the naga withdraw deeper into their rivers.`,
         portrait,
         speaker: playerName,
         speakerColor: color,
       },
       {
-        text: `"You test me," ${playerName} whispers to the fragment, to the sky, to whatever force shaped the Aetheric Throne and then shattered it. "You test my faith when everything I built lies in ruins. But faith is not a tower — it does not crumble when the wind blows. Faith is the wind itself." The fragment hears. And for the first time since the war began, it does not demand — it gives.`,
+        text: `"You test me," ${playerName} whispers to the fragment, to the sky, to whatever god forged the Golden Crown and then shattered it upon the altars of Phnom Kulen. "You test my faith when everything I built lies in ruins. But faith is not a temple — it does not crumble when the monsoon blows. Faith is the monsoon itself." The fragment hears. And for the first time since the war began, it does not demand — it gives.`,
         speaker: playerName,
         speakerColor: color,
         portrait,
       },
       {
-        text: `The light swells. Not the cold, analytical glow of the Mage's aether, nor the hungry crimson of the Knight's fragment, but something warmer — something that feels like absolution. The Paladin rises, shield reforming from pure light, and the last ${territoryCount} territories pulse with renewed holy energy. ${playerName} will not win through strength or cunning. ${playerName} will win because the light refuses to go out.`,
+        text: `The eternal flame swells. Not the crackling storm-light of the Mage's monsoon, nor the hungry crimson of the Knight's jade, but something warmer — something that feels like absolution, like the first fire that lit the first temple on the first day of the Khmer Empire. The Paladin rises, shield reforming from pure sacred flame, sun-disk crown blazing anew, and the last ${territoryCount} territories pulse with renewed divine energy. ${playerName} will not win through strength or cunning. ${playerName} will win because the eternal flame refuses to go out.`,
       },
     ],
   };
@@ -831,13 +833,13 @@ export function getDominantForceBeat(
     skippable: false,
     pages: [
       {
-        text: `The map of Aethermoor has been redrawn. Where once four warlords held roughly equal sway, a single power now dominates — and that power is ${playerName}. With ${territoryCount} territories under their banner and ${remainingRivals} rival${remainingRivals !== 1 ? 's' : ''} left to challenge them, the war for the Aetheric Crown is approaching its endgame.`,
+        text: `The map of the Khmer Empire has been redrawn. Where once four warlords held roughly equal sway across the temple lands, a single power now dominates — and that power is ${playerName}. With ${territoryCount} territories under their banner and ${remainingRivals} rival${remainingRivals !== 1 ? 's' : ''} left to challenge them, the war for the Sacred Crown is approaching its endgame. The naga bow. The monsoon obeys. The temples resonate with fragment energy.`,
       },
       {
-        text: `The Aetheric fragment responds to this dominance with terrifying enthusiasm. It burns hotter, pulses stronger, and whispers more insistently — urging its bearer onward, promising ultimate power, unity, the reforged Crown. The land itself seems to lean toward ${playerName}'s territories, aetheric currents flowing like rivers toward a dominant gravitational center. The other fragments grow dimmer in comparison, their bearers weakened by the imbalance.`,
+        text: `The Sacred Crown fragment responds to this dominance with terrifying enthusiasm. It burns hotter, pulses stronger, and whispers more insistently — urging its bearer onward, promising ultimate power, unity, the reforged Golden Crown. The land itself seems to lean toward ${playerName}'s territories, spiritual currents flowing like rivers toward a dominant gravitational center. The other fragments grow dimmer in comparison, their bearers weakened by the imbalance. The ancestral spirits grow restless.`,
       },
       {
-        text: `But ${remainingRivals > 1 ? 'the remaining warlords' : 'the last rival'} will not surrender quietly. Desperation is a potent fuel, and those who fight with nothing to lose are often the most dangerous. Across the continent, alliances of convenience form, last-ditch strategies are hatched, and ancient weapons are dragged from vaults sealed since before the Shattering. The end of the war is near — but the bloodiest chapter may yet be unwritten.`,
+        text: `But ${remainingRivals > 1 ? 'the remaining warlords' : 'the last rival'} will not surrender quietly. Desperation is a potent fuel, and those who fight with nothing to lose are often the most dangerous. Across the empire, alliances of convenience form, last-ditch strategies are hatched, and ancient weapons are dragged from vaults sealed beneath temples since before the Crown shattered. The end of the war is near — but the bloodiest chapter may yet be unwritten. The naga watch from the deep rivers, coiled and waiting.`,
       },
     ],
   };
@@ -858,101 +860,101 @@ export interface RivalDialogue {
 export const RIVAL_DIALOGUES: RivalDialogue[] = [
   // Knight dialogue lines
   { id: 'knight_turn_early', speakerClass: 'knight', context: 'turn_start', minTurn: 1, lines: [
-    'My armies stand ready. The north does not wait for the hesitant.',
-    'Steel and discipline. That is all Aethermoor needs now.',
-    'The fragment pulses. It hungers for order.',
+    'My armies stand ready at the temple gates. Angkor does not wait for the hesitant.',
+    'Jade and bronze. Discipline and order. That is all the empire needs now.',
+    'The fragment pulses. It hungers for the unity of the old kings.',
   ]},
   { id: 'knight_attacking', speakerClass: 'knight', context: 'attacking', minTurn: 1, lines: [
-    'Charge! Let them feel the weight of true resolve!',
-    'For the north! For order! Break their lines!',
-    'No retreat. No surrender. Forward!',
+    'Charge! Let the war elephants break their lines!',
+    'For Angkor! For the Crown! Advance with honor!',
+    'No retreat. No surrender. Forward, in the name of the Golden Crown!',
   ]},
   { id: 'knight_defending', speakerClass: 'knight', context: 'defending', minTurn: 1, lines: [
-    'Hold the line! Not one step back!',
-    'Let them come. Our walls have never fallen.',
-    'A shield wall does not break. It only grows stronger.',
+    'Hold the temple walls! Not one step back!',
+    'Let them come. These fortresses have never fallen.',
+    'A shield wall of jade does not break. It only grows stronger.',
   ]},
   // Mage dialogue lines
   { id: 'mage_turn_early', speakerClass: 'mage', context: 'turn_start', minTurn: 1, lines: [
-    'The aetheric currents shift... interesting. The threads of fate are tangled.',
-    'I have seen seventeen possible futures today. In twelve of them, I win.',
-    'Knowledge is the sharpest blade. And I have an entire library.',
+    'The monsoon currents shift... interesting. The winds of fate are tangled.',
+    'I have seen seventeen possible storm patterns today. In twelve of them, I prevail.',
+    'Knowledge of the sky is the sharpest blade. And I command the thunder.',
   ]},
   { id: 'mage_attacking', speakerClass: 'mage', context: 'attacking', minTurn: 1, lines: [
-    'Let them burn. Arcane fire cares nothing for armor.',
-    'The equations of war are simple. I have already solved them.',
-    'Witness the power that shattered a throne!',
+    'Let the lightning fall. Sacred fire cares nothing for jade armor.',
+    'The equations of war are simple. I have already solved them in the storm.',
+    'Witness the power that commands the monsoon!',
   ]},
   { id: 'mage_defending', speakerClass: 'mage', context: 'defending', minTurn: 1, lines: [
-    'My wards are unbreakable. Try and see.',
-    'Every spell I cast is a calculation. They cannot outthink the inevitable.',
-    'The aether bends to my will. Your armies will not.',
+    'My storm wards are unbreakable. Try and see.',
+    'Every lightning strike is a calculation. They cannot outthink the inevitable.',
+    'The monsoon bends to my will. Your armies will not.',
   ]},
   // Rogue dialogue lines
   { id: 'rogue_turn_early', speakerClass: 'rogue', context: 'turn_start', minTurn: 1, lines: [
-    'They think they see me coming. They are wrong.',
-    'The shadows are full of secrets. I know all of them.',
-    'Every warlord here has a weakness. I intend to find them all.',
+    'They think they see me in the mist. They are wrong.',
+    'The naga spirits are full of secrets. I know all of them.',
+    'Every warlord here has a weakness hidden in the shadows. I will find them all.',
   ]},
   { id: 'rogue_attacking', speakerClass: 'rogue', context: 'attacking', minTurn: 1, lines: [
-    'You never saw it coming. None of them ever do.',
-    'From the darkness, swift and certain.',
-    'Why fight fair when you can fight smart?',
+    'You never saw it coming from the mist. None of them ever do.',
+    'From the river fog, swift and certain, like a naga striking.',
+    'Why fight in the open when the shadows offer victory?',
   ]},
   { id: 'rogue_defending', speakerClass: 'rogue', context: 'defending', minTurn: 1, lines: [
-    'You think you have me cornered? I am exactly where I want to be.',
-    'The shadows protect their own.',
-    'Catch me if you can.',
+    'You think you have cornered me? I am exactly where the mist wants me to be.',
+    'The naga spirits protect their own.',
+    'Catch me if you can. The delta has a thousand hiding places.',
   ]},
   // Paladin dialogue lines
   { id: 'paladin_turn_early', speakerClass: 'paladin', context: 'turn_start', minTurn: 1, lines: [
-    'The light guides my path. Even in this darkness, I do not waver.',
-    'Faith is not a weapon. It is a shield. And mine is unbreakable.',
-    'Aethermoor will be saved — not by conquest, but by conviction.',
+    'The eternal flame guides my path. Even in this darkness, I do not waver.',
+    'Faith is not a weapon. It is a sacred fire. And mine is unquenchable.',
+    'The Khmer Empire will be saved — not by conquest, but by conviction.',
   ]},
   { id: 'paladin_attacking', speakerClass: 'paladin', context: 'attacking', minTurn: 1, lines: [
-    'In the name of the light, I strike!',
-    'Your darkness ends here. Justice comes for all.',
-    'Holy fire cleanses all. Even the battlefield.',
+    'By the eternal flame of Phnom Kulen, I strike!',
+    'Your darkness ends here. Sacred fire cleanses all.',
+    'The phoenix fire burns for justice. Even the battlefield.',
   ]},
   { id: 'paladin_defending', speakerClass: 'paladin', context: 'defending', minTurn: 1, lines: [
-    'The light shall not be extinguished!',
-    'My faith is my fortress. You cannot breach it.',
-    'Even in defeat, I do not yield. For I know the truth.',
+    'The eternal flame shall not be extinguished!',
+    'My faith is my fortress. No army can breach it.',
+    'Even in defeat, I do not yield. For I know the sacred truth.',
   ]},
   // Losing dialogue (any class)
   { id: 'knight_losing', speakerClass: 'knight', context: 'losing', minTurn: 5, lines: [
-    'The walls are crumbling... but I will fight from the rubble.',
-    'A knight does not beg. But I admit... the situation is dire.',
+    'The temple walls are crumbling... but I will fight from the sacred rubble.',
+    'A knight of Angkor does not beg. But I admit... the situation is dire.',
   ]},
   { id: 'mage_losing', speakerClass: 'mage', context: 'losing', minTurn: 5, lines: [
-    'This outcome was... not in my calculations. Fascinating.',
-    'The aether... is draining. I must conserve what remains.',
+    'This storm pattern was... not in my calculations. Fascinating.',
+    'The monsoon energy is draining. I must conserve what remains.',
   ]},
   { id: 'rogue_losing', speakerClass: 'rogue', context: 'losing', minTurn: 5, lines: [
-    'Everyone runs out of shadows eventually.',
-    'I always have an exit strategy. ...I think.',
+    'Everyone runs out of mist eventually.',
+    'I always have an escape through the spirit veil. ...I think.',
   ]},
   { id: 'paladin_losing', speakerClass: 'paladin', context: 'losing', minTurn: 5, lines: [
-    'Even now, I do not doubt. The light tests those who are worthy.',
-    'A guardian falls... but the light endures.',
+    'Even now, I do not doubt. The eternal flame tests those who are worthy.',
+    'A guardian of Phnom Kulen falls... but the sacred fire endures.',
   ]},
   // Winning dialogue (any class)
   { id: 'knight_winning', speakerClass: 'knight', context: 'winning', minTurn: 5, lines: [
-    'The pieces are in place. Aethermoor will know order once more.',
-    'One by one, the banners fall. Soon, only mine will remain.',
+    'The jade pieces are in place. The empire will know order once more.',
+    'One by one, the temple banners fall. Soon, only mine will remain.',
   ]},
   { id: 'mage_winning', speakerClass: 'mage', context: 'winning', minTurn: 5, lines: [
-    'The pattern is becoming clear. Victory is simply the next logical step.',
-    'I have calculated every variable. The outcome is no longer in doubt.',
+    'The storm pattern is becoming clear. Victory is the next thunderclap.',
+    'I have calculated every variable. The monsoon obeys my design.',
   ]},
   { id: 'rogue_winning', speakerClass: 'rogue', context: 'winning', minTurn: 5, lines: [
-    'The game is almost over. And they never even saw me playing.',
-    'Checkmate. Though I prefer the term... shadow-check.',
+    'The game is almost over. And they never even saw me in the mist.',
+    'Checkmate. Though I prefer the term... shadow-serpent strike.',
   ]},
   { id: 'paladin_winning', speakerClass: 'paladin', context: 'winning', minTurn: 5, lines: [
-    'The light grows stronger with every territory freed from darkness.',
-    'Soon, this war will end. And peace will finally reign.',
+    'The eternal flame grows stronger with every territory freed from darkness.',
+    'Soon, this war will end. And the Golden Crown will shine once more.',
   ]},
 ];
 

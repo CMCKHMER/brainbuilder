@@ -1,6 +1,6 @@
 // ============================================================
-// CAMPAIGN DATA — Realm of Aethermoor
-// Dark Fantasy Epic: Magic + Machinery, Political Intrigue
+// CAMPAIGN DATA — Realm Of The Khmer Empire
+// Cambodian Folklore Epic: Ancestral Spirits, Naga Serpents, Sacred Flames
 // ============================================================
 
 export interface CampaignChapter {
@@ -23,32 +23,50 @@ export interface CampaignChapter {
 // ============================================================
 
 export const WORLD_LORE = {
-  title: "The Chronicle of Aethermoor",
-  history: `Before the Shattering, Aethermoor was not a continent of warring factions — it was a single, magnificent empire ruled from the Aetherspire, a tower of crystal and iron that pierced the sky at the continent's heart. The empire's power came from Aetherium: a luminous mineral that hummed with raw arcane energy. In the hands of Aethermoor's artificers, Aetherium bridged the gap between magic and machine, giving birth to wonders that no other realm could match — war constructs that marched without soldiers, siege engines that hurled bolts of concentrated spellfire, and clockwork soldiers that never tired, never faltered, and never asked why they fought.
+  title: "The War of the Broken Crown",
+  history: `Before the Shattering, the Khmer Empire was the jewel of Southeast Asia — a vast and radiant civilization that stretched from the Mekong delta to the mist-shrouded peaks of Phnom Kulen. At its heart stood Angkor Wat, the largest religious monument ever built by human hands, its five lotus-bud towers rising above a city of a million souls. The empire's power did not come from armies alone, though its war elephants and temple guardians were legendary. It came from the Sacred Crown — a circlet forged in the fire temples of Phnom Kulen from a single, flawless piece of jade blessed by the naga serpent kings themselves. For nine centuries, the Sacred Crown kept peace among the empire's peoples and bound the spirit world to the mortal one in a delicate, sacred harmony.
 
-The empire endured for nine centuries under the Aetheric Dynasty, each ruler more obsessed with pushing the boundaries of Aetherium technology than the last. But power corrupts, and absolute power corrupts absolutely. The last emperor, Aldric the Undying, sought what no ruler before him had dared: immortality through Aetherium saturation. He ordered his artificers to construct the Hollowing Engine — a colossal machine designed to drain every vein of Aetherium from the continent's bedrock and channel it into a single, living vessel: himself.
+The empire endured for nine centuries under the guidance of the Temple Guardians, an ancient order of warrior-monks who safeguarded the sacred sites and mediated between the human realm and the spirit world. Each king who wore the Crown was blessed with wisdom and long life, and the land prospered. Rice paddies stretched to every horizon, fed by an ingenious network of canals and reservoirs.
 
-The ritual succeeded, but not as Aldric had envisioned. The sheer volume of raw Aetherium shattered his mortal mind, splitting it into a thousand fractured consciousnesses that screamed in unison. His body became a hollow shell — an immortal vessel of immense power but no humanity. The Aetherspire cracked and collapsed. The Aetherium veins beneath the earth ruptured, sending shockwaves that tore the continent apart. Mountain ranges rose where plains had been. Rivers reversed course. The western forests grew wild and dark, choked with corrupted Aetherium mist. The northern lands froze in an eternal winter born of disrupted arcane currents.
+The great barays — vast artificial lakes that served as both irrigation systems and sacred reflections of the cosmic Ocean of Milk — held water enough to see the empire through even the cruelest drought. Angkor Wat's stone walls told the story of the cosmos in exquisite bas-relief — the churning of the Ocean of Milk, the triumphs of the devas over the asuras, the eternal dance of creation and destruction that underpins all existence. Pilgrims traveled from distant lands to walk the temple causeways and pray before the jade altars, and the naga serpent kings were said to slumber peacefully in the deep pools of the Mekong, content with the harmony their gift had made possible.
 
-This was the Shattering. In a single night, a thousand years of civilization collapsed into ruin and blood.
+The empire's armies were equally legendary, though war was rare during the centuries of Crown-blessed peace. When conflict came — from rival kingdoms to the west, from sea raiders along the coast, or from spirit incursions when the barrier between worlds grew thin — the Temple Guardians rode forth on jade-armored war elephants at the head of peasant levies who fought with ferocious loyalty. The Royal Guard of Angkor Wat, ancestors of the Soryan dynasty, were considered the finest warriors in the known world, their discipline unmatched and their jade-forged weapons unequaled. But it was not military might that made the Khmer Empire great. It was faith — faith in the jade, faith in the ancestors, and faith in the sacred compact that bound the living and the dead in an unending cycle of mutual protection and reverence.
 
-The survivors called the thing that Emperor Aldric had become "the Hollow King." He retreated into the deepest caverns beneath the continent, attended by his Hollowed Generals — former commanders who had undergone partial Aetherium saturation and been reduced to loyal, mindless enforcers. From his subterranean throne, the Hollow King dreams of completing what the Shattering interrupted: absorbing every last fragment of Aetherium and becoming a god.
+But the last king, Jayavarman the Unbroken, grew fearful of death in his old age. He had ruled wisely for sixty years, but the prospect of leaving his beloved empire to an uncertain successor consumed him. He came to believe that the Sacred Crown could grant him more than long life — it could grant him eternity itself. In secret, far from the eyes of the Temple Guardians, he descended into the deepest fire temple of Phnom Kulen and performed a forbidden ritual, one that the naga kings had warned the first Khmer kings never to attempt: the severing of the soul from the mortal body and its binding to the jade of the Crown. He sought to become one with the stone, to rule his empire not for a lifetime but forever.
 
-Three generations have passed since the Shattering. The four great factions that rose from the empire's ashes have fought each other for territory, resources, and survival. But now the Hollow King stirs. His influence creeps upward through the earth, corrupting the land, poisoning Aetherium deposits, and awakening ancient war machines buried since the Shattering. The factions can no longer afford to fight only each other. Something must be done about the Hollow King — before there is nothing left to save.`,
+The ritual demanded a price no mortal should pay: the severing of the ancient bond between the human and spirit realms. When the naga kings felt the compact shatter, they shrieked in fury, and their wrath shook the earth. Rivers boiled. The sky turned the color of bruised jade.
 
-  aetheriumLore: `Aetherium is the crystalline lifeblood of Aethermoor, a mineral that exists at the intersection of matter and magic. In its raw form, it appears as jagged, luminous crystals ranging from pale blue to deep violet. When refined and properly channeled, it can power mechanical constructs, amplify arcane spells, and even sustain life beyond its natural limits.
+The Sacred Crown, unable to contain the power Jayavarman forced into it, cracked into four fragments, each blazing with corrupted jade fire. The shockwave tore through Angkor Wat, splitting its towers and draining the great barays dry in a single night. The spirit world, no longer bound by the Crown's harmony, bled into the mortal one. Ancestral spirits became vengeful wraiths. Temple Guardians caught in the blast were twisted into hollow echoes of their former selves. The land itself fractured — rivers changed course, forests grew wild with spirit energy, and the mist from the Mekong swallowed whole provinces.
 
-The empire developed two primary schools of Aetherium application. The first was Arcane Mechanization — using Aetherium crystals as power cores for mechanical devices. War constructs, siege engines, and clockwork soldiers all fell under this discipline. The second was Flesh Aetherization — the dangerous practice of infusing living tissue with refined Aetherium. This granted enhanced strength, reflexes, and in extreme cases, near-immortality — but at the cost of gradual loss of humanity, culminating in the "hollowing" process that created the Hollow King and his generals.
+King Jayavarman the Unbroken was transformed. His body became a vessel of void energy, a hollow king wearing a broken crown, his humanity consumed by the very jade he had sought to master. He retreated into the caverns beneath Phnom Kulen, attended by the corrupted Temple Guardians who had been caught in the ritual's blast.
 
-After the Shattering, most knowledge of Aetherium refinement was lost. The surviving factions each recovered fragments of the old empire's technology and developed their own distinct approaches. The Iron Legion favors brute-force mechanization. The Arcane Conclave focuses on pure arcane channeling. The Underworld Syndicate developed stealth applications and poison mechanisms. The Order of the Radiant Dawn pursues a hybrid path, using "blessed" Aetherium that they claim has been purified of its corrupting influence.`,
+From the ruins of the empire, four warlords rose — each claiming a fragment of the Sacred Crown and a vision for what the Khmer lands should become. Soryan the Iron Strategist, Chanreth the Stormcaller, Veasna of Shadows, and Kiriath the Eternal Flame. They warred against each other for dominance, even as the Hollow King's influence crept through the land like poison through a river.
 
-  theHollowKing: `Emperor Aldric the Undying was once a brilliant but deeply paranoid ruler who believed that death was the only true enemy worth fighting. His obsession with immortality drove him to commission the Hollowing Engine — a machine so vast it required the labor of ten thousand artificers and the Aetherium output of an entire province to construct.
+The years that followed were a nightmare of fire and spirit. Villages burned as vengeful wraiths hunted those who had once worshipped at the jade altars. The great roads connecting Angkor Wat to the provinces became impassable, choked with spirit-mist and haunted by the echoes of the dead. Refugees flooded the remaining habitable lands, and the warlords who would eventually divide the empire between them first emerged as protectors of these desperate communities, their authority born not from royal blood but from the sword and the spear.
 
-When the ritual went wrong, Aldric's consciousness shattered. What remains is not a man, not even a monster, but something far worse: a void wearing an emperor's face. The Hollow King does not speak. He does not scheme in the traditional sense. Instead, he emits a constant psychic pressure that bends the weak-willed to his service and corrupts the land around him. His mere presence causes Aetherium deposits to destabilize, creating zones of wild magic where reality itself becomes uncertain.
+This was the Shattering — the beginning of what would be known as the War of the Broken Crown.`,
 
-His Hollowed Generals — once the empire's greatest military commanders — serve as his enforcers. These towering figures wear the rusted armor of the old empire and wield Aetherium-powered weapons that have been running continuously for three generations without refueling. They feel no pain, no fear, and no mercy. They are the Hollow King's will made manifest, and they are the reason no faction has dared to venture into the deep places where the Hollow King sleeps.
+  sacredJadeLore: `Sacred jade is the crystalline lifeblood of the Khmer Empire, a stone that exists at the boundary between the mortal world and the spirit realm. In its pure form, it glows with a soft green luminescence and hums with the whisper of ancestral spirits. The naga serpent kings bestowed it upon the first Khmer kings as a gift of covenant — a promise that the two realms would coexist in harmony for as long as the jade endured. Every temple in the empire held at least one jade altar, and every royal decree was sealed with a jade stamp that was believed to carry the weight of the ancestors' approval. The jade appeared in three known varieties: River Jade, found in the Mekong's depths, which glowed blue-green and was prized for healing; Mountain Jade, mined from Phnom Kulen's slopes, which burned gold and was used in forging weapons; and Deep Jade, gifted only by the naga from the spirit realm's own deposits, which shimmered between all colors and was required for the Sacred Crown itself.
 
-But the sleep is ending. Seismographs in the Arcane Conclave's observatories have detected increasing tremors from beneath the continent. Aetherium deposits that were stable for decades are suddenly going critical. And in the darkest corners of Aethermoor, people are beginning to hear a voice — not in their ears, but in the Aetherium itself — whispering of unity, of perfection, of the peace that comes when all things are made hollow.`,
+The empire developed two primary disciplines of jade craft over the centuries. The first was Temple Forging — the art of infusing jade into weapons and armor through sacred rituals conducted at the fire temples of Phnom Kulen. Smiths would meditate for days before approaching the forge, allowing the spirits of their ancestors to guide their hands. Jade-forged blades could cut through iron as though it were silk, and jade-woven armor turned aside arrows and spears with the blessing of the ancestor spirits. Each temple maintained its own forging traditions, and the greatest weapons were said to contain the spirit of the smith's lineage, awakening only in the hands of a worthy heir. The war elephants of the Royal Guard wore jade-reinforced howdahs that could deflect spirit fire, and the temple walls themselves were embedded with jade crystals that created protective barriers against malevolent spirits.
+
+The second discipline was Spirit Channeling — the dangerous practice of opening one's mind to the spirits bound within the jade. Skilled channelers could commune with ancestors, glimpse possible futures, and even command lesser spirits to do their bidding in the mortal world. The storm monks of the eastern highlands used Spirit Channeling to call down monsoon lightning through jade resonators, while the deep-pool priestesses of the Mekong channeled the naga themselves, learning secrets of healing and prophecy. But Spirit Channeling exacted a terrible toll. Each use eroded the channeler's connection to the living world, drawing them deeper into the spirit realm. Those who channeled too deeply became hollow — empty vessels animated by spirit energy, serving unknowable purposes with blank eyes and silent steps.
+
+After the Shattering, the four warlords each developed their own relationship with the sacred jade. King Soryan of Soryanthar treats it as a military resource, embedding jade shards into the weapons and armor of his war elephants and temple soldiers, viewing it through the lens of strategy and warfare. Lord Chanreth of the Stormrealm channels jade through the monsoon storms themselves, using wind and lightning as conduits for spirit energy, believing the storms are the ancestors' way of speaking to the living. Queen Veasna of the Shadowlands communes with the naga through corrupted jade, learning shadow arts that allow her warriors to step between the mortal world and the spirit realm, embracing the blurring of boundaries that the other factions fear. Emperor Kiriath of the Fire Temples feeds jade directly into his sacred flames, believing that only the eternal fire can purify the corrupted stone and restore the Sacred Crown to its original purpose.
+
+Of all the jade's mysteries, the most terrifying is its memory. Sacred jade does not forget what it has witnessed. The jade that now pulses beneath the Hollow King's throne remembers the naga kings' blessing, the forging of the Crown, the nine centuries of peace, and the moment Jayavarman's ritual shattered everything. Some scholars believe that if the jade could be made to speak its memories, it could reveal the exact nature of the forbidden ritual and perhaps even the way to undo it. But no one has yet devised a method for listening to jade without falling prey to Spirit Channeling's terrible toll.`,
+
+  theHollowKing: `King Jayavarman the Unbroken was once the most beloved ruler the Khmer Empire had known — a poet-king who inscribed his own verses on the walls of Angkor Wat and who walked among his people without guards or ceremony. He composed love poems to the Mekong and battle hymns for his war elephants. His love for his empire was genuine, deep, and all-consuming, and it was that very love — twisted by the fear of losing what he cherished — that became the seed of his destruction.
+
+When the forbidden ritual consumed his humanity, what remained was not a man, not even a spirit, but something far worse: a void wearing a king's crown. The Hollow King does not speak with his own voice. Instead, the shattered spirits trapped within the corrupted jade speak through him — a chorus of broken whispers that emanate from his twisted form like the drone of a thousand dying insects. Those who have glimpsed him describe a figure draped in tattered royal silks, his face an ever-shifting mask of shadows and jade light, the four fragments of the Sacred Crown orbiting his head in slow, predatory circles.
+
+His servants are the corrupted Temple Guardians — once the empire's most sacred warriors, now hollow shells encased in ceremonial armor that has fused with their flesh. They move in perfect, silent unison, their movements eerily graceful, as if performing a temple dance that has no music and no audience. They wield jade-cursed weapons that burn with a sickly green fire, flames that consume not flesh but spirit, leaving the body intact while erasing everything that made it human. They do not eat, sleep, or rest. They simply serve the Hollow King's will, which pulses outward from Phnom Kulen like the heartbeat of something vast and terrible. Entire villages have been found emptied, their populations led away in silent processions toward the mountain, their eyes glazed with jade-green light.
+
+In the three generations since the Shattering, there have been sighting after sighting. Merchants traveling the old Khmer roads report passing through villages where every inhabitant stands motionless in the town square, eyes closed, lips moving in unison, chanting in a language that predates the empire itself. Children born near Phnom Kulen are sometimes found with jade-colored eyes that glow faintly in the dark and a knowledge of things no child should know. And hunters who venture too close to the mountain return with their jade amulets dark and cracked, the ancestor spirits that once dwelt within them simply gone — drawn, perhaps, into the void that calls itself a king.
+
+But the most insidious aspect of the Hollow King's power is not his servants or his corrupted armies. It is the jade itself. Every shard of sacred jade across the empire carries a fragment of his shattered consciousness, and through those shards, his whispers reach every corner of the land. In the quiet hours before dawn, farmers hear his voice in the jade amulets hanging above their doorways. Soldiers feel his presence in the jade inlays of their weapons. Even the warlords themselves are not immune — each one has caught, in moments of exhaustion or doubt, the whisper of a voice that is not their own, promising power, promising peace, promising the beautiful simplicity of surrender. The jade remembers its king, and it wants to serve him again.
+
+And now, after three generations of slow, patient growth, the Hollow King is ready. The tremors beneath Phnom Kulen have become constant. The spirit-mist along the Mekong thickens with each passing week. The four warlords, so busy fighting each other, have failed to notice the ground beneath their feet turning cold. The Hollow King's awakening is not a possibility — it is an inevitability. The only question that remains is whether anyone will be strong enough, wise enough, and desperate enough to stop him when he finally opens his eyes.`,
 };
 
 // ============================================================
@@ -64,61 +82,59 @@ export const FACTION_STORIES: Record<string, {
   secret: string;
 }> = {
   knight: {
-    name: "The Iron Legion",
-    leader: "Lord Kaelen Ashford",
-    motto: "Steel endures where flesh fails.",
-    backstory: `The Iron Legion traces its lineage directly to the Aetheric Dynasty's Royal Guard — an elite military order that protected the emperor and his family for nine centuries. When the Shattering tore the empire apart, it was Commander Aldric Ashford, Lord Kaelen's grandfather, who held the evacuation corridors open long enough for ten thousand civilians to escape the Aetherspire's collapse. He paid for it with his life, crushed beneath falling crystal.
+    name: "Kingdom of Soryanthar",
+    leader: "King Soryan the Iron Strategist",
+    motto: "Victory is carved in stone; defeat is written in water.",
+    backstory: `The Kingdom of Soryanthar traces its lineage directly to the Royal Guard of Angkor Wat — an elite military order that protected the Sacred Crown and the temple city for nine centuries. When the Shattering tore the empire apart, it was General Soryan's grandfather, Commander Bophan the Gatekeeper, who held the eastern gates of Angkor Wat open long enough for ten thousand refugees to escape the collapsing temple complex. He paid for it with his life, crushed beneath a falling apsara carving, his jade blade still drawn and glowing in the darkness.
 
-Three generations later, the Ashford family still carries the weight of that sacrifice. The Iron Legion they command is the most disciplined military force on the continent, renowned for their ironclad formations and their mastery of Aetherium-powered war machinery. Lord Kaelen Ashford himself wears a suit of Mechanized Aetheric Plate — a walking fortress of enchanted steel that amplifies his strength tenfold and can withstand direct hits from siege engines. His cavalry rides steam-powered warhorses with diamond-hard hooves, and his siege engines hurl Aetherium-tipped bolts that explode on impact, showering the battlefield with razor-sharp crystal shrapnel.
+Three generations later, the Soryan family still carries the weight of that sacrifice. King Soryan commands the most disciplined military force in the shattered empire, renowned for their ironclad formations and their mastery of jade-embedded war machinery. His war elephants are fitted with jade-reinforced howdahs that can withstand direct hits from spirit-fire, and his infantry fights in interlocking shield walls that have not broken in living memory. Soryan himself wields the Gatekeeper's Blade — his grandfather's jade sword, still humming with the old guardian's spirit, a blade that has tasted the blood of corrupted Temple Guardians and emerged burning brighter for it.
 
-But the Iron Legion's strength is also its curse. The old royal guard oath demands absolute loyalty to the throne — but there is no throne. There is only a hollow king in the deep dark. Some within the Legion whisper that the Ashford family's true duty is to the Hollow King himself, that Commander Aldric's dying wish was not to save the people but to preserve the dynasty's connection to its immortal emperor. Lord Kaelen violently rejects these rumors, but they persist, poisoning trust between the Legion and the other factions.`,
-    motivation: `Lord Kaelen fights to restore order to Aethermoor. He believes the continent needs a strong central authority to resist the Hollow King, and he is convinced that authority should be his. He is not cruel, but he is rigid — he sees war as a necessary tool for unification, and he will not hesitate to crush those who stand in the way of what he believes is the greater good.`,
-    secret: `The Iron Legion possesses a fragment of the original Hollowing Engine's schematics, recovered from the ruins of the Aetherspire by Kaelen's grandfather. Kaelen has kept this secret even from his own officers. He does not intend to rebuild the engine — but he believes its principles could be used to construct a device that could either amplify or suppress Aetherium energy across the continent. If he can build it, he could either weaponize every Aetherium deposit on the map or render the Hollow King powerless. He has not yet decided which.`,
+But the kingdom's strength is also its curse. The old Royal Guard oath demands absolute loyalty to the Crown — but the Crown is broken, and its wearer has become a monster. Some within Soryanthar whisper that the Soryan family's true duty is to the Hollow King himself, that Commander Bophan's dying act was not to save the people but to preserve the dynasty's sacred connection to the throne. King Soryan violently rejects these rumors, but they persist like monsoon mist — impossible to dispel, seeping into every crack in the kingdom's unity.
+
+The kingdom's capital is a fortress-city called Gatehold, built from the stones of Angkor Wat's fallen eastern gatehouse. Its walls are embedded with jade crystals that create a constant low hum, a remnant of the temple's protective barriers. Within Gatehold, every soldier trains daily in the old Royal Guard formations, and the war elephants are stabled in courtyards where jade-inlaid floor tiles keep their temperaments calm and their strength enhanced. It is a city of discipline, duty, and barely contained fear — fear that the Hollow King's whispers will one day prove true, and that the Soryan dynasty's loyalty belongs to a monster wearing a broken crown.`,
+    motivation: `King Soryan fights to restore order to the Khmer lands. He believes the realm needs a strong central authority to resist the Hollow King, and he is convinced that authority should be his by right of blood and sacrifice. He is not cruel, but he is rigid — he sees war as a necessary tool for unification, and he will not hesitate to crush those who stand in the way of what he believes is the greater good. He dreams of rebuilding Angkor Wat and forging the Sacred Crown anew from the four fragments, restoring the empire to its former glory under the Soryan dynasty.`,
+    secret: `The Kingdom of Soryanthar possesses a fragment of the original Crown-forging ritual, recovered from the ruins of the Phnom Kulen fire temples by Soryan's grandfather. King Soryan has kept this secret even from his own generals, locked in a jade-sealed chest that only the Soryan bloodline can open. He does not intend to complete the forbidden ritual — but he believes its principles could be used to construct a device that could either amplify or suppress jade energy across the empire. If he can build it, he could either weaponize every jade deposit in the land or render the Hollow King powerless. He has not yet decided which path to take.`,
   },
 
   mage: {
-    name: "The Arcane Conclave",
-    leader: "Lady Seraphine Elara",
-    motto: "Knowledge is the only weapon that never dulls.",
-    backstory: `The Arcane Conclave was born from the empire's greatest institution of learning: the Aetherspire Academy, once the foremost center of magical research in the known world. When the Shattering destroyed the Aetherspire, the Academy's surviving scholars fled to the southern reaches of the continent, where they established a new seat of learning among the sun-baked ruins of an older, forgotten civilization.
+    name: "Stormrealm of Chanreth",
+    leader: "Lord Chanreth the Stormcaller",
+    motto: "Where thunder walks, the earth remembers its place.",
+    backstory: `The Stormrealm of Chanreth was born from the empire's storm temples — sacred sites built atop the highest peaks along the Mekong, where monks once mediated between the monsoon rains and the spirit world. When the Shattering destroyed Angkor Wat, the surviving storm monks fled to the eastern highlands, where they rebuilt their tradition among the lightning-scarred peaks and the endless, roiling clouds that never seem to part.
 
-Lady Seraphine Elara is the Conclave's youngest ever Archon, elevated to the position after her predecessor was consumed by a rogue Aetherium experiment. She is a prodigy who mastered three schools of arcane theory before her twentieth birthday and has since developed several original spells, including the infamous "Aetheric Resonance" technique that allows mages to harmonize their casting, creating spell effects far more powerful than any single caster could achieve alone.
+Lord Chanreth is the Stormrealm's most powerful leader in generations, born during the Great Monsoon of the Shattering itself — a storm so violent it was said to have been summoned by the naga kings in their fury at Jayavarman's arrogance. From birth, Chanreth could hear the spirits in the wind, and by adulthood he had mastered three of the storm temples' most guarded disciplines: the Lightning Speakers, who can call down bolts of jade-infused lightning with a gesture; the Wind Walkers, who can move across the battlefield faster than the eye can follow by riding the spirit winds; and the Monsoon Bringers, who can summon devastating rainstorms that flood enemy positions and turn the terrain itself into a weapon of the ancestors.
 
-The Conclave's military might lies in its battlemages and arcane constructs. Where the Iron Legion builds machines and powers them with Aetherium, the Conclave directly channels Aetherium through living mages — a far more efficient but far more dangerous approach. Their armies include Arcane Cannons (mages who specialize in projecting concentrated bolts of destructive energy), Warden Golems (Aetherium-powered constructs that serve as mobile shields and melee fighters), and Stormcallers who can manipulate weather patterns to devastating effect on the battlefield.
-
-But the Conclave's pursuit of knowledge has made them both powerful and feared. Their experiments push the boundaries of what is safe, and more than one settlement has been leveled by an arcane accident. Lady Elara's predecessor was not the first Archon to die by Aetherium — merely the most recent. The other factions view the Conclave with a mixture of respect and deep suspicion, knowing that the mages' thirst for understanding may one day lead them to repeat the very catastrophe that created the Hollow King.`,
-    motivation: `Lady Elara is driven by a genuine desire to understand Aetherium and find a way to neutralize the Hollow King without destroying the continent. She believes the answer lies in knowledge — specifically, in recovering lost research from the empire's golden age. She views the other factions as obstacles to this goal, short-sighted warriors who would rather fight over territory than invest in the research that could save them all.`,
-    secret: `Deep within the Conclave's vaults, Lady Elara has been conducting private research into Flesh Aetherization — the forbidden practice that created the Hollow King. She is not trying to replicate it. Instead, she is attempting to develop a reverse process: a way to draw Aetherium out of a living subject and return them to normal. If she succeeds, she believes she could potentially "cure" the Hollow King — restoring Emperor Aldric's humanity and ending the threat without violence. But the research requires living test subjects, and some of her experiments have not gone well. The basement of the Conclave's academy holds things that would horrify even the Hollow King's generals.`,
+The Stormrealm's armies are unlike any other in the shattered empire. Where Soryanthar fields disciplined infantry, Chanreth deploys battlemages who fight from the sky, riding wind currents and striking with jade lightning that can shatter stone and turn war elephants to ash. Their war elephants are not armored for close combat but are instead fitted with jade resonators that amplify storm energy, turning each beast into a mobile lightning rod capable of electrifying entire battlefields. But the Stormrealm's reliance on Spirit Channeling has made them both powerful and feared — more than one monastery has been destroyed when a channeler lost control and the spirits they commanded turned on them, reducing sacred halls to smoking rubble.`,
+    motivation: `Lord Chanreth is driven by a genuine desire to understand the spirit world and find a way to reseal the bond between the mortal and spirit realms. He believes the answer lies in the ancient storm temple records, many of which were lost in the Shattering but may yet survive in forgotten mountain monasteries. He views the other warlords as short-sighted warriors who fight over territory while the very fabric of reality unravels around them. His ultimate goal is not conquest but restoration — the healing of the wound that the Shattering tore between the two worlds. To this end, he has dispatched teams of scholar-monks into the most dangerous regions of the shattered empire, searching for lost temple records that might contain the ritual's reversal. Three such expeditions have been lost without a trace. A fourth returned with a single jade tablet inscribed with fragmentary instructions that Chanreth believes are the key — if he can decipher them before the Hollow King awakens fully.`,
+    secret: `Deep within his meditation, Lord Chanreth has been visited by the naga kings themselves — not in physical form, but through the jade that courses through his blood and the storms that answer his call. The naga have shown him visions of the Hollow King's true power, revealing that the corrupted king is not merely a mortal transformed by a forbidden ritual but a gateway — a tear in the ancient barrier between worlds through which something vast and hungry from the deep spirit realm is trying to enter the mortal one. The naga have shown Chanreth that the Hollow King must not merely be defeated but properly sealed, or the breach will widen until both realms are consumed by the void. This knowledge terrifies him, for it means the war cannot be won by arms alone.`,
   },
 
   rogue: {
-    name: "The Underworld Syndicate",
-    leader: "Shadow Vex",
-    motto: "Every crown is held by blood. We simply collect the debt.",
-    backstory: `The Underworld Syndicate is not a kingdom, not an army, and not a nation by any traditional definition. It is a network — a vast, sprawling web of smugglers, assassins, informants, thieves, and mercenaries that spans every settlement on the continent. The Syndicate was born in the chaos immediately following the Shattering, when the old empire's criminal underworld suddenly found itself without any law enforcement to fear. In the power vacuum, the strongest and most cunning criminal organizations absorbed the weaker ones, until a single syndicate emerged supreme.
+    name: "Veasna's Shadowlands",
+    leader: "Queen Veasna of Shadows",
+    motto: "The shadow knows what the light cannot bear to see.",
+    backstory: `Veasna's Shadowlands is not a kingdom, not an army, and not a nation by any traditional definition. It is a web — a vast, sprawling network of spirit-walkers, mist-dancers, and temple outcasts that stretches across the mist-shrouded lowlands along the Mekong. The Shadowlands were born in the chaos of the Shattering, when the old empire's spirit-touched outcasts — those who had always lived on the margins of temple society, their gifts feared and their presence unwelcome — suddenly found themselves without masters to answer to and a world remade to their advantage.
 
-Shadow Vex is not the syndicate's founder, but they are its most effective leader. No one knows Shadow Vex's true name, gender, or even species — they wear a featureless mask of blackened Aetherium and speak through a voice-modulation device that makes them sound like overlapping whispers. What is known is that Shadow Vex rose to power by assassinating the previous syndicate boss and seventeen of his top lieutenants in a single night, using poisoned Aetherium needles that killed silently and left no trace.
+Queen Veasna is the Shadowlands' undisputed ruler, though she rarely appears in public and never in the same form twice. She was once a temple acolyte in one of Angkor Wat's lesser shrines, a girl of fourteen who discovered during a rain-soaked meditation that she could step between the mortal world and the spirit realm at will — a gift that the Temple Guardians considered heresy and a corruption of the sacred order. Exiled long before the Shattering, she survived alone in the wild lands between provinces, learning the shadow arts from the naga queens who dwelt in the deep pools of the Mekong. When the Shattering shattered the barrier between worlds, Veasna's power multiplied a hundredfold. She can now move through shadows as easily as water, command spirit-beasts that lurk in the mist, and see through the eyes of any creature touched by jade.
 
-The Syndicate's military strength is unconventional but formidable. They do not field armies in the traditional sense. Instead, they deploy small teams of highly specialized operatives: Ghostblade Assassins who can kill a target and vanish before the body hits the ground, Saboteurs who disable enemy war machines with Aetherium-disrupting charges, and Spymasters who can turn an enemy garrison against itself through blackmail, bribery, and strategically placed poison. In open battle, the Syndicate relies on ambush tactics, hit-and-run strikes, and a network of hidden tunnels and safe houses that allow them to appear and disappear at will.
-
-The other factions despise the Syndicate but cannot afford to ignore it. Every faction has, at some point, hired Syndicate operatives for tasks too dirty or too delicate for regular soldiers. This web of debts and blackmail gives Shadow Vex an outsized influence over continental politics — an influence that is far greater than their territorial holdings would suggest.`,
-    motivation: `Shadow Vex's true motivation is unknown even to their closest lieutenants. Some say Vex wants to rule Aethermoor from the shadows, creating a puppet government controlled by the Syndicate. Others believe Vex is searching for something specific — a particular artifact, a hidden Aetherium deposit, or perhaps information about their own mysterious past. What is certain is that Vex is playing a long game, and every move on the continental chessboard serves some purpose that only they can see.`,
-    secret: `Shadow Vex was once a child of the Aetherspire Academy — a young student who showed extraordinary aptitude for Aetherium manipulation. During the Shattering, this child was caught in the blast wave and exposed to raw, uncontrolled Aetherium. The exposure should have killed them. Instead, it transformed them — granting them the ability to absorb and redirect Aetherium energy through their body, but at a terrible cost. Their physical form became unstable, shifting between solid and shadow. They cannot remove their mask because there is no face beneath it — only a swirling vortex of dark Aetherium. Shadow Vex is not merely the Syndicate's leader; they are a living Aetherium anomaly, and they are terrified that if the Hollow King absorbs all the continent's Aetherium, Vex will cease to exist entirely.`,
+The Shadowlands' military strength is unconventional but terrifying. They do not field armies in the open — they have no banners, no war drums, no formations that can be read by a scout on a distant hilltop. Instead, they deploy spirit-walkers who can pass through walls and assassinate targets before vanishing into mist, mist-dancers who use the monsoon fog as cover for devastating ambushes, and naga-bound spies who can take the form of serpents and infiltrate any stronghold. In open battle, the Shadowlands relies on hit-and-run strikes, psychological warfare, and the ability to appear and vanish like ghosts. Their opponents never know if the soldier beside them is truly alive or a spirit wearing a soldier's face. The other warlords despise the Shadowlands but cannot afford to ignore them. Every faction has hired Veasna's operatives for tasks too delicate for regular soldiers, creating a web of debts and secrets that gives Queen Veasna an outsized influence over the entire war.`,
+    motivation: `Queen Veasna's true motivation is known only to the naga queens who counsel her from the deep pools. She claims to seek the reunification of the mortal and spirit realms — not the old harmony of the Sacred Crown, but a new synthesis in which the living and the dead coexist as equals, with the naga as mediators. Whether this vision is genuine liberation or an elegant mask for personal ambition, none can say with certainty. She plays a game measured in decades, and every maneuver on the war's chessboard serves a purpose that only she and the serpents beneath the water can perceive.`,
+    secret: `The naga queens have revealed to Veasna the Hollow King's true nature — not a corrupted mortal king but a vessel for an ancient entity that the naga themselves imprisoned within the jade of the Sacred Crown millennia ago, long before the first Khmer king ever wore it. The forbidden ritual did not transform Jayavarman; it freed the entity and allowed it to consume him from within. The naga created the Sacred Crown as a prison, and Jayavarman's foolishness broke the lock. Veasna knows that the four Crown fragments, if reassembled by the wrong hands, will not restore the empire but will fully unleash the imprisoned entity upon both realms. She is not trying to reunite the Crown — she is trying to ensure it can never be made whole. The implications of this secret are staggering: if Veasna is right, then every warlord who seeks to reforge the Sacred Crown is unwittingly working toward the destruction of both realms. And the naga, who created the Crown as a prison, are either unwilling or unable to stop them directly, relying instead on cryptic prophecies and a single exiled queen to prevent an apocalypse they themselves failed to prevent the first time.`,
   },
 
   paladin: {
-    name: "The Order of the Radiant Dawn",
-    leader: "Sir Gideon the Unbroken",
-    motto: "The light does not ask permission to shine.",
-    backstory: `The Order of the Radiant Dawn was founded in the immediate aftermath of the Shattering by a group of soldiers, priests, and refugees who believed that the catastrophe was divine punishment for the empire's hubris. They saw the Hollow King not as a political problem to be solved but as a spiritual wound to be healed. Their founding charter declared three sacred duties: protect the innocent, purify corrupted Aetherium, and ultimately seal the Hollow King away forever.
+    name: "Empire of Kiriath",
+    leader: "Emperor Kiriath the Eternal Flame",
+    motto: "From ashes we rose; to ashes all enemies shall return.",
+    backstory: `The Empire of Kiriath was founded in the immediate aftermath of the Shattering by a faction of fire temple priests who believed the catastrophe was divine punishment for the empire's spiritual decay. They saw the Hollow King not as a political problem to be solved but as a sacred wound to be cauterized — a corruption that could only be healed through fire, the purest element, the one that the naga kings themselves revered above all others as the essence of creation.
 
-Sir Gideon is the Order's current Grandmaster, a title he earned not through birthright but through decades of unwavering service and three near-death experiences that should have killed any ordinary warrior. He carries the Dawnbrand — a massive two-handed sword forged from purified Aetherium crystal that glows with warm golden light. The Dawnbrand is one of the few weapons known to cause lasting damage to Hollowed beings, and Gideon has used it to destroy three of the Hollow King's lesser generals over the course of his career.
+Emperor Kiriath is the Empire's current ruler, a title he earned not through birthright but through a trial by fire — literally. He walked barefoot across the molten stone of the Phnom Kulen forges to prove his worthiness to the flame priests, and the sacred fires did not consume him, parting around his feet like water around stone. He carries the Sunfire Brand, a massive war-spear forged from jade-infused obsidian that burns with an eternal golden flame said to be a fragment of the original fire that the naga kings used to forge the Sacred Crown itself. The Sunfire Brand is one of the few weapons known to cause lasting harm to the Hollow King's corrupted servants, and Kiriath has used it to destroy three of the Hollow King's temple guardian generals over the course of his reign.
 
-The Order's military forces are the most spiritually disciplined on the continent. Their Paladins undergo years of meditation and ritual purification before they are allowed to wield Aetherium-powered equipment, ensuring that the mineral's corrupting influence is kept in check. Their signature units are the Dawn Guard — heavy infantry wearing Aegis Suits, powered armor that generates a shimmering energy shield capable of deflecting both physical and magical attacks. The Order also fields Sanctifiers, specialized priests who can channel purified Aetherium to heal allies and weaken enemies, and Champions — elite warriors mounted on Aetherium-powered war steeds that can gallop across any terrain, even water, for short distances.
+The Empire's military forces are the most fanatically devoted in the shattered lands. Their warriors undergo years of ritual purification before they are allowed to wield jade-forged weapons, ensuring that the stone's corrupting influence is held in check by sacred flame. Their signature units are the Sunfire Guard — heavy infantry wearing obsidian armor inscribed with flame prayers, each warrior wielding a jade-tipped spear that burns with holy fire. The Empire also fields Flame Channelers, specialized priests who can summon pillars of sacred fire from the earth itself, and Ash Walkers — elite scouts who can move through burning terrain without harm, leaving no footprints in the embers. The Empire follows a phoenix philosophy: that destruction and rebirth are one and the same, and that the old world must burn completely before the new one can rise from its ashes.
 
-The Order's rigid code of honor makes them both respected and frustrated by the other factions. They refuse to use ambushes, poison, or any tactic they consider dishonorable. They will not attack non-combatants. They will not break truces. This chivalry has cost them dearly in a war where their opponents feel no such constraints. But the Order's unwavering principles have also earned them something no other faction possesses: the genuine trust and loyalty of the common people.`,
-    motivation: `Sir Gideon is driven by an unshakable conviction that the Hollow King must be sealed, not killed. He believes that killing the Hollow King would release the concentrated Aetherium within him in an uncontrolled burst that would cause a second Shattering — potentially destroying the continent entirely. The Order's mission, as Gideon sees it, is not to win the war but to prevent an apocalypse. Every battle he fights, every territory he claims, is in service of gathering enough purified Aetherium to construct a new sealing device — one that will be strong enough to contain the Hollow King for another thousand years.`,
-    secret: `Sir Gideon has already been partially hollowed. During his third encounter with a Hollowed General, the creature's Aetherium-corrupted weapon pierced his Aegis Suit and injected a sliver of tainted Aetherium directly into his bloodstream. Gideon has kept this secret from everyone, including his own order's priests. He can feel the corruption spreading slowly through his body — a cold numbness that creeps up his spine a little further each year. He estimates he has perhaps five years before the hollowing process claims him completely. This is why he is in such a desperate hurry to complete the sealing device. He is not just trying to save Aethermoor. He is racing against his own extinction.`,
+This philosophy makes the Empire of Kiriath both the most dangerous and the most unpredictable of the four factions. They do not fear loss — they embrace it. Cities they cannot hold are burned rather than surrendered. Jade deposits they cannot protect are detonated with sacred fire rather than left for enemies. Their enemies have learned to fear the scent of smoke on the wind, for where there is smoke, the Ash Walkers are not far behind, and where the Ash Walkers go, nothing green remains.`,
+    motivation: `Emperor Kiriath is driven by an unshakable conviction that the Hollow King must be purified by fire — not merely killed, but cleansed of the void's corruption. He believes that destroying the Hollow King outright would release the corrupted jade energy in an uncontrolled burst, causing a second Shattering that would finish what the first one started and perhaps consume both realms entirely. The Empire's mission, as Kiriath sees it, is to gather the four Crown fragments and use them in a sacred flame ritual that will burn away the corruption while preserving the jade's essential power, restoring the Sacred Crown to its true purpose as the bridge between worlds. It is a vision that inspires fanatical devotion in his followers and deep unease in his rivals, for Kiriath's definition of "purification" leaves little room for mercy or compromise. Those who will not embrace the flame, in his eyes, are already part of the void.`,
+    secret: `The eternal flames that power the Empire of Kiriath are dying. The sacred fires that once burned with the intensity of the sun now gutter and flicker, weakened by the Hollow King's growing corruption of the jade beneath the earth. Emperor Kiriath has kept this secret from his own people, hiding the weakening flames behind ceremonial veils and increasing the number of prayers and offerings to mask the decline. But he knows the truth: the fires will extinguish entirely within a few short years unless they are rekindled. And the only way to rekindle them is to reunite all four fragments of the Sacred Crown and place them within the original fire temple forge of Phnom Kulen. Kiriath's holy crusade is not merely a quest for power or justice — it is a desperate race against the extinction of everything his empire stands for.`,
   },
 };
 
@@ -128,223 +144,157 @@ The Order's rigid code of honor makes them both respected and frustrated by the 
 
 export const CAMPAIGN_CHAPTERS: CampaignChapter[] = [
   {
-    id: "prologue",
-    chapterNumber: 0,
-    title: "The Shattering",
-    subtitle: "Where gods fell and empires crumbled to dust",
-    introNarration: `The night the Aetherspire fell, the sky over Aethermoor burned violet.
-
-You have heard the stories a thousand times — told by grandparents who heard them from their own grandparents, each retelling adding fresh horror. The emperor's mad ritual. The crystal tower cracking like a glass egg. The shockwave that flattened forests and boiled rivers. The three days of darkness that followed, during which no one dared to light a fire for fear of attracting the things that crawled from the broken earth.
-
-Three generations later, the scars of the Shattering still define every aspect of life on the continent. The Frostlands in the north are locked in unnatural winter, kept frozen by disrupted arcane currents that show no sign of weakening. The Western Reaches are choked with corrupted Aetherium mist that drives wanderers mad. The Eastern Shores are littered with the rusted hulks of war machines that fought and died in the cataclysm's final hours.
-
-And beneath it all, growing stronger with each passing year, the Hollow King waits in his subterranean kingdom — dreaming his hollow dreams, and slowly, patiently, reaching upward through the stone.
-
-You are one of the four warlords who have claimed pieces of this broken world. Whether you seek to save it, rule it, or simply survive it, the time for waiting is over. The Hollow King stirs. The old borders will not hold. And the war for Aethermoor begins now.`,
-    victoryNarration: `The first blows have been struck. The continent trembles not from the Shattering this time, but from the march of armies and the clash of steel and spellfire.
-
-Your banner flies over new territory tonight. But the victories feel hollow already — you can feel it in the Aetherium beneath your boots, vibrating with a frequency that makes your teeth ache. The Hollow King's influence is growing. Whatever you are fighting for, you had better fight fast. Time is a luxury Aethermoor can no longer afford.`,
-    defeatNarration: `Defeat. Bitter, swift, and absolute. Your forces are scattered, your banners torn, your claim on this land reduced to a memory. But defeat in Aethermoor is rarely final — the shattered continent has a way of offering second chances to those desperate enough to take them.
-
-Lick your wounds. Rebuild. And remember: the Hollow King does not care which warlord wins this battle. He only cares that they are too busy fighting each other to notice him clawing his way back to the surface.`,
-    objectives: [
-      "Secure your home territories and establish a foothold",
-      "Deploy reinforcements to strengthen border positions",
-      "Eliminate at least one rival faction's presence in your region",
-    ],
-  },
-
-  {
     id: "chapter_1",
     chapterNumber: 1,
-    title: "The Gathering Storm",
-    subtitle: "Four warlords, four visions, one shattered continent",
-    introNarration: `The border skirmishes have begun in earnest. What started as probes and raids has escalated into full-scale territorial warfare as each faction pushes to control the continent's most valuable Aetherium deposits.
+    title: "The Stirring of Fragments",
+    subtitle: "Where the old empire's echoes first awaken",
+    introNarration: `The monsoon winds carry whispers from Phnom Kulen — whispers that the jade beneath the earth is stirring after three generations of silence. For decades, the four warlords have fought over the ruins of the Khmer Empire, each claiming a fragment of the Sacred Crown and a destiny they believe is theirs alone.
 
-The Iron Legion's war machines thunder across the Heartlands, their steam-driven cavalry leaving furrows of torn earth in their wake. Lord Ashford's strategy is characteristically blunt: overwhelming force applied at decisive points, supported by Aetherium-tipped siege bolts that can shatter fortress walls in a single volley. His commanders call it "the anvil and the hammer." His enemies call it "being crushed between a rock and a hard place."
+But now the land itself is changing. Spirit energies surge through the Mekong's waters, turning them the color of bruised jade. Ancestral voices echo in the crumbling corridors of Angkor Wat, chanting hymns that no living person remembers. And in the border territory of Ironhold, a fortress built from the stones of a fallen temple, something has been unearthed in the deep foundations — a cache of pristine jade, untouched by the Shattering's corruption, humming with power that has not been felt since the empire's golden age. The time for skirmishing is over. The War of the Broken Crown begins in earnest.`,
+    victoryNarration: `Ironhold's ancient walls now fly your banner, and the jade cache hidden beneath its foundations pulses steadily under your control. But the victory tastes of ash and old stone.
 
-The Arcane Conclave responds with precision and terror. Lady Elara's battlemages do not march in formation — they teleport. Strike teams materialize behind enemy lines, unleash devastating spells, and vanish before a response can be organized. Meanwhile, the Conclave's Warden Golems hold the front lines, tireless constructs of enchanted stone and crystal that absorb punishment that would shatter any living soldier.
+The jade you recovered hums with a frequency that makes your teeth ache and your ancestors stir in their sleep — the Hollow King's influence is growing stronger, and every fragment of sacred jade across the land is resonating with his corrupted will. The other warlords have taken notice of your ambitions. The old borders will not hold. Move quickly, before the shadows close in and the Hollow King's whispers grow too loud to ignore.`,
+    defeatNarration: `Ironhold has fallen to your rivals, its jade caches seized by those with sharper blades or deeper treachery, its strategic position along the Mekong lost.
 
-The Underworld Syndicate watches from the shadows, as always. Shadow Vex's operatives have infiltrated every faction's supply lines. Poisoned rations disable garrisons. Sabotaged war machines explode at critical moments. And when a territory changes hands, it is rarely because of a fair fight — the Syndicate has already prepared the ground with bribes, blackmail, and strategically placed informants.
-
-The Order of the Radiant Dawn marches with purpose. Sir Gideon does not seek territory for its own sake — he seeks specific locations where purified Aetherium can be harvested for his sealing device. His paladins fight with a ferocity that belies their chivalric code, driving hard toward ancient ruins and forgotten temples where the old empire's purified Aetherium caches might still lie hidden.
-
-The storm is gathering. Choose your battles wisely — the wrong war at the wrong time could leave you vulnerable to far worse than a rival warlord.`,
-    victoryNarration: `The first true campaign of the war is yours. Your rivals reel from your advances, and the common folk of the territories you have liberated whisper your name with a mixture of hope and fear.
-
-But hope is a dangerous thing in Aethermoor. It makes people lower their guard. And something is stirring in the deep places — something that feeds on hope and turns it to despair.
-
-The tremors are getting stronger. The Aetherium is singing a different song now. The next chapter of this war will not be fought against your rivals. It will be fought against something far older and far worse.`,
-    defeatNarration: `Your campaign has stalled. Rival warlords have seized the initiative, and your forces are stretched thin across too many fronts. In Aethermoor, weakness invites predators — and there is no predator more dangerous than a rival who smells blood.
-
-But take heart. The war is far from over. Your rivals may have won battles, but they have not won the war. And they are about to face a threat that makes territorial disputes look like playground squabbles.`,
+But defeat in the Khmer lands is rarely final — the spirits of the old empire have a way of offering second chances to those desperate enough to seize them. The ancestors remember those who fight with courage, even in loss. Rebuild your forces, listen to the whispers of the jade, and remember: the Hollow King does not care which warlord wins this battle. He only cares that they are too busy fighting each other to notice him clawing his way back toward the light of the living world.`,
     objectives: [
-      "Control at least 6 territories to establish regional dominance",
-      "Capture an enemy territory to demonstrate military strength",
-      "Defend your territories against rival counterattacks",
-      "Begin stockpiling Aetherium resources for the battles ahead",
+      "Secure your home territories and establish a defensive foothold",
+      "Capture Ironhold and seize the jade cache beneath its foundations",
+      "Deploy reinforcements to strengthen border positions along the Mekong",
+      "Eliminate at least one rival faction's presence in your region",
+      "Build a spirit ward to protect your jade supplies from Hollow King's influence",
     ],
+    battleSetup: {
+      territoryAssignments: {
+        "Ironhold": { ownerId: "neutral", units: ["Spirit Guard", "Jade Archer", "War Elephant"] },
+        "Mekong Crossing": { ownerId: "neutral", units: ["River Patrol", "Naga Scout"] },
+      },
+      bonusReinforcements: 2,
+    },
   },
 
   {
     id: "chapter_2",
     chapterNumber: 2,
-    title: "The Hollow King Awakens",
-    subtitle: "Death does not sleep — it merely waits",
-    introNarration: `It begins with the tremors.
+    title: "Whispers in the Mist",
+    subtitle: "The naga do not forget, and they do not forgive",
+    introNarration: `The monsoon mist rolling off the Mekong has grown thick with spirit energy, so dense that travelers lose their way within paces of the road and villages wake to find their boundaries shifted in the night. Those who venture into the mist return changed — speaking in old tongues, carving naga scales into their skin, or simply vanishing altogether, their footprints ending abruptly in pools of jade-tinted water.
 
-They are subtle at first — a vibration in the ground that most people dismiss as mining activity or natural seismic shifts. But the Arcane Conclave's seismographs tell a different story. The tremors are not random. They are rhythmic, deliberate, and originating from a single point deep beneath the continent's center. Something enormous is moving down there. Something that has been still for three generations is finally waking up.
+Queen Veasna's Shadowlands have expanded deep into the mist-covered lowlands, her spirit-walkers and mist-dancers striking from the fog with devastating precision. But the mist hides more than assassins. Naga spirits have been sighted in the deep pools, their immense serpent forms coiling through the jade-tainted waters, their voices carrying prophecies across the current. They speak of the Hollow King's true nature and the terrible, ancient purpose of the four Crown fragments. Navigate the mist, uncover the naga's secrets, and survive Queen Veasna's deadly shadow games.`,
+    victoryNarration: `You have pushed through the spirit-mist and survived Queen Veasna's shadow games, claiming territory rich with naga-touched jade that sings with ancient power. The serpent spirits have shared fragments of forbidden knowledge — visions of what the Hollow King truly is and what will happen if the Crown fragments fall into the wrong hands and are made whole.
 
-Then come the Hollowed Ones.
+The mist is thinning now, the Mekong's waters running clear once more, but the truths the naga revealed will haunt your dreams for seasons to come. The war has entered a new phase, one where knowledge may prove more dangerous than any blade.`,
+    defeatNarration: `The mist has swallowed your forces whole. Soldiers who wandered into the fog emerged days later unable to speak, their eyes clouded with jade-green light, their lips moving in silent conversation with things no living person can see.
 
-They emerge from fissures in the earth — not the great Hollowed Generals, but lesser creatures: Hollowed Stalkers, humanoid figures with rusted Aetherium armor fused to their flesh, moving with jerky, puppet-like motions. They do not eat, sleep, or speak. They simply attack anything that moves, driven by the Hollow King's psychic command. Entire villages are found emptied, their populations dragged underground. Patrols vanish without a trace. And in the corrupted territories of the Western Reaches, something far worse is happening — the land itself is changing, Aetherium crystals erupting from the soil like malevolent flowers, pulsing with a sickly violet light.
-
-The factions are forced to divert forces from their war against each other to deal with this new threat. Lord Ashford dispatches mechanized strike teams to seal the underground fissures. Lady Elara sends battlemages to study the emerging creatures, hoping to find a weakness. Shadow Vex's informants report that the Hollowed Ones are not mindless — they are being directed by something, herded toward specific targets with tactical precision that suggests a guiding intelligence. And Sir Gideon knows, with a certainty that chills him to his corrupted bones, that this is only the beginning.
-
-The Hollow King is testing the surface dwellers. Probing their defenses. Learning their strengths and weaknesses. And when he is ready, he will send his true servants — the Hollowed Generals — to finish what the Stalkers have started.`,
-    victoryNarration: `You have pushed back the Hollowed incursion, but the victory tastes like ash. The creatures you destroyed were merely scouts — disposable pawns in a game whose scope you are only beginning to comprehend.
-
-The Aetherium deposits across the continent are behaving strangely. Crystals that have been stable for decades are suddenly resonating at new frequencies, as if responding to a signal from deep below. Your artificers report that their machines are running hotter than usual, the Aetherium cores straining against some invisible pressure.
-
-And in your dreams, you hear it: a voice that is not a voice, a thought that is not your own, whispering from the crystal beneath your feet.
-
-Soon.`,
-    defeatNarration: `The Hollowed Ones have overwhelmed your defenses. Territories you fought hard to claim are now no-man's-lands patrolled by rusted abominations that feel no pain and know no mercy.
-
-But the war goes on. The other factions have also suffered — the Hollow King's emergence is an equal-opportunity catastrophe. If anything, this shared threat might create opportunities for unexpected alliances.
-
-Or it might simply give the Hollow King more time to prepare his true assault. The clock is ticking, and every territory lost to the hollow ones is a territory that feeds the enemy's growing strength.`,
+Veasna's shadow-walkers exploited the chaos, seizing territories you had fought hard to claim and vanishing before you could respond. But even in defeat, the naga whispers linger at the edge of hearing — a reminder that the true war is not between warlords but between the living and the hollow things that wear the shapes of kings and guardians. Some of your soldiers never returned from the mist at all, and those who did speak of vast serpentine shapes moving beneath the jade-tinted waters, watching, waiting, as if the naga themselves were judging whether this war is worth fighting.`,
     objectives: [
-      "Defend your territories against Hollowed Stalker incursions",
-      "Recapture any territory lost to the Hollow King's forces",
-      "Push into corrupted regions to seal underground fissures",
-      "Maintain your military strength while fighting on two fronts",
+      "Push through the spirit-mist and secure the Mekong lowlands",
+      "Survive Veasna's ambushes and counter her shadow tactics",
+      "Locate and commune with the naga spirits in the deep pools",
+      "Capture territory containing naga-touched jade deposits",
+      "Uncover the naga prophecy about the true nature of the Crown fragments",
     ],
+    battleSetup: {
+      territoryAssignments: {
+        "Mist Village": { ownerId: "veasna", units: ["Mist Dancer", "Spirit Walker", "Naga Bound Spy"] },
+        "Deep Pool Shrine": { ownerId: "neutral", units: ["Naga Spirit Guardian", "Jade Serpent"] },
+      },
+      bonusReinforcements: 2,
+    },
   },
 
   {
     id: "chapter_3",
     chapterNumber: 3,
-    title: "Blood and Betrayal",
-    subtitle: "In war, the enemy of my enemy is still my enemy",
-    introNarration: `The Hollow King's emergence has changed everything. The faction war that dominated Aethermoor for three generations is no longer the continent's primary concern — but it has not stopped. If anything, the desperation born of the Hollow King's awakening has made the remaining factions more ruthless, not less.
+    title: "The Storm Breaks",
+    subtitle: "When the sky itself takes sides, no wall can save you",
+    introNarration: `Lord Chanreth has summoned the Great Monsoon — a storm of such fury that it has not been seen since the night of the Shattering itself, when the naga kings first vented their wrath upon the land. Lightning cracks across the eastern highlands in continuous sheets, turning night into day and day into a blinding white hell. The wind howls with the voices of a thousand ancestor spirits, all of them screaming Chanreth's name.
 
-Lord Ashford proposes an alliance. It is a logical proposition: the Iron Legion provides military might, the Arcane Conclave provides magical firepower, the Order provides purified Aetherium technology, and the Syndicate... well, the Syndicate provides intelligence and deniable operations. Together, the four factions could mount a genuine campaign against the Hollow King.
+Chanreth's battlemages ride the storm winds like surfers on a tidal wave, striking with jade lightning that can shatter fortress walls, split war elephants in two, and turn rivers to steam in an instant. The Stormrealm is on the march, and Chanreth will not stop until his vision of a restored spirit-mortal bond is imposed upon the shattered empire — by thunder, by lightning, and by overwhelming force. Cross the lightning-fields, weather the storm, and prove that your will is stronger than the sky's fury.`,
+    victoryNarration: `The Great Monsoon has broken against your determination like waves against the ancient temple walls of Angkor Wat — walls that were built to endure the wrath of gods and have outlasted them all. Chanreth's storm temples are yours, their jade resonators now humming under your command, their sacred archives open to your scholars.
 
-But trust is a currency in short supply on Aethermoor. Lady Elara suspects Ashford wants to use the alliance to absorb the other factions once the Hollow King is dealt with. Shadow Vex knows that any alliance would require the Syndicate to reveal its networks — a vulnerability they cannot afford. Sir Gideon wants the alliance, but only if the other factions agree to submit their Aetherium stockpiles to his order's purification process — a condition that no faction will accept.
+The lightning has faded to a gentle, cleansing rain, and in its aftermath, the spirit energy that Chanreth unleashed has settled into the land like nourishing dew. The mountain monasteries, once shrouded in perpetual storm, are now visible for the first time in a generation — ancient stone spires dusted with snow and etched with prayers to the naga kings. But the storm's true lesson lingers: the spirit world is not a resource to be exploited but a force to be respected, and the Hollow King stirs more violently with each passing day as the barrier between worlds grows ever thinner.`,
+    defeatNarration: `The storm has scattered your forces like dry leaves before a typhoon. Chanreth's Lightning Speakers carved through your formations with surgical precision, each bolt guided by ancestor spirits who knew exactly where your defenses were weakest.
 
-And so the betrayals begin.
-
-In the Frostlands, an Iron Legion convoy carrying Aetherium warheads is ambushed — not by the Hollow King's forces, but by Syndicate operatives who sell the weapons to the highest bidder. In the Heartlands, a Conclave research outpost is destroyed by an "accidental" siege engine misfire from a Legion garrison stationed nearby. In the Southern Realms, Order paladins discover that one of their own sanctuaries has been secretly housing a Conclave black-site where forbidden Flesh Aetherization experiments are being conducted on captured prisoners.
-
-Alliances form and shatter within weeks. Promises are made and broken before the ink dries. And through it all, the Hollow King's influence continues to spread, turning the faction war into exactly the distraction he needs.
-
-You must navigate this web of betrayal and opportunity. Form alliances when they serve you. Break them when they don't. And never, ever forget that the true enemy is not the warlord across the border — it is the thing beneath your feet that is slowly waking up.`,
-    victoryNarration: `You have emerged from the crucible of betrayal stronger than before. The alliances you forged — and broke — have reshaped the political landscape of Aethermoor. Rivals who underestimated you now know better. Those who trusted you may come to regret it. But regret is a luxury for the living, and in Aethermoor, the living are becoming scarce.
-
-The Hollow King's influence continues to grow, but you have bought something precious: time. Time to gather resources. Time to strengthen your forces. Time to prepare for the final confrontation that is coming, whether anyone is ready or not.
-
-The endgame approaches. The continent holds its breath.`,
-    defeatNarration: `Betrayal has cost you dearly. Allies turned enemies at the worst possible moment, territories you fought to secure were stolen by diplomatic knife-work, and your forces are demoralized by the realization that the war they are fighting has no honor and no rules.
-
-But here is the truth that no one in Aethermoor wants to admit: honor and rules will not save this continent. Only power will. And power is not won by being noble. It is won by being smart, being ruthless, and being willing to do what others will not.
-
-The Hollow King does not care about your morals. He only cares about his hunger. And every moment you spend licking your wounds is a moment he spends growing stronger.`,
+The Wind Walkers struck from directions that should not have been possible — riding air currents that twisted through your ranks like serpents. Your war elephants panicked in the electrical storms, trampling your own infantry in their terror. But the rain will pass, the land will dry, and armies can be rebuilt from the surviving remnants. The sky may have chosen Chanreth this day, but skies change with the seasons.`,
     objectives: [
-      "Form or exploit at least one alliance with a rival faction",
-      "Capture territories rich in Aetherium deposits",
-      "Defend against both rival attacks and Hollowed incursions",
-      "Eliminate a rival faction from the war entirely",
+      "Survive the Great Monsoon and push into Chanreth's highland territories",
+      "Capture at least two storm temples to disrupt Chanreth's power base",
+      "Protect your war elephants from jade lightning strikes using spirit wards",
+      "Defeat or drive back Chanreth's battlemage corps",
+      "Secure the storm temple archives before they can be destroyed or hidden",
     ],
+    battleSetup: {
+      territoryAssignments: {
+        "Storm Peak": { ownerId: "chanreth", units: ["Lightning Speaker", "Wind Walker", "Storm Elephant"] },
+        "Cloud Monastery": { ownerId: "chanreth", units: ["Monsoon Bringer", "Temple Monk", "Jade Resonator"] },
+      },
+      bonusReinforcements: 3,
+    },
   },
 
   {
     id: "chapter_4",
     chapterNumber: 4,
-    title: "The Siege of Aethermoor",
-    subtitle: "The final battle for the soul of a broken world",
-    introNarration: `The tremors have stopped.
+    title: "Ashes of the Old World",
+    subtitle: "The fire that purifies also consumes",
+    introNarration: `The volcanic lowlands surrounding the Fire Temples of Kiriath burn day and night, rivers of molten stone carving glowing channels through a landscape of obsidian and ash. Emperor Kiriath has declared a holy crusade, his Sunfire Guard marching outward from the Sunfire Citadel — a fortress forged from molten stone at the heart of the volcanic fields, its walls radiating heat that can be felt from a day's march away.
 
-For three weeks, the ground beneath Aethermoor has been utterly still — no vibrations, no tremors, no underground rumbles. The seismographs in the Arcane Conclave's observatories show a flat line, as if the earth itself is holding its breath.
+Kiriath's warriors are the most fanatical in the shattered empire, fighting with a zeal that borders on madness, their jade-tipped spears burning with sacred fire that leaves nothing but white ash where enemies once stood. But Kiriath's crusade masks a desperation that his people must never discover: the eternal flames are dying, the sacred fires that have burned for nine centuries guttering and dimming with each passing season. Only the Sacred Crown's restoration can save them.
 
-Lady Elara knows what this means. She has seen it in her research, in the fragmented records recovered from the Aetherspire's ruins. The Hollow King is not dormant. He is concentrating. Every ounce of Aetherium energy in the continent's bedrock — every crystal, every vein, every trace molecule — is being drawn toward a single point deep underground, funneling into the Hollow King's chamber like water swirling down a drain.
+Scouts report that the volcanic lowlands have grown more unstable in recent weeks — new fissures opening in the earth, geysers of jade-tinted steam erupting without warning, and the distant sound of the Sunfire Citadel's war horns echoing across the ash plains day and night. Kiriath is calling every warrior to the flames. This is not merely a defense — it is a final stand. Traverse the hellscape, breach the obsidian walls, and confront a dying empire's final, most terrible fury.`,
+    victoryNarration: `The Sunfire Citadel's obsidian walls lie cracked and smoking, their sacred fires dimmed but not extinguished, and Emperor Kiriath's forces have been driven back to the inner sanctums where the last embers still glow.
 
-He is preparing his final form.
+But victory here carries a bitter revelation: the eternal flames that have burned since the naga kings first kindled them are guttering and dim, their sacred light fading as the Hollow King's corruption seeps deeper into the jade veins beneath the earth. Kiriath's desperation is now your burden — without the flames, the last barrier between the mortal world and the Hollow King's void will fall, and the spirits of the old empire will have nowhere left to anchor themselves. The final confrontation draws near, and it must happen soon, before the last flame goes dark.`,
+    defeatNarration: `Kiriath's sacred fire has consumed your advancing armies like dry timber. The Sunfire Guard fought with the desperate fury of warriors who know they are defending the last light in a darkening world, their jade spears burning through your strongest shields and turning your war elephants into screaming torches.
 
-On the surface, the effects are immediate and devastating. Aetherium-powered machines begin failing across the continent — war constructs stall, siege engines go cold, Aegis Suits flicker and die. Without Aetherium, the factions' most powerful weapons are useless. The Iron Legion's mechanized cavalry reverts to horseback. The Conclave's golems crumble into inert rubble. The Order's energy shields fail. Even the Syndicate's stealth technology becomes unreliable.
-
-Only the Hollowed Ones grow stronger. Fed by the concentrated Aetherium flowing toward their master, they emerge from the earth in vast numbers — no longer scouts and raiders but a full army, led by the Hollowed Generals themselves. Seven of them. Seven towering monstrosities of rusted iron and corrupted crystal, each one carrying a fragment of the Hollow King's will and a weapon that has been absorbing Aetherium for three generations.
-
-The final battle for Aethermoor will not be won by the faction with the most territory or the biggest army. It will be won by the warlord who can adapt fastest to a world suddenly stripped of its greatest power source. Steel, spellcraft, cunning, and faith — the old ways, the ways that existed before Aetherium changed everything — will determine who survives to see the dawn.
-
-This is it. The siege of Aethermoor. The last war. Win, and you will have the chance to face the Hollow King on his own ground. Lose, and there will be no one left to remember that Aethermoor ever existed.`,
-    victoryNarration: `Against all odds, you have held. The Hollowed army has been driven back, the Generals destroyed or scattered, and the continent — battered, bleeding, but alive — has survived the Hollow King's greatest assault.
-
-But it is not over. The tremors have returned, stronger than ever, and the Aetherium is flowing underground with renewed fury. The Hollow King has not been defeated — merely delayed. His final transformation is nearly complete, and when it finishes, he will emerge from the depths not as the broken emperor of a fallen empire, but as something entirely new. Something that has never existed before.
-
-Something godlike.
-
-The final battle awaits. Gather your forces, sharpen your steel, pray to whatever gods still listen, and prepare to descend into the hollow places of the earth. The Hollow King awaits.`,
-    defeatNarration: `The Hollowed army has broken through. Your defenses are shattered, your forces scattered, your territories overrun by a tide of rust and corruption that shows no mercy and accepts no surrender.
-
-But even in defeat, there is a sliver of hope. The Hollowed Ones are not invincible. They were driven back — briefly — by coordinated assaults from all four factions working in desperate, unspoken unison. If the factions could stop fighting each other long enough to face the true enemy...
-
-No. That is a fantasy. Aethermoor runs on power, not hope. But perhaps, in the darkness of defeat, you will find the one thing that matters most: the will to stand up and fight again.
-
-The war is not over. Not yet. Not while you still draw breath.`,
+The volcanic lands remain in Kiriath's grip, and the eternal flames — whatever remains of them — continue to cast their dying, golden glow across the ash-choked plains. But even empires built on fire eventually run out of fuel, and the Hollow King's corruption will reach these flames soon enough. Regroup, gather your strength, and strike again when the fires are weaker.`,
     objectives: [
-      "Survive the Hollowed army's massive assault",
-      "Destroy or repel at least 2 Hollowed Generals",
-      "Adapt to the loss of Aetherium-powered technology",
-      "Control the majority of the continent when the dust settles",
+      "Advance through the volcanic lowlands toward the Sunfire Citadel",
+      "Breach the obsidian fortress walls and engage the Sunfire Guard",
+      "Protect your forces from sacred fire attacks and Flame Channelers",
+      "Uncover the truth about the dying eternal flames",
+      "Decide whether to aid or exploit Kiriath's desperate situation",
     ],
+    battleSetup: {
+      territoryAssignments: {
+        "Lava Fields": { ownerId: "kiriath", units: ["Flame Channeler", "Ash Walker", "Sunfire Guard"] },
+        "Obsidian Gate": { ownerId: "kiriath", units: ["Sunfire Guardian", "Jade Pyromancer", "War Elephant"] },
+      },
+      bonusReinforcements: 3,
+    },
   },
 
   {
     id: "chapter_5",
     chapterNumber: 5,
-    title: "Into the Hollow",
-    subtitle: "To kill a god, you must first become something more than mortal",
-    introNarration: `The entrance to the Hollow King's domain lies beneath the ruins of the Aetherspire — a gaping wound in the earth where the greatest structure ever built once stood. Jagged crystals of raw Aetherium line the descent, pulsing with sickly light that illuminates a staircase carved into the bedrock itself, spiraling downward into darkness that seems to swallow the light whole.
+    title: "The Hollow King Awakens",
+    subtitle: "Beneath Phnom Kulen, the void opens its crown",
+    introNarration: `The ground beneath Phnom Kulen is splitting apart, and from the fissures pours a darkness that swallows light and silences sound. The mountain itself groans, its ancient stones shifting like the scales of some enormous serpent stirring in its sleep.
 
-You are not going alone. Whatever alliances, betrayals, and sacrifices brought you to this moment, you stand at the threshold with the combined might of every faction that still survives. The enemy of my enemy is still my enemy — but today, that enemy is the same for all of us.
+The Hollow King is awakening — fully, completely, for the first time since the Shattering. King Jayavarman the Unbroken, or what remains of him, stirs in the deep caverns beneath the sacred mountain, and his corrupted will pulses outward through every shard of jade in the empire, making the stone sing and the spirits scream. The corrupted Temple Guardians march from the mountain's roots in silent, terrible formation, their ceremonial armor fused with flesh and stone, their jade-cursed weapons burning with hollow green fire that leaves no bodies, only shadows.
 
-The descent takes hours. The staircase opens into vast underground chambers that defy geometry — spaces too large to exist beneath the surface, illuminated by Aetherium crystals that have grown to the size of buildings. The air is thick with arcane energy, so dense that it tastes of copper and ozone. And everywhere, the Hollow King's presence: a psychic pressure that presses against your mind like a physical weight, whispering promises of power, of peace, of the beautiful simplicity of surrender.
+The four warlords must set aside their rivalries and descend into the ancient fire temples one final time, past the forges where the Sacred Crown was first made, past the altars where the naga kings once blessed the jade, to the deepest chamber where a void wearing a king's face sits upon a throne of corrupted crystal. Below lies the Hollow King, the four fragments of the Sacred Crown, and the choice that will determine whether the Khmer Empire rises again or is consumed by the void forever.`,
+    victoryNarration: `The Hollow King falls. Not easily, not cleanly, not without sacrifice — warriors you loved lie broken among the ancient stones, their spirits joining the jade chorus that fills the caverns with a sound like weeping and triumph intertwined. But he falls.
 
-Your forces encounter resistance as they descend — Hollowed Stalkers by the thousand, automated war machines from the old empire that have been running on standby for three centuries, and traps of Aetherium-enhanced crystal that can slice through armor like paper. Casualties mount. But you press on, because the alternative is to turn back and let the Hollow King complete his transformation — and that is not an option.
+The Sacred Crown's four fragments, reunited at last within the original forge of Phnom Kulen, blaze with a light that has not been seen since the empire's golden age — a light so pure it burns away the corruption, dissolving the void that wore Jayavarman's face into mist and silence and blessed nothingness. For a single, breathtaking moment, the naga kings themselves appear in the forge's depths, their serpent forms coiling through the sacred light, their ancient voices chanting a hymn of sealing that resonates through both realms. Above ground, the spirit mist recedes from the Mekong. The monsoon rains return to their natural rhythm. And in the distance, rising from the jungle like a lotus from dark water, the towers of Angkor Wat begin to glow with a faint, emerald light. The war is over. What rises from its ashes is yours to shape.`,
+    defeatNarration: `The Hollow King stands victorious atop the broken forge of Phnom Kulen, the four Crown fragments orbiting his twisted form like vengeful moons. Your armies lie shattered among the ancient stones, their jade weapons dark and silent, the sacred flames extinguished.
 
-And then, at the bottom of everything, you find him.
-
-Emperor Aldric the Undying sits on a throne of pure, crystallized Aetherium, his body a ruin of fused metal and flesh, his eyes twin voids of swirling violet energy. Around him, the Hollowing Engine still turns — not destroyed in the Shattering but merely cracked, operating at a fraction of its original capacity, slowly but surely absorbing every trace of Aetherium on the continent.
-
-He does not speak. He does not need to. The air itself carries his intent: absolute domination, absolute consumption, the reduction of all things to the beautiful, silent, hollow peace of nothingness.
-
-The final battle begins. Not for territory. Not for resources. Not for pride or revenge or survival.
-
-For everything.`,
-    victoryNarration: `The Hollow King falls.
-
-Not easily. Not cleanly. Not without cost. But he falls. The Aetherium that sustains him destabilizes, the Hollowing Engine cracks and shatters, and the entity that was once Emperor Aldric the Undying collapses into a pile of rusted metal and fading crystal light. In his final moment, just before the void consumes him entirely, something flickers in those hollow eyes — not recognition, not regret, but perhaps something like relief. The agony of being a god is over. He is finally, after three centuries, allowed to die.
-
-The Aetherium that was concentrated in his chamber explodes outward in a shockwave that ripples through the continent's bedrock, healing the corrupted deposits and purifying the tainted veins. Above ground, the unnatural winter in the Frostlands begins to ease. The corrupted mist in the Western Reaches dissipates. Crystal Lake, long choked with unstable Aetherium, clears to reveal waters of extraordinary purity.
-
-You emerge from the depths into a changed world. The factions still exist. The rivalries still simmer. But for the first time in three generations, the shadow that hung over Aethermoor has lifted. The continent is broken, scarred, and will take generations to fully heal — but it is free.
-
-The war for Aethermoor is over. What comes next is up to you.`,
-    defeatNarration: `The Hollow King stands victorious.
-
-Your armies lie broken at the foot of his throne, your weapons shattered, your allies fallen. The Hollow King does not gloat. He does not celebrate. He simply absorbs — drawing the Aetherium from the fallen, from the air, from the very stones of his chamber, growing larger and more terrible with each passing moment.
-
-But this is not the end. The Hollow King's victory is not absolute — the crack in the Hollowing Engine still leaks, and his transformation is not yet complete. There is still time. There is still a chance.
-
-In the depths of defeat, when all hope seems lost, that is when heroes are forged. Rise again. Gather new allies. Find new strength. And return to the hollow places, because Aethermoor has no one else to save it.
-
-The King may be hollow, but you are not. And that makes all the difference.`,
+The Hollow King does not gloat or celebrate — he simply reaches outward with hands that are not quite hands, and the jade in the earth answers his call, surging toward him in rivers of green fire that illuminate the caverns like the belly of some terrible beast. But this is not the end. The Crown fragments remain scattered, the naga still watch from the deep pools, and the embers of the eternal flames have not yet gone completely cold. Rise again. The Khmer Empire was built to endure nine centuries of glory; it can survive a single defeat. So can you.`,
     objectives: [
-      "Descend into the Hollow King's domain and survive",
-      "Destroy the Hollow King's defensive layers",
-      "Shatter the Hollowing Engine to break his power source",
-      "Defeat the Hollow King in final combat",
+      "Descend into the caverns beneath Phnom Kulen and survive the descent",
+      "Fight through the corrupted Temple Guardians to reach the Hollow King's chamber",
+      "Gather or claim all four fragments of the Sacred Crown",
+      "Defeat the Hollow King and restore or destroy the Sacred Crown in the forge",
+      "Choose the fate of the Khmer Empire — restoration or a new beginning",
     ],
+    battleSetup: {
+      territoryAssignments: {
+        "Phnom Kulen Summit": { ownerId: "hollow_king", units: ["Corrupted Guardian", "Jade Wraith", "Void Sentinel"] },
+        "Fire Temple Depths": { ownerId: "hollow_king", units: ["Hollow Guardian", "Spirit Eater", "Crown Phantom"] },
+        "Crown Forge": { ownerId: "hollow_king", units: ["Hollow King", "Royal Jade Guardian", "Void Herald"] },
+      },
+      bonusReinforcements: 5,
+    },
   },
 ];
