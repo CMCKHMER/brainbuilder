@@ -50,7 +50,7 @@ export default function TacticsPanel() {
         onCooldown,
         cooldownLeft,
         active: isActive,
-        hasRequired: hasRequired,
+        hasRequiredUnit: hasRequired,
         reason: !hasRequired ? `Requires ${UNIT_TYPES[tactic.requires!].name}` :
           usedThisTurn ? 'Already used this turn' :
           onCooldown ? `Cooldown: ${cooldownLeft} turn${cooldownLeft > 1 ? 's' : ''}` : undefined,
@@ -62,7 +62,7 @@ export default function TacticsPanel() {
       onCooldown: false,
       cooldownLeft: 0,
       active: isActive,
-      hasRequired: hasRequired,
+      hasRequiredUnit: hasRequired,
       reason: !hasRequired ? `Requires ${UNIT_TYPES[tactic.requires!].name}` : undefined,
     };
   };
@@ -119,7 +119,7 @@ export default function TacticsPanel() {
                     CD: {status.cooldownLeft}T
                   </span>
                 )}
-                {!status.hasRequired && (
+                {!status.hasRequiredUnit && (
                   <span className="text-[8px] text-amber-400 leading-tight">
                     No {UNIT_TYPES[tactic.requires!].name}
                   </span>

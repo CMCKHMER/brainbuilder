@@ -1,0 +1,527 @@
+     1→     1→'use client';
+     2→     2→
+     3→     3→import { useState } from 'react';
+     4→     4→import { useGameStore } from '@/lib/game-store';
+     5→     5→import { PLAYER_CONFIGS, CHARACTER_CLASSES, UNIT_TYPE_LIST, UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
+     6→     6→import { UnitPortrait } from './UnitCards';
+     7→     7→import Image from 'next/image';
+     8→     8→
+     9→     9→export default function GameSetup() {
+    10→    10→  const setupGame = useGameStore(s => s.setupGame);
+    11→    11→  const [playerCount, setPlayerCount] = useState(2);
+    12→    12→  const [configs, setConfigs] = useState(
+    13→    13→    PLAYER_CONFIGS.slice(0, 4).map((p, i) => ({
+    14→    14→      name: p.name,
+    15→    15→      color: p.color,
+    16→    16→      colorLight: p.colorLight,
+    17→    17→      characterClass: p.characterClass.toLowerCase(),
+    18→    18→      icon: p.icon,
+    19→    19→      isAI: i >= 1,
+    20→    20→      active: i < 2,
+    21→    21→    }))
+    22→    22→  );
+    23→    23→  const [showUnits, setShowUnits] = useState(false);
+    24→    24→  const [selectedUnit, setSelectedUnit] = useState<UnitTypeId | null>(null);
+    25→    25→  const [hoveredChar, setHoveredChar] = useState<number | null>(null);
+    26→    26→  const [showMap, setShowMap] = useState(false);
+    27→    27→
+    28→    28→  const handleStart = () => {
+    29→    29→    const activeConfigs = configs
+    30→    30→      .filter(c => c.active)
+    31→    31→      .map(c => ({
+    32→    32→        name: c.name,
+    33→    33→        color: c.color,
+    34→    34→        colorLight: c.colorLight,
+    35→    35→        characterClass: c.characterClass,
+    36→    36→        icon: c.icon,
+    37→    37→        isAI: c.isAI,
+    38→    38→      }));
+    39→    39→    if (activeConfigs.length >= 2) {
+    40→    40→      setupGame(activeConfigs);
+    41→    41→    }
+    42→    42→  };
+    43→    43→
+    44→    44→  const updateConfig = (index: number, field: string, value: string | boolean) => {
+    45→    45→    setConfigs(prev => prev.map((c, i) => i === index ? { ...c, [field]: value } : c));
+    46→    46→  };
+    47→    47→
+    48→    48→  const selUnit = selectedUnit ? UNIT_TYPES[selectedUnit] : null;
+    49→    49→
+    50→    50→  return (
+    51→    51→    <div className="min-h-screen relative overflow-hidden">
+    52→    52→      {/* Background Image */}
+    53→    53→      <div className="absolute inset-0 z-0">
+    54→    54→        <Image
+    55→    55→          src="/game/selectscreen_bg.png"
+    56→    56→          alt="Realm of the Khmer Empire"
+    57→    57→          fill
+    58→    58→          className="object-cover object-center"
+    59→    59→          unoptimized
+    60→    60→          priority
+    61→    61→        />
+    62→    62→        <div className="absolute inset-0 bg-black/50" />
+    63→    63→        <div className="absolute inset-0" style={{
+    64→    64→          background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.8) 100%)',
+    65→    65→        }} />
+    66→    66→      </div>
+    67→    67→
+    68→    68→      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+    69→    69→        <div className="w-full max-w-5xl">
+    70→    70→          {/* Title */}
+    71→    71→          <div className="text-center mb-6">
+    72→    72→            <div className="text-5xl mb-3" style={{
+    73→    73→              filter: 'drop-shadow(0 0 12px rgba(212,160,23,0.6))',
+    74→    74→            }}>⚔️</div>
+    75→    75→            <h1
+    76→    76→              className="text-4xl md:text-5xl font-bold tracking-wider"
+    77→    77→              style={{
+    78→    78→                fontFamily: 'var(--font-cinzel), serif',
+    79→    79→                color: '#D4A017',
+    80→    80→                textShadow: '0 0 20px rgba(212,160,23,0.5), 0 2px 4px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5)',
+    81→    81→                letterSpacing: '0.1em',
+    82→    82→              }}
+    83→    83→            >
+    84→    84→              REALM OF THE KHMER EMPIRE
+    85→    85→            </h1>
+    86→    86→            <p className="text-sm mt-2 opacity-50 tracking-widest uppercase" style={{
+    87→    87→              fontFamily: 'var(--font-cinzel), serif',
+    88→    88→              textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+    89→    89→            }}>
+    90→    90→              A Medieval Strategy Board Game
+    91→    91→            </p>
+    92→    92→            <div className="w-48 h-0.5 mx-auto mt-3" style={{
+    93→    93→              background: 'linear-gradient(90deg, transparent, #D4A01788, transparent)',
+    94→    94→              boxShadow: '0 0 8px rgba(212,160,23,0.3)',
+    95→    95→            }} />
+    96→    96→          </div>
+    97→    97→
+    98→    98→          {/* Faction Characters Showcase */}
+    99→    99→          <div className="mb-8">
+   100→   100→            <div className="text-center mb-4">
+   101→   101→              <div className="text-[10px] uppercase tracking-[4px] opacity-40" style={{
+   102→   102→                fontFamily: 'var(--font-cinzel), serif',
+   103→   103→                textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+   104→   104→              }}>
+   105→   105→                Choose Your Kingdom
+   106→   106→              </div>
+   107→   107→            </div>
+   108→   108→            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+   109→   109→              {PLAYER_CONFIGS.map((p, i) => {
+   110→   110→                const charClass = CHARACTER_CLASSES.find(cc => cc.id === p.characterClass.toLowerCase());
+   111→   111→                const isHovered = hoveredChar === i;
+   112→   112→                const k = p.kingdom;
+   113→   113→                return (
+   114→   114→                  <div
+   115→   115→                    key={i}
+   116→   116→                    className="relative rounded-2xl text-center transition-all duration-500 ease-out cursor-pointer overflow-hidden"
+   117→   117→                    style={{
+   118→   118→                      background: isHovered
+   119→   119→                        ? `linear-gradient(180deg, ${p.color}30 0%, ${p.color}15 40%, rgba(0,0,0,0.7) 100%)`
+   120→   120→                        : `linear-gradient(180deg, ${p.color}18 0%, ${p.color}06 50%, rgba(0,0,0,0.3) 100%)`,
+   121→   121→                      border: `2px solid ${isHovered ? p.color + 'aa' : p.color + '33'}`,
+   122→   122→                      boxShadow: isHovered
+   123→   123→                        ? `0 8px 32px ${p.color}44, 0 0 60px ${p.color}22, inset 0 1px 0 rgba(255,255,255,0.1)`
+   124→   124→                        : `0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)`,
+   125→   125→                      transform: isHovered
+   126→   126→                        ? 'translateY(-8px) scale(1.03)'
+   127→   127→                        : 'translateY(0) scale(1)',
+   128→   128→                      perspective: '800px',
+   129→   129→                    }}
+   130→   130→                    onMouseEnter={() => setHoveredChar(i)}
+   131→   131→                    onMouseLeave={() => setHoveredChar(null)}
+   132→   132→                  >
+   133→   133→                    <div
+   134→   134→                      className="absolute inset-0 rounded-2xl transition-opacity duration-500"
+   135→   135→                      style={{
+   136→   136→                        background: `radial-gradient(ellipse at 50% 20%, ${p.color}${isHovered ? '25' : '08'} 0%, transparent 70%)`,
+   137→   137→                      }}
+   138→   138→                    />
+   139→   139→                    <div
+   140→   140→                      className="absolute top-0 left-4 right-4 h-px"
+   141→   141→                      style={{
+   142→   142→                        background: `linear-gradient(90deg, transparent, ${p.color}${isHovered ? '66' : '22'}, transparent)`,
+   143→   143→                      }}
+   144→   144→                    />
+   145→   145→                    <div className="relative z-10 p-4 pb-2">
+   146→   146→                      <div className="text-2xl mb-2" style={{
+   147→   147→                        filter: `drop-shadow(0 0 8px ${p.color}66)`,
+   148→   148→                      }}>
+   149→   149→                        {p.icon}
+   150→   150→                      </div>
+   151→   151→                      <div
+   152→   152→                        className="w-16 h-22 mx-auto mb-2 rounded-lg overflow-hidden transition-all duration-500"
+   153→   153→                        style={{
+   154→   154→                          border: `2px solid ${isHovered ? p.color + 'cc' : p.color + '44'}`,
+   155→   155→                          boxShadow: isHovered
+   156→   156→                            ? `0 0 24px ${p.color}44, 0 4px 16px rgba(0,0,0,0.6)`
+   157→   157→                            : `0 0 16px ${p.color}22, 0 4px 12px rgba(0,0,0,0.4)`,
+   158→   158→                        }}
+   159→   159→                      >
+   160→   160→                        <Image
+   161→   161→                          src={p.image}
+   162→   162→                          alt={p.name}
+   163→   163→                          width={64}
+   164→   164→                          height={88}
+   165→   165→                          className="w-full h-full object-cover object-top"
+   166→   166→                          unoptimized
+   167→   167→                        />
+   168→   168→                      </div>
+   169→   169→                      <div
+   170→   170→                        className="text-[10px] tracking-widest uppercase mb-0.5 font-bold transition-all duration-300"
+   171→   171→                        style={{
+   172→   172→                          color: p.color,
+   173→   173→                          fontFamily: 'var(--font-cinzel), serif',
+   174→   174→                          textShadow: `0 0 12px ${p.color}44`,
+   175→   175→                        }}
+   176→   176→                      >
+   177→   177→                        {k?.name}
+   178→   178→                      </div>
+   179→   179→                      <div
+   180→   180→                        className="text-[9px] tracking-wide mb-1 transition-all duration-300"
+   181→   181→                        style={{
+   182→   182→                          color: p.colorLight,
+   183→   183→                          opacity: isHovered ? 0.8 : 0.5,
+   184→   184→                          fontFamily: 'var(--font-cinzel), serif',
+   185→   185→                        }}
+   186→   186→                      >
+   187→   187→                        {p.fullName || p.name}
+   188→   188→                      </div>
+   189→   189→                      <div className="flex items-center justify-center gap-1.5 mb-1.5 flex-wrap">
+   190→   190→                        <span
+   191→   191→                          className="text-[8px] px-1.5 py-0.5 rounded"
+   192→   192→                          style={{
+   193→   193→                            background: `${p.color}15`,
+   194→   194→                            border: `1px solid ${p.color}22`,
+   195→   195→                            color: p.colorLight,
+   196→   196→                            opacity: 0.7,
+   197→   197→                          }}
+   198→   198→                        >
+   199→   199→                          🏰 {k?.capital}
+   200→   200→                        </span>
+   201→   201→                        <span
+   202→   202→                          className="text-[8px] px-1.5 py-0.5 rounded"
+   203→   203→                          style={{
+   204→   204→                            background: `${p.color}15`,
+   205→   205→                            border: `1px solid ${p.color}22`,
+   206→   206→                            color: p.colorLight,
+   207→   207→                            opacity: 0.7,
+   208→   208→                          }}
+   209→   209→                        >
+   210→   210→                          ⚔️ {charClass?.name}
+   211→   211→                        </span>
+   212→   212→                      </div>
+   213→   213→
+   214→   214→                      {/* HOVER EXPANDED KINGDOM DETAILS */}
+   215→   215→                      <div
+   216→   216→                        className="transition-all duration-500 ease-out overflow-hidden"
+   217→   217→                        style={{
+   218→   218→                          maxHeight: isHovered ? '400px' : '0px',
+   219→   219→                          opacity: isHovered ? 1 : 0,
+   220→   220→                        }}
+   221→   221→                      >
+   222→   222→                        <div className="w-12 h-px mx-auto my-2" style={{
+   223→   223→                          background: `linear-gradient(90deg, transparent, ${p.color}55, transparent)`,
+   224→   224→                        }} />
+   225→   225→                        <div className="text-left mb-1.5 px-0.5">
+   226→   226→                          <div className="text-[7px] uppercase tracking-widest font-bold mb-0.5" style={{ color: p.color, fontFamily: 'var(--font-cinzel), serif' }}>Terrain</div>
+   227→   227→                          <div className="text-[8px] leading-relaxed" style={{ color: p.colorLight, opacity: 0.7 }}>{k?.terrain}</div>
+   228→   228→                        </div>
+   229→   229→                        <div className="text-left mb-1.5 px-0.5">
+   230→   230→                          <div className="text-[7px] uppercase tracking-widest font-bold mb-0.5" style={{ color: p.color, fontFamily: 'var(--font-cinzel), serif' }}>Culture</div>
+   231→   231→                          <div className="text-[8px] leading-relaxed" style={{ color: p.colorLight, opacity: 0.7 }}>{k?.culture}</div>
+   232→   232→                        </div>
+   233→   233→                        <div className="text-left mb-1.5 px-0.5">
+   234→   234→                          <div className="text-[7px] uppercase tracking-widest font-bold mb-0.5" style={{ color: p.color, fontFamily: 'var(--font-cinzel), serif' }}>Military Doctrine</div>
+   235→   235→                          <div className="text-[8px] leading-relaxed" style={{ color: p.colorLight, opacity: 0.7 }}>{k?.militaryDoctrine}</div>
+   236→   236→                        </div>
+   237→   237→                        <div className="text-left mb-1.5 px-0.5">
+   238→   238→                          <div className="text-[7px] uppercase tracking-widest font-bold mb-0.5" style={{ color: p.color, fontFamily: 'var(--font-cinzel), serif' }}>Symbol</div>
+   239→   239→                          <div className="text-[8px]" style={{ color: p.colorLight, opacity: 0.7 }}>
+   240→   240→                            <span className="font-bold">{k?.symbol}</span> — {k?.symbolMeaning}
+   241→   241→                          </div>
+   242→   242→                        </div>
+   243→   243→                        <div
+   244→   244→                          className="text-[9px] font-bold italic mt-2 py-1.5 px-2 rounded-lg"
+   245→   245→                          style={{
+   246→   246→                            color: p.color,
+   247→   247→                            fontFamily: 'var(--font-cinzel), serif',
+   248→   248→                            background: `linear-gradient(90deg, transparent, ${p.color}15, transparent)`,
+   249→   249→                            borderLeft: `2px solid ${p.color}66`,
+   250→   250→                            textShadow: `0 0 8px ${p.color}33`,
+   251→   251→                          }}
+   252→   252→                        >
+   253→   253→                          {k?.motto}
+   254→   254→                        </div>
+   255→   255→                      </div>
+   256→   256→                    </div>
+   257→   257→                  </div>
+   258→   258→                );
+   259→   259→              })}
+   260→   260→            </div>
+   261→   261→            <div className="text-center mt-3">
+   262→   262→              <span className="text-[9px] opacity-30 tracking-wider" style={{
+   263→   263→                fontFamily: 'var(--font-cinzel), serif',
+   264→   264→                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+   265→   265→              }}>
+   266→   266→                HOVER OVER A KINGDOM TO REVEAL ITS LORE
+   267→   267→              </span>
+   268→   268→            </div>
+   269→   269→          </div>
+   270→   270→
+   271→   271→          {/* World Map & Lore Toggle */}
+   272→   272→          <div className="text-center mb-6">
+   273→   273→            <button
+   274→   274→              onClick={() => { setShowMap(!showMap); setShowUnits(false); }}
+   275→   275→              className="relative px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer"
+   276→   276→              style={{
+   277→   277→                fontFamily: 'var(--font-cinzel), serif',
+   278→   278→                background: showMap
+   279→   279→                  ? 'linear-gradient(180deg, rgba(212,160,23,0.25), rgba(212,160,23,0.1))'
+   280→   280→                  : 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
+   281→   281→                border: `2px solid ${showMap ? '#D4A01788' : 'rgba(139,115,85,0.2)'}`,
+   282→   282→                color: showMap ? '#D4A017' : '#8B7355',
+   283→   283→                boxShadow: showMap
+   284→   284→                  ? '0 3px 0 #92700C44, 0 6px 20px rgba(212,160,23,0.3), 0 0 30px rgba(212,160,23,0.1)'
+   285→   285→                  : '0 3px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.3)',
+   286→   286→                transform: showMap ? 'translateY(-2px)' : 'translateY(0)',
+   287→   287→                textShadow: showMap ? '0 0 8px rgba(212,160,23,0.3)' : 'none',
+   288→   288→              }}
+   289→   289→              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; if (!showMap) { e.currentTarget.style.borderColor = 'rgba(139,115,85,0.4)'; e.currentTarget.style.boxShadow = '0 5px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.4)'; } }}
+   290→   290→              onMouseLeave={(e) => { if (!showMap) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(139,115,85,0.2)'; e.currentTarget.style.boxShadow = '0 3px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.3)'; } }}
+   291→   291→            >
+   292→   292→              {showMap ? '▲ Hide World Map' : '🌍 View World Map & Lore'}
+   293→   293→            </button>
+   294→   294→          </div>
+   295→   295→
+   296→   296→          {/* World Map & Lore Panel */}
+   297→   297→          {showMap && (
+   298→   298→            <div className="mb-6 rounded-xl overflow-hidden" style={{ background: 'rgba(0,0,0,0.6)', border: '1.5px solid rgba(139,115,85,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)', backdropFilter: 'blur(8px)' }}>
+   299→   299→              <div className="relative w-full" style={{ maxHeight: '400px' }}>
+   300→   300→                <Image src="/game/worldmap.png" alt="World Map of the Khmer Empire" width={1200} height={650} className="w-full h-auto object-contain" unoptimized style={{ maxHeight: '400px' }} />
+   301→   301→                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%)' }} />
+   302→   302→              </div>
+   303→   303→              <div className="p-5">
+   304→   304→                <h2 className="text-base font-bold tracking-wider text-center mb-3" style={{ fontFamily: 'var(--font-cinzel), serif', color: '#D4A017', textShadow: '0 0 16px rgba(212,160,23,0.3)' }}>THE WAR OF THE BROKEN CROWN</h2>
+   305→   305→                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+   306→   306→                  <div className="p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(220,38,38,0.08), rgba(220,38,38,0.02))', border: '1px solid rgba(220,38,38,0.2)' }}>
+   307→   307→                    <div className="flex items-center gap-2 mb-1.5">
+   308→   308→                      <span className="text-base">🗡️</span>
+   309→   309→                      <span className="text-[11px] font-bold tracking-wide" style={{ color: '#DC2626', fontFamily: 'var(--font-cinzel), serif', textShadow: '0 0 8px rgba(220,38,38,0.3)' }}>THE STRATEGIST&apos;S BETRAYAL</span>
+   310→   310→                    </div>
+   311→   311→                    <p className="text-[10px] leading-relaxed opacity-60">King Soryan sought to preserve order through reason and discipline. He forged alliances and built fortresses, but his ambition to control the Crown&apos;s wisdom led him to betray the council of unity. His armies marched under banners of jade and bronze, believing intellect could rule destiny.</p>
+   312→   312→                  </div>
+   313→   313→                  <div className="p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(22,101,52,0.08), rgba(22,101,52,0.02))', border: '1px solid rgba(22,101,52,0.2)' }}>
+   314→   314→                    <div className="flex items-center gap-2 mb-1.5">
+   315→   315→                      <span className="text-base">🐍</span>
+   316→   316→                      <span className="text-[11px] font-bold tracking-wide" style={{ color: '#166534', fontFamily: 'var(--font-cinzel), serif', textShadow: '0 0 8px rgba(22,101,52,0.3)' }}>THE SHADOW&apos;S REBELLION</span>
+   317→   317→                    </div>
+   318→   318→                    <p className="text-[10px] leading-relaxed opacity-60">Queen Veasna saw the Crown&apos;s fading light as divine punishment. She turned to forbidden naga rituals, summoning spirits to reclaim the gods&apos; favor. Her rebellion spread through the jungles like mist — unseen, unstoppable, and whispered in fear.</p>
+   319→   319→                  </div>
+   320→   320→                  <div className="p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(212,160,23,0.08), rgba(212,160,23,0.02))', border: '1px solid rgba(212,160,23,0.2)' }}>
+   321→   321→                    <div className="flex items-center gap-2 mb-1.5">
+   322→   322→                      <span className="text-base">⚡</span>
+   323→   323→                      <span className="text-[11px] font-bold tracking-wide" style={{ color: '#D4A017', fontFamily: 'var(--font-cinzel), serif', textShadow: '0 0 8px rgba(212,160,23,0.3)' }}>THE STORM&apos;S WRATH</span>
+   324→   324→                    </div>
+   325→   325→                    <p className="text-[10px] leading-relaxed opacity-60">Lord Chanreth declared that the gods had abandoned the weak. He struck first, unleashing storms upon both allies and foes. His lightning armies shattered temples and flooded valleys, believing chaos would cleanse the land for rebirth.</p>
+   326→   326→                  </div>
+   327→   327→                  <div className="p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(126,34,206,0.08), rgba(126,34,206,0.02))', border: '1px solid rgba(126,34,206,0.2)' }}>
+   328→   328→                    <div className="flex items-center gap-2 mb-1.5">
+   329→   329→                      <span className="text-base">🔥</span>
+   330→   330→                      <span className="text-[11px] font-bold tracking-wide" style={{ color: '#7E22CE', fontFamily: 'var(--font-cinzel), serif', textShadow: '0 0 8px rgba(126,34,206,0.3)' }}>THE FLAME&apos;S ASCENSION</span>
+   331→   331→                    </div>
+   332→   332→                    <p className="text-[10px] leading-relaxed opacity-60">Emperor Kiriath saw destruction as salvation. He burned the sacred archives and forged the Sunfire Citadel from molten stone. His followers called him the Phoenix King — the one who would ignite the world to start anew.</p>
+   333→   333→                  </div>
+   334→   334→                </div>
+   335→   335→                <div className="p-3 rounded-lg text-center" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,160,23,0.06), transparent)', borderLeft: '2px solid rgba(212,160,23,0.3)', borderRight: '2px solid rgba(212,160,23,0.3)' }}>
+   336→   336→                  <p className="text-[10px] leading-relaxed opacity-70 italic" style={{ fontFamily: 'var(--font-cinzel), serif', color: '#D4A017' }}>
+   337→   337→                    The Golden Crown shattered into four fragments, each infused with the essence of its claimant — wisdom, shadow, storm, and flame. The land divided, temples fell silent, and the gods withdrew. Now, centuries later, the fragments stir again, calling warriors from every realm to reclaim the legacy of Angkor.
+   338→   338→                  </p>
+   339→   339→                </div>
+   340→   340→              </div>
+   341→   341→            </div>
+   342→   342→          )}
+   343→   343→
+   344→   344→          {/* Player Count Selector — 3D Buttons */}
+   345→   345→          <div className="flex justify-center gap-4 mb-6">
+   346→   346→            {[2, 3, 4].map(n => {
+   347→   347→              const isSelected = playerCount === n;
+   348→   348→              return (
+   349→   349→                <button
+   350→   350→                  key={n}
+   351→   351→                  onClick={() => { setPlayerCount(n); setConfigs(prev => prev.map((c, i) => ({ ...c, active: i < n }))); }}
+   352→   352→                  className="relative px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 ease-out cursor-pointer"
+   353→   353→                  style={{
+   354→   354→                    fontFamily: 'var(--font-cinzel), serif',
+   355→   355→                    background: isSelected ? 'linear-gradient(180deg, #F0C850 0%, #D4A017 40%, #92700C 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)',
+   356→   356→                    color: isSelected ? '#1a0f00' : '#8B7355',
+   357→   357→                    border: isSelected ? '2px solid #FDE68A' : '2px solid rgba(139,115,85,0.15)',
+   358→   358→                    boxShadow: isSelected ? '0 6px 0 #6B4F08, 0 8px 24px rgba(212,160,23,0.4), 0 0 40px rgba(212,160,23,0.15), inset 0 1px 0 rgba(255,255,255,0.3)' : '0 4px 0 rgba(0,0,0,0.3), 0 6px 12px rgba(0,0,0,0.3)',
+   359→   359→                    transform: isSelected ? 'translateY(-3px)' : 'translateY(0)',
+   360→   360→                    textShadow: isSelected ? '0 1px 0 rgba(255,255,255,0.3)' : 'none',
+   361→   361→                  }}
+   362→   362→                  onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 0 rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.4)'; e.currentTarget.style.borderColor = 'rgba(139,115,85,0.3)'; } }}
+   363→   363→                  onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 0 rgba(0,0,0,0.3), 0 6px 12px rgba(0,0,0,0.3)'; e.currentTarget.style.borderColor = 'rgba(139,115,85,0.15)'; } }}
+   364→   364→                  onMouseDown={(e) => { if (isSelected) { e.currentTarget.style.transform = 'translateY(1px)'; e.currentTarget.style.boxShadow = '0 2px 0 #6B4F08, 0 4px 12px rgba(212,160,23,0.3)'; } }}
+   365→   365→                  onMouseUp={(e) => { if (isSelected) { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 0 #6B4F08, 0 8px 24px rgba(212,160,23,0.4), 0 0 40px rgba(212,160,23,0.15), inset 0 1px 0 rgba(255,255,255,0.3)'; } }}
+   366→   366→                >
+   367→   367→                  {n}
+   368→   368→                </button>
+   369→   369→              );
+   370→   370→            })}
+   371→   371→          </div>
+   372→   372→          <div className="text-center text-xs opacity-50 mb-6" style={{ fontFamily: 'var(--font-cinzel), serif', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+   373→   373→            Number of Warlords
+   374→   374→          </div>
+   375→   375→
+   376→   376→          {/* Player Config Cards */}
+   377→   377→          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+   378→   378→            {configs.map((config, index) => (
+   379→   379→              <div key={index} className="rounded-xl p-4 transition-all duration-300" style={{ background: config.active ? `linear-gradient(135deg, ${config.color}18, ${config.color}08)` : 'rgba(0,0,0,0.3)', border: `2px solid ${config.active ? config.color + '66' : 'rgba(255,255,255,0.05)'}`, boxShadow: config.active ? '0 4px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)' : '0 2px 8px rgba(0,0,0,0.3)', opacity: config.active ? 1 : 0.3 }}>
+   380→   380→                <div className="flex items-center gap-2 mb-3">
+   381→   381→                  <span className="text-xl">{config.icon}</span>
+   382→   382→                  <input type="text" value={config.name} onChange={(e) => updateConfig(index, 'name', e.target.value)} className="flex-1 bg-transparent border-b border-white/10 text-sm font-bold outline-none py-1 px-1" style={{ color: config.color, fontFamily: 'var(--font-cinzel), serif' }} disabled={!config.active} />
+   383→   383→                  <button onClick={() => updateConfig(index, 'isAI', !config.isAI)} className="relative px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-300 flex-shrink-0 cursor-pointer" style={{ background: config.isAI ? `linear-gradient(180deg, ${config.color}55, ${config.color}33)` : 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))', border: `1.5px solid ${config.isAI ? config.color + '99' : 'rgba(255,255,255,0.08)'}`, color: config.isAI ? config.color : '#666', fontFamily: 'var(--font-cinzel), serif', letterSpacing: '1px', boxShadow: config.isAI ? `0 3px 0 ${config.color}22, 0 4px 12px ${config.color}33` : '0 3px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.3)' }} disabled={!config.active || index === 0} title={index === 0 ? 'Player 1 is always human' : undefined}>
+   384→   384→                    {config.isAI ? '🤖 AI' : '👤 HUMAN'}
+   385→   385→                  </button>
+   386→   386→                </div>
+   387→   387→                <div className="flex gap-1.5 flex-wrap">
+   388→   388→                  {CHARACTER_CLASSES.map(cc => {
+   389→   389→                    const isClassSelected = config.characterClass === cc.id;
+   390→   390→                    return (
+   391→   391→                      <button key={cc.id} onClick={() => updateConfig(index, 'characterClass', cc.id)} className="relative px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-300 cursor-pointer" style={{ background: isClassSelected ? `linear-gradient(180deg, ${config.color}44, ${config.color}22)` : 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01))', border: `1.5px solid ${isClassSelected ? config.color + '88' : 'rgba(255,255,255,0.06)'}`, color: isClassSelected ? config.color : '#666', boxShadow: isClassSelected ? `0 3px 0 ${config.color}33, 0 4px 12px ${config.color}33, 0 0 20px ${config.color}11` : '0 2px 0 rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.2)', transform: isClassSelected ? 'translateY(-1px)' : 'translateY(0)', textShadow: isClassSelected ? `0 0 8px ${config.color}44` : 'none' }} disabled={!config.active}>
+   392→   392→                        {cc.icon} {cc.name}
+   393→   393→                      </button>
+   394→   394→                    );
+   395→   395→                  })}
+   396→   396→                </div>
+   397→   397→                <div className="text-[10px] opacity-40 mt-2">
+   398→   398→                  {CHARACTER_CLASSES.find(cc => cc.id === config.characterClass)?.desc}
+   399→   399→                </div>
+   400→   400→              </div>
+   401→   401→            ))}
+   402→   402→          </div>
+   403→   403→
+   404→   404→          {/* Unit Showcase Toggle */}
+   405→   405→          <div className="text-center mb-4">
+   406→   406→            <button onClick={() => { setShowUnits(!showUnits); setShowMap(false); }} className="relative px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer" style={{ fontFamily: 'var(--font-cinzel), serif', background: showUnits ? 'linear-gradient(180deg, rgba(212,160,23,0.25), rgba(212,160,23,0.1))' : 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))', border: `2px solid ${showUnits ? '#D4A01788' : 'rgba(139,115,85,0.2)'}`, color: showUnits ? '#D4A017' : '#8B7355', boxShadow: showUnits ? '0 3px 0 #92700C44, 0 6px 20px rgba(212,160,23,0.3), 0 0 30px rgba(212,160,23,0.1)' : '0 3px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.3)', transform: showUnits ? 'translateY(-2px)' : 'translateY(0)', textShadow: showUnits ? '0 0 8px rgba(212,160,23,0.3)' : 'none' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; if (!showUnits) { e.currentTarget.style.borderColor = 'rgba(139,115,85,0.4)'; e.currentTarget.style.boxShadow = '0 5px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.4)'; } }} onMouseLeave={(e) => { if (!showUnits) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(139,115,85,0.2)'; e.currentTarget.style.boxShadow = '0 3px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.3)'; } }}>
+   407→   407→              {showUnits ? '▲ Hide Unit Guide' : '▼ View Unit Guide & Type Advantages'}
+   408→   408→            </button>
+   409→   409→          </div>
+   410→   410→
+   411→   411→          {/* Unit Cards Showcase */}
+   412→   412→          {showUnits && (
+   413→   413→            <div className="mb-6 p-4 rounded-xl" style={{ background: 'rgba(0,0,0,0.5)', border: '1.5px solid rgba(139,115,85,0.25)', boxShadow: '0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)', backdropFilter: 'blur(8px)' }}>
+   414→   414→              <div className="text-center mb-4">
+   415→   415→                <h2 className="text-sm font-bold tracking-wider" style={{ fontFamily: 'var(--font-cinzel), serif', color: '#D4A017', textShadow: '0 0 12px rgba(212,160,23,0.3)' }}>UNITS OF THE KHMER EMPIRE</h2>
+   416→   416→                <p className="text-[10px] opacity-40 mt-1">Each unit has unique ATK, DEF, HP stats and type advantages. Click a unit for details.</p>
+   417→   417→              </div>
+   418→   418→              <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-4">
+   419→   419→                {UNIT_TYPE_LIST.map(unit => {
+   420→   420→                  const isUnitSelected = selectedUnit === unit.id;
+   421→   421→                  return (
+   422→   422→                    <button key={unit.id} onClick={() => setSelectedUnit(selectedUnit === unit.id ? null : unit.id)} className="p-2 rounded-xl flex flex-col items-center gap-1.5 transition-all duration-300 cursor-pointer" style={{ background: isUnitSelected ? `linear-gradient(180deg, ${unit.color}33, ${unit.color}11)` : unit.gradient, border: `2px solid ${isUnitSelected ? unit.color : unit.color + '33'}`, boxShadow: isUnitSelected ? `0 4px 0 ${unit.color}44, 0 6px 20px ${unit.color}44, 0 0 30px ${unit.color}22` : '0 3px 0 rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.3)', transform: isUnitSelected ? 'translateY(-4px) scale(1.05)' : 'translateY(0)' }} onMouseEnter={(e) => { if (!isUnitSelected) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 5px 0 rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.4)`; } }} onMouseLeave={(e) => { if (!isUnitSelected) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 3px 0 rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.3)'; } }}>
+   423→   423→                      <UnitPortrait unitType={unit.id} size={48} />
+   424→   424→                      <span className="text-[10px] font-bold" style={{ color: unit.color, fontFamily: 'var(--font-cinzel), serif' }}>{unit.name}</span>
+   425→   425→                      <div className="flex gap-2 text-[9px]">
+   426→   426→                        <span style={{ color: '#EF4444' }}>A{unit.attack}</span>
+   427→   427→                        <span style={{ color: '#60A5FA' }}>D{unit.defense}</span>
+   428→   428→                        <span style={{ color: '#22C55E' }}>H{unit.health}</span>
+   429→   429→                        <span style={{ color: '#FBBF24' }}>S{unit.speed}</span>
+   430→   430→                      </div>
+   431→   431→                      <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: `${unit.color}22`, color: unit.color, border: `1px solid ${unit.color}33` }}>{unit.role}</span>
+   432→   432→                    </button>
+   433→   433→                  );
+   434→   434→                })}
+   435→   435→              </div>
+   436→   436→              {selUnit && (
+   437→   437→                <div className="p-4 rounded-xl flex gap-4 items-start" style={{ background: `${selUnit.color}11`, border: `2px solid ${selUnit.color}44`, boxShadow: `0 4px 20px ${selUnit.color}11, inset 0 1px 0 rgba(255,255,255,0.05)`, backdropFilter: 'blur(4px)' }}>
+   438→   438→                  <UnitPortrait unitType={selUnit.id} size={80} />
+   439→   439→                  <div className="flex-1">
+   440→   440→                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+   441→   441→                      <span className="text-lg">{selUnit.icon}</span>
+   442→   442→                      <span className="text-base font-bold" style={{ color: selUnit.color, fontFamily: 'var(--font-cinzel), serif' }}>{selUnit.name}</span>
+   443→   443→                      <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: `${selUnit.color}22`, color: selUnit.color, border: `1px solid ${selUnit.color}44` }}>{selUnit.role}</span>
+   444→   444→                      <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(212,160,23,0.2)', color: '#D4A017' }}>Cost: {selUnit.cost === 1 ? '★' : '★★'}</span>
+   445→   445→                    </div>
+   446→   446→                    <p className="text-[11px] opacity-60 mb-2 leading-relaxed">{selUnit.description}</p>
+   447→   447→                    <div className="grid grid-cols-2 gap-x-6 gap-y-1 mb-2">
+   448→   448→                      {[
+   449→   449→                        { label: 'ATK', value: selUnit.attack, max: 7, color: '#EF4444' },
+   450→   450→                        { label: 'DEF', value: selUnit.defense, max: 7, color: '#60A5FA' },
+   451→   451→                        { label: 'HP', value: selUnit.health, max: 7, color: '#22C55E' },
+   452→   452→                        { label: 'SPD', value: selUnit.speed, max: 5, color: '#FBBF24' },
+   453→   453→                      ].map(stat => (
+   454→   454→                        <div key={stat.label} className="flex items-center gap-2">
+   455→   455→                          <span className="text-[9px] font-bold w-6" style={{ color: stat.color, fontFamily: 'var(--font-cinzel), serif' }}>{stat.label}</span>
+   456→   456→                          <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+   457→   457→                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(stat.value / stat.max) * 100}%`, background: stat.color, boxShadow: `0 0 6px ${stat.color}44` }} />
+   458→   458→                          </div>
+   459→   459→                          <span className="text-[10px] font-bold w-4 text-right" style={{ color: stat.color }}>{stat.value}</span>
+   460→   460→                        </div>
+   461→   461→                      ))}
+   462→   462→                    </div>
+   463→   463→                    <div className="flex gap-4">
+   464→   464→                      <div><span className="text-[9px] font-bold" style={{ color: '#22C55E' }}>▲ Strong vs: </span><span className="text-[9px] opacity-60">{selUnit.strongVs.map(t => UNIT_TYPES[t].name).join(', ') || 'None'}</span></div>
+   465→   465→                      <div><span className="text-[9px] font-bold" style={{ color: '#EF4444' }}>▼ Weak vs: </span><span className="text-[9px] opacity-60">{selUnit.weakVs.map(t => UNIT_TYPES[t].name).join(', ') || 'None'}</span></div>
+   466→   466→                    </div>
+   467→   467→                  </div>
+   468→   468→                </div>
+   469→   469→              )}
+   470→   470→              <div className="text-center mt-4">
+   471→   471→                <div className="text-[10px] uppercase tracking-wider opacity-50 mb-2" style={{ fontFamily: 'var(--font-cinzel), serif' }}>Type Advantage Web</div>
+   472→   472→                <div className="flex items-center justify-center gap-1.5 flex-wrap text-[10px]">
+   473→   473→                  <span className="px-2 py-1 rounded" style={{ background: '#A1887F22', color: '#A1887F' }}>🔱 Spearman</span><span className="opacity-30">beats</span>
+   474→   474→                  <span className="px-2 py-1 rounded" style={{ background: '#D4A01722', color: '#D4A017' }}>🐎 Cavalry</span><span className="opacity-30">beats</span>
+   475→   475→                  <span className="px-2 py-1 rounded" style={{ background: '#C0C0C022', color: '#C0C0C0' }}>⚔️ Swordsman</span><span className="opacity-30">beats</span>
+   476→   476→                  <span className="px-2 py-1 rounded" style={{ background: '#A1887F22', color: '#A1887F' }}>🔱 Spearman</span>
+   477→   477→                </div>
+   478→   478→                <div className="flex items-center justify-center gap-1.5 flex-wrap text-[10px] mt-1">
+   479→   479→                  <span className="px-2 py-1 rounded" style={{ background: '#C0C0C022', color: '#C0C0C0' }}>⚔️ Swordsman</span><span className="opacity-30">beats</span>
+   480→   480→                  <span className="px-2 py-1 rounded" style={{ background: '#22C55E22', color: '#22C55E' }}>🏹 Archer</span><span className="opacity-30">beats</span>
+   481→   481→                  <span className="px-2 py-1 rounded" style={{ background: '#F472B622', color: '#F472B6' }}>🗡️ Assassin</span><span className="opacity-30">beats</span>
+   482→   482→                  <span className="px-2 py-1 rounded" style={{ background: '#A855F722', color: '#A855F7' }}>🔮 Mage</span>
+   483→   483→                </div>
+   484→   484→                <div className="flex items-center justify-center gap-1.5 flex-wrap text-[10px] mt-1">
+   485→   485→                  <span className="px-2 py-1 rounded" style={{ background: '#60A5FA22', color: '#60A5FA' }}>🛡️ Shield</span><span className="opacity-30">beats</span>
+   486→   486→                  <span className="px-2 py-1 rounded" style={{ background: '#F472B622', color: '#F472B6' }}>🗡️ Assassin</span><span className="opacity-30">|</span>
+   487→   487→                  <span className="px-2 py-1 rounded" style={{ background: '#FBBF2422', color: '#FBBF24' }}>✨ Paladin</span><span className="opacity-30">beats</span>
+   488→   488→                  <span className="px-2 py-1 rounded" style={{ background: '#A855F722', color: '#A855F7' }}>🔮 Mage</span>
+   489→   489→                </div>
+   490→   490→              </div>
+   491→   491→            </div>
+   492→   492→          )}
+   493→   493→
+   494→   494→          {/* START BUTTON */}
+   495→   495→          <div className="text-center">
+   496→   496→            <button
+   497→   497→              onClick={handleStart}
+   498→   498→              className="relative px-14 py-5 text-lg font-bold rounded-2xl transition-all duration-300 ease-out cursor-pointer overflow-hidden"
+   499→   499→              style={{
+   500→   500→                fontFamily: 'var(--font-cinzel), serif',
+   501→   501→                fontWeight: 700,
+   502→   502→                letterSpacing: '3px',
+   503→   503→                background: 'linear-gradient(180deg, #F5D060 0%, #D4A017 30%, #A67C00 70%, #8B6914 100%)',
+   504→   504→                color: '#1a0f00',
+   505→   505→                border: '2.5px solid #FDE68A66',
+   506→   506→                boxShadow: '0 8px 0 #5C4A0A, 0 10px 30px rgba(212,160,23,0.4), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)',
+   507→   507→                transform: 'translateY(0)',
+   508→   508→                textShadow: '0 1px 0 rgba(255,255,255,0.3)',
+   509→   509→                animation: 'btn-golden-pulse 2.5s ease-in-out infinite',
+   510→   510→              }}
+   511→   511→              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 0 #5C4A0A, 0 14px 40px rgba(212,160,23,0.5), 0 0 80px rgba(212,160,23,0.25), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; e.currentTarget.style.animation = 'none'; }}
+   512→   512→              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 0 #5C4A0A, 0 10px 30px rgba(212,160,23,0.4), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; e.currentTarget.style.animation = 'btn-golden-pulse 2.5s ease-in-out infinite'; }}
+   513→   513→              onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(3px)'; e.currentTarget.style.boxShadow = '0 3px 0 #5C4A0A, 0 5px 15px rgba(212,160,23,0.3), inset 0 2px 4px rgba(0,0,0,0.2)'; e.currentTarget.style.animation = 'none'; }}
+   514→   514→              onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 0 #5C4A0A, 0 14px 40px rgba(212,160,23,0.5), 0 0 80px rgba(212,160,23,0.25), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; }}
+   515→   515→            >
+   516→   516→              <div className="absolute top-0 bottom-0 w-1/3 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)', animation: 'btn-shimmer 3s ease-in-out infinite' }} />
+   517→   517→              <div className="absolute top-0 left-3 right-3 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }} />
+   518→   518→              <span className="relative z-10" style={{ display: 'inline-block', filter: 'drop-shadow(0 1px 0 rgba(255,255,255,0.4))' }}>
+   519→   519→                ⚔️ BEGIN CONQUEST ⚔️
+   520→   520→              </span>
+   521→   521→            </button>
+   522→   522→          </div>
+   523→   523→        </div>
+   524→   524→      </div>
+   525→   525→    </div>
+   526→   526→  );
+   527→   527→}

@@ -873,9 +873,7 @@ function MagicalParticles() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          array={positions}
-          count={count}
-          itemSize={3}
+          args={[positions, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
@@ -1025,7 +1023,7 @@ function LoadingScreen() {
 // 2D FALLBACK MAP (when WebGL is unavailable)
 // ========================
 
-function Fallback2DMap({ onTerritoryHover }: GameMap3DProps) {
+function Fallback2DMap({ onTerritoryHover }: { onTerritoryHover: (id: string | null) => void }) {
   const territories = useGameStore(s => s.territories);
   const players = useGameStore(s => s.players);
   const selectedTerritory = useGameStore(s => s.selectedTerritory);

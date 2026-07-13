@@ -1,0 +1,912 @@
+     1→'use client';
+     2→
+     3→import { useEffect, useRef, useState, useCallback } from 'react';
+     4→import { useGameStore } from '@/lib/game-store';
+     5→
+     6→/* ─── particle system ─── */
+     7→interface Particle {
+     8→  x: number;
+     9→  y: number;
+    10→  vx: number;
+    11→  vy: number;
+    12→  size: number;
+    13→  opacity: number;
+    14→  hue: number;
+    15→  life: number;
+    16→  maxLife: number;
+    17→  type: 'firefly' | 'ember' | 'mist';
+    18→}
+    19→
+    20→function lerp(a: number, b: number, t: number) {
+    21→  return a + (b - a) * t;
+    22→}
+    23→
+    24→function randomRange(min: number, max: number) {
+    25→  return Math.random() * (max - min) + min;
+    26→}
+    27→
+    28→export default function TitleScreen() {
+    29→  const canvasRef = useRef<HTMLCanvasElement>(null);
+    30→  const animRef = useRef<number>(0);
+    31→  const particles = useRef<Particle[]>([]);
+    32→  const mouseRef = useRef({ x: 0, y: 0 });
+    33→  const [loaded, setLoaded] = useState(false);
+    34→
+    35→  // Fallback: ensure loading overlay dismisses even if image is cached
+    36→  useEffect(() => {
+    37→    const timer = setTimeout(() => setLoaded(true), 2000);
+    38→    return () => clearTimeout(timer);
+    39→  }, []);
+    40→  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+    41→  const [fadeToGame, setFadeToGame] = useState(false);
+    42→  const [showModeSelect, setShowModeSelect] = useState(false);
+    43→  const startCampaign = useGameStore((s) => s.startCampaign);
+    44→  const startSkirmish = useGameStore((s) => s.startSkirmish);
+    45→  const startGame = useGameStore((s) => s.startGame);
+    46→
+    47→  const menuItems = [
+    48→    { id: 'campaign', label: 'NEW CAMPAIGN', action: () => { setShowModeSelect(true); } },
+    49→    { id: 'skirmish', label: 'SKIRMISH MODE', action: () => handleModeSelect(false) },
+    50→    { id: 'multi', label: 'MULTIPLAYER', action: () => {} },
+    51→    { id: 'credits', label: 'CREDITS', action: () => {} },
+    52→  ];
+    53→
+    54→  const handleModeSelect = useCallback((isCampaign: boolean) => {
+    55→    setShowModeSelect(false);
+    56→    setFadeToGame(true);
+    57→    setTimeout(() => {
+    58→      if (isCampaign) {
+    59→        startCampaign();
+    60→      } else {
+    61→        startSkirmish();
+    62→      }
+    63→    }, 1200);
+    64→  }, [startCampaign, startSkirmish]);
+    65→
+    66→  const handleStart = useCallback(() => {
+    67→    setFadeToGame(true);
+    68→    setTimeout(() => startGame(), 1200);
+    69→  }, [startGame]);
+    70→
+    71→  /* ─── canvas particle engine ─── */
+    72→  useEffect(() => {
+    73→    const canvas = canvasRef.current;
+    74→    if (!canvas) return;
+    75→    const ctx = canvas.getContext('2d');
+    76→    if (!ctx) return;
+    77→
+    78→    const resize = () => {
+    79→      canvas.width = window.innerWidth;
+    80→      canvas.height = window.innerHeight;
+    81→    };
+    82→    resize();
+    83→    window.addEventListener('resize', resize);
+    84→
+    85→    const onMouse = (e: MouseEvent) => {
+    86→      mouseRef.current = { x: e.clientX, y: e.clientY };
+    87→    };
+    88→    window.addEventListener('mousemove', onMouse);
+    89→
+    90→    // Seed initial particles
+    91→    const spawnParticle = (type: Particle['type'] = 'firefly'): Particle => {
+    92→      const w = canvas.width;
+    93→      const h = canvas.height;
+    94→      switch (type) {
+    95→        case 'firefly':
+    96→          return {
+    97→            x: Math.random() * w,
+    98→            y: Math.random() * h,
+    99→            vx: randomRange(-0.3, 0.3),
+   100→            vy: randomRange(-0.5, -0.1),
+   101→            size: randomRange(1.5, 3.5),
+   102→            opacity: 0,
+   103→            hue: randomRange(35, 55), // warm gold
+   104→            life: 0,
+   105→            maxLife: randomRange(180, 420),
+   106→            type: 'firefly',
+   107→          };
+   108→        case 'ember':
+   109→          return {
+   110→            x: Math.random() * w,
+   111→            y: h + 10,
+   112→            vx: randomRange(-0.5, 0.5),
+   113→            vy: randomRange(-1.5, -0.5),
+   114→            size: randomRange(1, 2.5),
+   115→            opacity: randomRange(0.5, 0.9),
+   116→            hue: randomRange(10, 35), // orange-red
+   117→            life: 0,
+   118→            maxLife: randomRange(120, 300),
+   119→            type: 'ember',
+   120→          };
+   121→        case 'mist':
+   122→          return {
+   123→            x: randomRange(-100, w + 100),
+   124→            y: h * randomRange(0.5, 0.95),
+   125→            vx: randomRange(0.1, 0.4),
+   126→            vy: randomRange(-0.05, 0.05),
+   127→            size: randomRange(80, 200),
+   128→            opacity: 0,
+   129→            hue: 220,
+   130→            life: 0,
+   131→            maxLife: randomRange(400, 800),
+   132→            type: 'mist',
+   133→          };
+   134→      }
+   135→    };
+   136→
+   137→    // Initialize
+   138→    for (let i = 0; i < 60; i++) particles.current.push(spawnParticle('firefly'));
+   139→    for (let i = 0; i < 15; i++) particles.current.push(spawnParticle('ember'));
+   140→    for (let i = 0; i < 6; i++) particles.current.push(spawnParticle('mist'));
+   141→
+   142→    let frame = 0;
+   143→    const draw = () => {
+   144→      frame++;
+   145→      ctx.clearRect(0, 0, canvas.width, canvas.height);
+   146→      const w = canvas.width;
+   147→      const h = canvas.height;
+   148→      const mx = mouseRef.current.x;
+   149→      const my = mouseRef.current.y;
+   150→
+   151→      // Spawn new particles periodically
+   152→      if (frame % 8 === 0 && particles.current.filter(p => p.type === 'firefly').length < 80) {
+   153→        particles.current.push(spawnParticle('firefly'));
+   154→      }
+   155→      if (frame % 20 === 0 && particles.current.filter(p => p.type === 'ember').length < 25) {
+   156→        particles.current.push(spawnParticle('ember'));
+   157→      }
+   158→      if (frame % 60 === 0 && particles.current.filter(p => p.type === 'mist').length < 8) {
+   159→        particles.current.push(spawnParticle('mist'));
+   160→      }
+   161→
+   162→      // Draw & update
+   163→      for (let i = particles.current.length - 1; i >= 0; i--) {
+   164→        const p = particles.current[i];
+   165→        p.life++;
+   166→
+   167→        // Fade in/out lifecycle
+   168→        const lifeRatio = p.life / p.maxLife;
+   169→        if (lifeRatio < 0.15) {
+   170→          p.opacity = lerp(0, p.type === 'mist' ? 0.06 : 0.8, lifeRatio / 0.15);
+   171→        } else if (lifeRatio > 0.75) {
+   172→          p.opacity = lerp(p.type === 'mist' ? 0.06 : 0.8, 0, (lifeRatio - 0.75) / 0.25);
+   173→        }
+   174→
+   175→        // Gentle mouse repulsion for fireflies
+   176→        if (p.type === 'firefly') {
+   177→          const dx = p.x - mx;
+   178→          const dy = p.y - my;
+   179→          const dist = Math.sqrt(dx * dx + dy * dy);
+   180→          if (dist < 120 && dist > 0) {
+   181→            const force = (120 - dist) / 120 * 0.15;
+   182→            p.vx += (dx / dist) * force;
+   183→            p.vy += (dy / dist) * force;
+   184→          }
+   185→          // Dampen velocity
+   186→          p.vx *= 0.995;
+   187→          p.vy *= 0.995;
+   188→          // Wandering
+   189→          p.vx += Math.sin(frame * 0.01 + i) * 0.02;
+   190→          p.vy += Math.cos(frame * 0.013 + i) * 0.015;
+   191→        }
+   192→
+   193→        p.x += p.vx;
+   194→        p.y += p.vy;
+   195→
+   196→        // Remove dead or off-screen
+   197→        if (p.life >= p.maxLife || p.x < -250 || p.x > w + 250 || p.y < -50 || p.y > h + 50) {
+   198→          particles.current.splice(i, 1);
+   199→          continue;
+   200→        }
+   201→
+   202→        if (p.type === 'firefly') {
+   203→          // Pulsing glow
+   204→          const pulse = 0.6 + Math.sin(frame * 0.05 + i * 1.7) * 0.4;
+   205→          const alpha = p.opacity * pulse;
+   206→          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
+   207→          glow.addColorStop(0, `hsla(${p.hue}, 80%, 70%, ${alpha})`);
+   208→          glow.addColorStop(0.4, `hsla(${p.hue}, 70%, 55%, ${alpha * 0.4})`);
+   209→          glow.addColorStop(1, `hsla(${p.hue}, 60%, 40%, 0)`);
+   210→          ctx.fillStyle = glow;
+   211→          ctx.beginPath();
+   212→          ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+   213→          ctx.fill();
+   214→          // Core
+   215→          ctx.fillStyle = `hsla(${p.hue}, 90%, 85%, ${alpha})`;
+   216→          ctx.beginPath();
+   217→          ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
+   218→          ctx.fill();
+   219→        } else if (p.type === 'ember') {
+   220→          const flicker = 0.7 + Math.sin(frame * 0.12 + i * 3.1) * 0.3;
+   221→          const alpha = p.opacity * flicker;
+   222→          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
+   223→          glow.addColorStop(0, `hsla(${p.hue}, 90%, 60%, ${alpha})`);
+   224→          glow.addColorStop(0.5, `hsla(${p.hue}, 80%, 45%, ${alpha * 0.3})`);
+   225→          glow.addColorStop(1, `hsla(${p.hue}, 70%, 30%, 0)`);
+   226→          ctx.fillStyle = glow;
+   227→          ctx.beginPath();
+   228→          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+   229→          ctx.fill();
+   230→        } else if (p.type === 'mist') {
+   231→          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+   232→          gradient.addColorStop(0, `hsla(${p.hue}, 30%, 40%, ${p.opacity})`);
+   233→          gradient.addColorStop(0.6, `hsla(${p.hue}, 25%, 30%, ${p.opacity * 0.4})`);
+   234→          gradient.addColorStop(1, `hsla(${p.hue}, 20%, 25%, 0)`);
+   235→          ctx.fillStyle = gradient;
+   236→          ctx.beginPath();
+   237→          ctx.ellipse(p.x, p.y, p.size, p.size * 0.4, 0, 0, Math.PI * 2);
+   238→          ctx.fill();
+   239→        }
+   240→      }
+   241→
+   242→      // Subtle vignette
+   243→      const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.25, w / 2, h / 2, w * 0.75);
+   244→      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+   245→      vignette.addColorStop(1, 'rgba(0,0,0,0.35)');
+   246→      ctx.fillStyle = vignette;
+   247→      ctx.fillRect(0, 0, w, h);
+   248→
+   249→      animRef.current = requestAnimationFrame(draw);
+   250→    };
+   251→
+   252→    animRef.current = requestAnimationFrame(draw);
+   253→
+   254→    return () => {
+   255→      cancelAnimationFrame(animRef.current);
+   256→      window.removeEventListener('resize', resize);
+   257→      window.removeEventListener('mousemove', onMouse);
+   258→    };
+   259→  }, []);
+   260→
+   261→  return (
+   262→    <div
+   263→      className="relative w-screen h-screen overflow-hidden"
+   264→      style={{ cursor: 'default' }}
+   265→    >
+   266→      {/* Background image */}
+   267→      <div
+   268→        className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-in-out"
+   269→        style={{
+   270→          backgroundImage: 'url(/game_menu.png)',
+   271→          animation: 'kenBurns 20s ease-in-out infinite alternate',
+   272→          filter: 'brightness(0.75) saturate(1.15) contrast(1.05)',
+   273→        }}
+   274→      />
+   275→
+   276→      {/* Dark gradient overlays for depth */}
+   277→      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+   278→      <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none" />
+   279→
+   280→      {/* Particle canvas */}
+   281→      <canvas
+   282→        ref={canvasRef}
+   283→        className="absolute inset-0 z-10 pointer-events-none"
+   284→      />
+   285→
+   286→      {/* Ambient light beams */}
+   287→      <div
+   288→        className="absolute z-[5] pointer-events-none"
+   289→        style={{
+   290→          top: '5%',
+   291→          left: '50%',
+   292→          transform: 'translateX(-50%)',
+   293→          width: '120%',
+   294→          height: '60%',
+   295→          background: 'radial-gradient(ellipse at 50% 0%, rgba(180,160,120,0.06) 0%, transparent 60%)',
+   296→          animation: 'lightBeam 8s ease-in-out infinite alternate',
+   297→        }}
+   298→      />
+   299→
+   300→      {/* Portal glow pulse (top center area) */}
+   301→      <div
+   302→        className="absolute z-[6] pointer-events-none"
+   303→        style={{
+   304→          top: '0%',
+   305→          left: '50%',
+   306→          transform: 'translateX(-50%)',
+   307→          width: '400px',
+   308→          height: '200px',
+   309→          background: 'radial-gradient(ellipse at 50% 80%, rgba(100,80,200,0.12) 0%, rgba(60,100,200,0.06) 40%, transparent 70%)',
+   310→          animation: 'portalPulse 4s ease-in-out infinite',
+   311→        }}
+   312→      />
+   313→
+   314→      {/* Title area */}
+   315→      <div
+   316→        className="absolute z-20 flex flex-col items-center pointer-events-none"
+   317→        style={{
+   318→          top: '6%',
+   319→          left: '50%',
+   320→          transform: 'translateX(-50%)',
+   321→          width: '90%',
+   322→          maxWidth: '800px',
+   323→        }}
+   324→      >
+   325→        {/* Title glow backdrop */}
+   326→        <div
+   327→          className="absolute -inset-10 opacity-30"
+   328→          style={{
+   329→            background: 'radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.3) 0%, transparent 65%)',
+   330→            animation: 'titleGlow 3s ease-in-out infinite alternate',
+   331→          }}
+   332→        />
+   333→
+   334→        {/* Ornamental top flourish */}
+   335→        <div
+   336→          className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+   337→          style={{
+   338→            top: '-28px',
+   339→            width: 'clamp(160px, 30vw, 320px)',
+   340→            height: '20px',
+   341→            opacity: 0,
+   342→            animation: 'ornamentReveal 1.5s ease forwards 0.8s',
+   343→          }}
+   344→        >
+   345→          <svg viewBox="0 0 300 20" fill="none" className="w-full h-full">
+   346→            <path d="M0 10 Q75 0 150 10 Q225 20 300 10" stroke="url(#goldFade)" strokeWidth="1" fill="none" opacity="0.6"/>
+   347→            <path d="M0 10 Q75 20 150 10 Q225 0 300 10" stroke="url(#goldFade)" strokeWidth="1" fill="none" opacity="0.6"/>
+   348→            <circle cx="150" cy="10" r="3" fill="#D4AF37" opacity="0.8"/>
+   349→            <circle cx="75" cy="8" r="1.5" fill="#D4AF37" opacity="0.5"/>
+   350→            <circle cx="225" cy="12" r="1.5" fill="#D4AF37" opacity="0.5"/>
+   351→            <defs><linearGradient id="goldFade" x1="0" y1="0" x2="300" y2="0"><stop offset="0%" stopColor="transparent"/><stop offset="50%" stopColor="#D4AF37"/><stop offset="100%" stopColor="transparent"/></linearGradient></defs>
+   352→          </svg>
+   353→        </div>
+   354→
+   355→        {/* 3D Old English Title */}
+   356→        <div
+   357→          className="relative text-center select-none"
+   358→          style={{ perspective: '800px' }}
+   359→        >
+   360→          {/* Top line - REALM OF */}
+   361→          <h1
+   362→            className="relative text-center select-none inline-flex flex-wrap justify-center"
+   363→            style={{
+   364→              fontFamily: 'var(--font-cinzel-decorative), var(--font-cinzel), serif',
+   365→              fontSize: 'clamp(1.4rem, 3.8vw, 3.2rem)',
+   366→              fontWeight: 700,
+   367→              letterSpacing: '0.25em',
+   368→              color: '#F5E6A3',
+   369→              textShadow: `
+   370→                0 1px 0 #C9A02E,
+   371→                0 2px 0 #B3821C,
+   372→                0 3px 0 #9D640A,
+   373→                0 4px 0 #874600,
+   374→                0 5px 8px rgba(0,0,0,0.7),
+   375→                0 5px 16px rgba(0,0,0,0.5),
+   376→                0 0 30px rgba(212,175,55,0.2),
+   377→                0 0 60px rgba(212,175,55,0.1)
+   378→              `,
+   379→              transformStyle: 'preserve-3d',
+   380→            }}
+   381→          >
+   382→            {'REALM OF'.split('').map((char, i) => (
+   383→              <span
+   384→                key={i}
+   385→                style={{
+   386→                  display: 'inline-block',
+   387→                  opacity: 0,
+   388→                  animation: `letterReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${0.3 + i * 0.06}s forwards, letterFloat 4s ease-in-out ${1.2 + i * 0.15}s infinite`,
+   389→                }}
+   390→              >
+   391→                {char === ' ' ? '\u00A0' : char}
+   392→              </span>
+   393→            ))}
+   394→          </h1>
+   395→
+   396→          {/* Main line - THE KHMER EMPIRE */}
+   397→          <h1
+   398→            className="relative text-center select-none inline-flex flex-wrap justify-center mt-1"
+   399→            style={{
+   400→              fontFamily: 'var(--font-cinzel-decorative), var(--font-cinzel), serif',
+   401→              fontSize: 'clamp(2.2rem, 7vw, 6.5rem)',
+   402→              fontWeight: 900,
+   403→              letterSpacing: '0.08em',
+   404→              color: '#FFE88A',
+   405→              textShadow: `
+   406→                0 1px 0 #D4AF37,
+   407→                0 2px 0 #C9A02E,
+   408→                0 3px 0 #BE9125,
+   409→                0 4px 0 #B3821C,
+   410→                0 5px 0 #A87313,
+   411→                0 6px 0 #9D640A,
+   412→                0 7px 0 #925501,
+   413→                0 8px 0 #874600,
+   414→                0 9px 0 #7C3700,
+   415→                0 10px 0 #612800,
+   416→                0 11px 20px rgba(0,0,0,0.85),
+   417→                0 11px 40px rgba(0,0,0,0.6),
+   418→                0 0 60px rgba(240,208,96,0.3),
+   419→                0 0 120px rgba(240,208,96,0.15),
+   420→                0 0 200px rgba(240,208,96,0.08)
+   421→              `,
+   422→              transformStyle: 'preserve-3d',
+   423→              animation: 'mainTitle3DBreathe 4s ease-in-out 2s infinite',
+   424→            }}
+   425→          >
+   426→            {'THE KHMER EMPIRE'.split('').map((char, i) => (
+   427→              <span
+   428→                key={i}
+   429→                style={{
+   430→                  display: 'inline-block',
+   431→                  opacity: 0,
+   432→                  animation: `letterRevealDramatic 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${0.8 + i * 0.045}s forwards, letterFloat 5s ease-in-out ${2.5 + i * 0.2}s infinite`,
+   433→                }}
+   434→              >
+   435→                {char === ' ' ? '\u00A0' : char}
+   436→              </span>
+   437→            ))}
+   438→            {/* Continuous gold shimmer sweep */}
+   439→            <span
+   440→              className="absolute inset-0 pointer-events-none"
+   441→              style={{
+   442→                background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.08) 35%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.08) 65%, transparent 80%)',
+   443→                backgroundSize: '300% 100%',
+   444→                WebkitBackgroundClip: 'text',
+   445→                backgroundClip: 'text',
+   446→                animation: 'shimmerSweep 6s ease-in-out 2s infinite',
+   447→              }}
+   448→            />
+   449→          </h1>
+   450→
+   451→          {/* Rising ember particles from text */}
+   452→          <div
+   453→            className="absolute inset-0 pointer-events-none overflow-visible"
+   454→            style={{ height: '200%', top: '-30%' }}
+   455→          >
+   456→            {[...Array(12)].map((_, i) => (
+   457→              <div
+   458→                key={i}
+   459→                style={{
+   460→                  position: 'absolute',
+   461→                  left: `${10 + (i * 7.3) % 82}%`,
+   462→                  bottom: '20%',
+   463→                  width: `${1.5 + (i % 3)}px`,
+   464→                  height: `${1.5 + (i % 3)}px`,
+   465→                  borderRadius: '50%',
+   466→                  background: i % 3 === 0 ? '#FFE88A' : i % 3 === 1 ? '#D4AF37' : '#FFA500',
+   467→                  boxShadow: `0 0 ${3 + i % 4}px ${i % 3 === 0 ? '#FFE88A' : '#D4AF37'}`,
+   468→                  animation: `${i % 2 === 0 ? 'emberRise' : 'emberRiseAlt'} ${2.5 + (i % 4) * 0.7}s ease-out ${i * 0.35}s infinite`,
+   469→                  opacity: 0,
+   470→                }}
+   471→              />
+   472→            ))}
+   473→          </div>
+   474→        </div>
+   475→
+   476→        {/* Ornamental bottom flourish */}
+   477→        <div
+   478→          className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+   479→          style={{
+   480→            bottom: '-24px',
+   481→            width: 'clamp(120px, 22vw, 240px)',
+   482→            height: '16px',
+   483→            opacity: 0,
+   484→            animation: 'ornamentReveal 1.5s ease forwards 1.5s',
+   485→          }}
+   486→        >
+   487→          <svg viewBox="0 0 240 16" fill="none" className="w-full h-full">
+   488→            <line x1="0" y1="8" x2="240" y2="8" stroke="url(#goldFade2)" strokeWidth="1"/>
+   489→            <path d="M110 4 L120 0 L130 4" stroke="#D4AF37" strokeWidth="0.8" fill="none" opacity="0.7"/>
+   490→            <path d="M110 12 L120 16 L130 12" stroke="#D4AF37" strokeWidth="0.8" fill="none" opacity="0.7"/>
+   491→            <circle cx="120" cy="8" r="2" fill="#D4AF37" opacity="0.6"/>
+   492→            <defs><linearGradient id="goldFade2" x1="0" y1="0" x2="240" y2="0"><stop offset="0%" stopColor="transparent"/><stop offset="50%" stopColor="#D4AF37" stopOpacity="0.8"/><stop offset="100%" stopColor="transparent"/></linearGradient></defs>
+   493→          </svg>
+   494→        </div>
+   495→
+   496→        {/* Decorative divider */}
+   497→        <div
+   498→          className="relative mt-4 mb-1"
+   499→          style={{
+   500→            width: 'clamp(200px, 40vw, 500px)',
+   501→            height: '2px',
+   502→            background: 'linear-gradient(90deg, transparent, #D4AF37, #F0D060, #D4AF37, transparent)',
+   503→            boxShadow: '0 0 12px rgba(212,175,55,0.5)',
+   504→            animation: 'dividerGlow 2.5s ease-in-out infinite alternate',
+   505→          }}
+   506→        />
+   507→        <p
+   508→          className="relative font-[var(--font-cinzel)] text-center select-none"
+   509→          style={{
+   510→            fontSize: 'clamp(0.65rem, 1.3vw, 0.9rem)',
+   511→            color: 'rgba(200,180,130,0.6)',
+   512→            letterSpacing: '0.4em',
+   513→            textShadow: '0 1px 0 rgba(80,60,20,0.8), 0 2px 4px rgba(0,0,0,0.9)',
+   514→            textTransform: 'uppercase',
+   515→            animation: 'subtitleFade 2.5s ease forwards 1.2s',
+   516→            opacity: 0,
+   517→          }}
+   518→        >
+   519→          Conquer the Shattered Lands
+   520→        </p>
+   521→      </div>
+   522→
+   523→      {/* Mode Selection Overlay */}
+   524→      {showModeSelect && (
+   525→        <div
+   526→          className="absolute inset-0 z-30 flex items-center justify-center"
+   527→          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', animation: 'modeFadeIn 0.3s ease forwards' }}
+   528→        >
+   529→          <div
+   530→            className="p-8 rounded-xl max-w-md w-[90%]"
+   531→            style={{
+   532→              background: 'linear-gradient(180deg, rgba(30,20,8,0.95), rgba(15,10,5,0.98))',
+   533→              border: '1.5px solid rgba(212,175,55,0.3)',
+   534→              boxShadow: '0 0 40px rgba(212,175,55,0.1), 0 16px 48px rgba(0,0,0,0.6)',
+   535→            }}
+   536→          >
+   537→            <h2
+   538→              className="text-xl font-bold tracking-widest text-center mb-2"
+   539→              style={{
+   540→                fontFamily: 'var(--font-cinzel), serif',
+   541→                color: '#D4AF37',
+   542→                textShadow: '0 0 12px rgba(212,175,55,0.4)',
+   543→              }}
+   544→            >
+   545→              CHOOSE YOUR PATH
+   546→            </h2>
+   547→            <p className="text-[11px] text-center opacity-40 mb-6" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+   548→              How will you wage war for the Khmer Crown?
+   549→            </p>
+   550→            <div className="flex flex-col gap-3">
+   551→              <button
+   552→                onClick={() => handleModeSelect(true)}
+   553→                onMouseEnter={() => setHoveredItem('mode-campaign')}
+   554→                onMouseLeave={() => setHoveredItem(null)}
+   555→                className="p-4 rounded-lg text-left transition-all"
+   556→                style={{
+   557→                  background: hoveredItem === 'mode-campaign' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
+   558→                  border: `1.5px solid ${hoveredItem === 'mode-campaign' ? 'rgba(212,175,55,0.5)' : 'rgba(139,115,85,0.2)'}`,
+   559→                }}
+   560→              >
+   561→                <div className="flex items-center gap-3 mb-1">
+   562→                  <span className="text-2xl">📜</span>
+   563→                  <span
+   564→                    className="text-base font-bold tracking-wider"
+   565→                    style={{
+   566→                      fontFamily: 'var(--font-cinzel), serif',
+   567→                      color: hoveredItem === 'mode-campaign' ? '#F5E6A3' : '#D4AF37',
+   568→                    }}
+   569→                  >
+   570→                    CAMPAIGN
+   571→                  </span>
+   572→                </div>
+   573→                <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+   574→                  Experience the full story of the Khmer Empire's war. Chapter transitions, narrative triggers on key territory captures, rival dialogues, and an epic 5-chapter saga from assembly to final stand.
+   575→                </p>
+   576→              </button>
+   577→              <button
+   578→                onClick={() => handleModeSelect(false)}
+   579→                onMouseEnter={() => setHoveredItem('mode-skirmish')}
+   580→                onMouseLeave={() => setHoveredItem(null)}
+   581→                className="p-4 rounded-lg text-left transition-all"
+   582→                style={{
+   583→                  background: hoveredItem === 'mode-skirmish' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
+   584→                  border: `1.5px solid ${hoveredItem === 'mode-skirmish' ? 'rgba(212,175,55,0.5)' : 'rgba(139,115,85,0.2)'}`,
+   585→                }}
+   586→              >
+   587→                <div className="flex items-center gap-3 mb-1">
+   588→                  <span className="text-2xl">⚔️</span>
+   589→                  <span
+   590→                    className="text-base font-bold tracking-wider"
+   591→                    style={{
+   592→                      fontFamily: 'var(--font-cinzel), serif',
+   593→                      color: hoveredItem === 'mode-skirmish' ? '#F5E6A3' : '#D4AF37',
+   594→                    }}
+   595→                  >
+   596→                    SKIRMISH
+   597→                  </span>
+   598→                </div>
+   599→                <p className="text-[10px] opacity-50 ml-9" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+   600→                  Jump straight into battle. Pure strategy with no story interruptions. Conquer the Khmer Empire at your own pace with random events and full tactical gameplay.
+   601→                </p>
+   602→              </button>
+   603→            </div>
+   604→            <button
+   605→              onClick={() => setShowModeSelect(false)}
+   606→              className="w-full mt-4 py-2 rounded text-[10px] tracking-widest uppercase transition-all opacity-50 hover:opacity-100"
+   607→              style={{
+   608→                fontFamily: 'var(--font-cinzel), serif',
+   609→                color: '#8B7355',
+   610→                border: '1px solid rgba(139,115,85,0.2)',
+   611→              }}
+   612→            >
+   613→              Cancel
+   614→            </button>
+   615→          </div>
+   616→        </div>
+   617→      )}
+   618→
+   619→      {/* Menu panel */}
+   620→      <div
+   621→        className="absolute z-20 flex flex-col items-center gap-3"
+   622→        style={{
+   623→          bottom: '12%',
+   624→          left: '50%',
+   625→          transform: 'translateX(-50%)',
+   626→        }}
+   627→      >
+   628→        {menuItems.map((item, index) => (
+   629→          <button
+   630→            key={item.id}
+   631→            onClick={item.action}
+   632→            onMouseEnter={() => setHoveredItem(item.id)}
+   633→            onMouseLeave={() => setHoveredItem(null)}
+   634→            className="group relative font-[var(--font-cinzel)] select-none outline-none border-none bg-transparent"
+   635→            style={{
+   636→              fontSize: 'clamp(0.9rem, 2vw, 1.3rem)',
+   637→              fontWeight: 600,
+   638→              color: hoveredItem === item.id ? '#F5E6A3' : '#C9A84C',
+   639→              textShadow: hoveredItem === item.id
+   640→                ? '0 0 15px rgba(212,175,55,0.8), 0 0 30px rgba(212,175,55,0.4), 0 2px 4px rgba(0,0,0,0.9)'
+   641→                : '0 0 8px rgba(212,175,55,0.3), 0 1px 3px rgba(0,0,0,0.8)',
+   642→              letterSpacing: '0.2em',
+   643→              padding: '8px 32px',
+   644→              transition: 'all 0.3s ease',
+   645→              transform: hoveredItem === item.id ? 'scale(1.08)' : 'scale(1)',
+   646→              animation: `menuFadeIn 0.8s ease ${index * 0.12}s both`,
+   647→              cursor: 'pointer',
+   648→              background: hoveredItem === item.id
+   649→                ? 'linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent)'
+   650→                : 'none',
+   651→              borderRadius: '4px',
+   652→            }}
+   653→          >
+   654→            {/* Hover underline glow */}
+   655→            <span
+   656→              className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[1px] transition-all duration-300"
+   657→              style={{
+   658→                width: hoveredItem === item.id ? '80%' : '0%',
+   659→                background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+   660→                boxShadow: '0 0 8px rgba(212,175,55,0.6)',
+   661→              }}
+   662→            />
+   663→            {/* Side decorative brackets on hover */}
+   664→            {hoveredItem === item.id && (
+   665→              <>
+   666→                <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 text-sm animate-pulse">[</span>
+   667→                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 text-sm animate-pulse">]</span>
+   668→              </>
+   669→            )}
+   670→            {item.label}
+   671→          </button>
+   672→        ))}
+   673→      </div>
+   674→
+   675→      {/* Torch flicker effects (bottom corners) */}
+   676→      <div className="absolute bottom-0 left-0 z-10 pointer-events-none w-32 h-48">
+   677→        <div
+   678→          style={{
+   679→            position: 'absolute',
+   680→            bottom: '10%',
+   681→            left: '20%',
+   682→            width: '30px',
+   683→            height: '50px',
+   684→            background: 'radial-gradient(ellipse at 50% 80%, rgba(255,150,30,0.25) 0%, rgba(255,100,20,0.1) 40%, transparent 70%)',
+   685→            animation: 'torchFlicker 0.15s ease-in-out infinite alternate',
+   686→            filter: 'blur(3px)',
+   687→          }}
+   688→        />
+   689→        <div
+   690→          style={{
+   691→            position: 'absolute',
+   692→            bottom: '15%',
+   693→            left: '25%',
+   694→            width: '12px',
+   695→            height: '20px',
+   696→            background: 'radial-gradient(ellipse at 50% 70%, rgba(255,220,100,0.6) 0%, rgba(255,150,30,0.2) 50%, transparent 80%)',
+   697→            animation: 'torchFlame 0.1s ease-in-out infinite alternate',
+   698→          }}
+   699→        />
+   700→      </div>
+   701→      <div className="absolute bottom-0 right-0 z-10 pointer-events-none w-32 h-48">
+   702→        <div
+   703→          style={{
+   704→            position: 'absolute',
+   705→            bottom: '10%',
+   706→            right: '20%',
+   707→            width: '30px',
+   708→            height: '50px',
+   709→            background: 'radial-gradient(ellipse at 50% 80%, rgba(255,150,30,0.25) 0%, rgba(255,100,20,0.1) 40%, transparent 70%)',
+   710→            animation: 'torchFlicker 0.18s ease-in-out infinite alternate-reverse',
+   711→            filter: 'blur(3px)',
+   712→          }}
+   713→        />
+   714→        <div
+   715→          style={{
+   716→            position: 'absolute',
+   717→            bottom: '15%',
+   718→            right: '25%',
+   719→            width: '12px',
+   720→            height: '20px',
+   721→            background: 'radial-gradient(ellipse at 50% 70%, rgba(255,220,100,0.6) 0%, rgba(255,150,30,0.2) 50%, transparent 80%)',
+   722→            animation: 'torchFlame 0.12s ease-in-out infinite alternate-reverse',
+   723→          }}
+   724→        />
+   725→      </div>
+   726→
+   727→      {/* Loading overlay */}
+   728→      <div
+   729→        className="absolute inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-1000"
+   730→        style={{ opacity: loaded ? 0 : 1, pointerEvents: loaded ? 'none' : 'all' }}
+   731→      >
+   732→        <div className="text-center">
+   733→          <div
+   734→            className="w-16 h-16 border-2 border-t-transparent rounded-full mx-auto mb-4"
+   735→            style={{
+   736→              borderColor: '#D4AF37',
+   737→              borderTopColor: 'transparent',
+   738→              animation: 'spin 1s linear infinite',
+   739→            }}
+   740→          />
+   741→          <p
+   742→            className="font-[var(--font-cinzel)] text-lg tracking-widest"
+   743→            style={{ color: '#C9A84C', textShadow: '0 0 10px rgba(212,175,55,0.4)' }}
+   744→          >
+   745→            ENTERING THE REALM...
+   746→          </p>
+   747→        </div>
+   748→      </div>
+   749→
+   750→      {/* Fade to game transition */}
+   751→      <div
+   752→        className="absolute inset-0 z-50 bg-black pointer-events-none transition-opacity duration-1000"
+   753→        style={{ opacity: fadeToGame ? 1 : 0 }}
+   754→      />
+   755→
+   756→      {/* Image preload + loaded trigger */}
+   757→      {/* eslint-disable-next-line @next/next/no-img-element */}
+   758→      <img
+   759→        src="/game_menu.png"
+   760→        alt=""
+   761→        className="hidden"
+   762→        onLoad={() => {
+   763→          setTimeout(() => setLoaded(true), 400);
+   764→        }}
+   765→        onError={() => setLoaded(true)}
+   766→      />
+   767→
+   768→      {/* Inline keyframes */}
+   769→      <style jsx global>{`
+   770→        @keyframes kenBurns {
+   771→          0% { transform: scale(1) translate(0, 0); }
+   772→          100% { transform: scale(1.06) translate(-0.5%, -0.3%); }
+   773→        }
+   774→        @keyframes titleGlow {
+   775→          0% { opacity: 0.2; }
+   776→          100% { opacity: 0.4; }
+   777→        }
+   778→        @keyframes ornamentReveal {
+   779→          0% { opacity: 0; transform: translateX(-50%) scaleX(0.3); }
+   780→          100% { opacity: 1; transform: translateX(-50%) scaleX(1); }
+   781→        }
+   782→        @keyframes letterReveal {
+   783→          0% {
+   784→            opacity: 0;
+   785→            transform: translateY(40px) scale(0.5) rotateX(40deg);
+   786→            filter: blur(8px) brightness(3);
+   787→          }
+   788→          50% {
+   789→            filter: blur(0px) brightness(1.8);
+   790→          }
+   791→          75% {
+   792→            transform: translateY(-3px) scale(1.08) rotateX(-3deg);
+   793→          }
+   794→          100% {
+   795→            opacity: 1;
+   796→            transform: translateY(0) scale(1) rotateX(0deg);
+   797→            filter: blur(0px) brightness(1);
+   798→          }
+   799→        }
+   800→        @keyframes letterRevealDramatic {
+   801→          0% {
+   802→            opacity: 0;
+   803→            transform: translateY(60px) scale(0.3) rotateX(50deg) rotateZ(-5deg);
+   804→            filter: blur(12px) brightness(4);
+   805→          }
+   806→          40% {
+   807→            opacity: 1;
+   808→            filter: blur(0px) brightness(2);
+   809→          }
+   810→          65% {
+   811→            transform: translateY(-6px) scale(1.12) rotateX(-4deg) rotateZ(1deg);
+   812→          }
+   813→          85% {
+   814→            transform: translateY(2px) scale(0.98) rotateX(1deg) rotateZ(0deg);
+   815→          }
+   816→          100% {
+   817→            opacity: 1;
+   818→            transform: translateY(0) scale(1) rotateX(0deg) rotateZ(0deg);
+   819→            filter: blur(0px) brightness(1);
+   820→          }
+   821→        }
+   822→        @keyframes letterFloat {
+   823→          0%, 100% { transform: translateY(0); }
+   824→          50% { transform: translateY(-3px); }
+   825→        }
+   826→        @keyframes mainTitle3DBreathe {
+   827→          0%, 100% {
+   828→            transform: perspective(800px) rotateX(1deg) scaleY(1);
+   829→            filter: brightness(1);
+   830→          }
+   831→          50% {
+   832→            transform: perspective(800px) rotateX(-1.5deg) scaleY(1.01);
+   833→            filter: brightness(1.08);
+   834→          }
+   835→        }
+   836→        @keyframes shimmerSweep {
+   837→          0% { background-position: 300% center; }
+   838→          100% { background-position: -300% center; }
+   839→        }
+   840→        @keyframes emberRise {
+   841→          0% {
+   842→            opacity: 0;
+   843→            transform: translateY(0) translateX(0) scale(1);
+   844→          }
+   845→          15% {
+   846→            opacity: 0.9;
+   847→          }
+   848→          50% {
+   849→            opacity: 0.6;
+   850→            transform: translateY(-40px) translateX(6px) scale(0.7);
+   851→          }
+   852→          100% {
+   853→            opacity: 0;
+   854→            transform: translateY(-90px) translateX(-10px) scale(0.2);
+   855→          }
+   856→        }
+   857→        @keyframes emberRiseAlt {
+   858→          0% {
+   859→            opacity: 0;
+   860→            transform: translateY(0) translateX(0) scale(1);
+   861→          }
+   862→          15% {
+   863→            opacity: 0.8;
+   864→          }
+   865→          50% {
+   866→            opacity: 0.5;
+   867→            transform: translateY(-35px) translateX(-8px) scale(0.6);
+   868→          }
+   869→          100% {
+   870→            opacity: 0;
+   871→            transform: translateY(-80px) translateX(12px) scale(0.15);
+   872→          }
+   873→        }
+   874→        @keyframes subtitleFade {
+   875→          0% { opacity: 0; transform: translateY(8px); letter-spacing: 0.6em; }
+   876→          100% { opacity: 1; transform: translateY(0); letter-spacing: 0.4em; }
+   877→        }
+   878→        @keyframes dividerGlow {
+   879→          0% { opacity: 0.6; }
+   880→          100% { opacity: 1; }
+   881→        }
+   882→        @keyframes menuFadeIn {
+   883→          0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+   884→          100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+   885→        }
+   886→        @keyframes torchFlicker {
+   887→          0% { opacity: 0.6; transform: scaleY(1); }
+   888→          100% { opacity: 1; transform: scaleY(1.15); }
+   889→        }
+   890→        @keyframes torchFlame {
+   891→          0% { opacity: 0.7; transform: scaleX(0.9) scaleY(0.95); }
+   892→          100% { opacity: 1; transform: scaleX(1.1) scaleY(1.05); }
+   893→        }
+   894→        @keyframes lightBeam {
+   895→          0% { opacity: 0.5; transform: translateX(-50%) rotate(-1deg); }
+   896→          100% { opacity: 0.8; transform: translateX(-50%) rotate(1deg); }
+   897→        }
+   898→        @keyframes portalPulse {
+   899→          0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+   900→          50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+   901→        }
+   902→        @keyframes spin {
+   903→          to { transform: rotate(360deg); }
+   904→        }
+   905→        @keyframes modeFadeIn {
+   906→          0% { opacity: 0; }
+   907→          100% { opacity: 1; }
+   908→        }
+   909→      `}</style>
+   910→    </div>
+   911→  );
+   912→}

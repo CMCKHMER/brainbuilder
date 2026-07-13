@@ -149,7 +149,7 @@ export default function ActionPanel() {
             {phase === 'attack' && !selectedTerritory && (
               <span>{phaseInfo.description}</span>
             )}
-            {phase === 'attack' && selectedTerritory && !targetTerritory && (
+            {phase === 'attack' && selectedTerritory && !targetTerritory && selectedTerr && (
               <div className="flex items-center gap-2">
                 <UnitPortrait unitType={getDominantUnit(selectedTerr.units) || 'swordsman'} size={18} />
                 <span>Selected <strong className="text-amber-300">{selectedTerr.name}</strong></span>
@@ -157,7 +157,7 @@ export default function ActionPanel() {
                 <span className="opacity-50">({selectedTerr.units.length} units). Click adjacent enemy.</span>
               </div>
             )}
-            {phase === 'attack' && selectedTerritory && targetTerritory && !battleResult && (
+            {phase === 'attack' && selectedTerritory && targetTerritory && !battleResult && selectedTerr && targetTerr && (
               <div className="flex items-center gap-2 flex-wrap">
                 <UnitPortrait unitType={attackDominantType || 'swordsman'} size={18} />
                 <span className="text-amber-300">{selectedTerr.name}</span>
@@ -171,10 +171,10 @@ export default function ActionPanel() {
             {phase === 'fortify' && !selectedTerritory && (
               <span>{phaseInfo.description}</span>
             )}
-            {phase === 'fortify' && selectedTerritory && !targetTerritory && (
+            {phase === 'fortify' && selectedTerritory && !targetTerritory && selectedTerr && (
               <span>From <strong className="text-amber-300">{selectedTerr.name}</strong> ({selectedTerr.units.length}). Click adjacent owned territory.</span>
             )}
-            {phase === 'fortify' && selectedTerritory && targetTerritory && (
+            {phase === 'fortify' && selectedTerritory && targetTerritory && selectedTerr && targetTerr && (
               <span>
                 <strong className="text-amber-300">{selectedTerr.name}</strong> → <strong className="text-green-400">{targetTerr.name}</strong>
               </span>
@@ -359,7 +359,7 @@ export default function ActionPanel() {
       )}
 
       {/* Row 2: Fortify controls */}
-      {phase === 'fortify' && selectedTerritory && targetTerritory && (
+      {phase === 'fortify' && selectedTerritory && targetTerritory && selectedTerr && (
         <div className="flex items-center gap-3">
           <input
             type="range"
