@@ -45,10 +45,15 @@ interface GameState {
   attackerDiceCount: number;
   defenderDiceCount: number;
   battleResult: BattleResult | null;
+  battleAnimation: { fromTerritory: string; toTerritory: string; conquered: boolean; timestamp: number } | null;
   battleLog: BattleLogEntry[];
   winner: Player | null;
   fortifyArmies: number;
   turnNumber: number;
+
+  // Cinematic intro
+  cinematicIntroActive: boolean;
+  dismissCinematicIntro: () => void;
 
   // Unit system
   deployUnitType: UnitTypeId;       // Currently selected unit type for deployment
@@ -187,10 +192,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   attackerDiceCount: 0,
   defenderDiceCount: 0,
   battleResult: null,
+  battleAnimation: null,
   battleLog: [],
   winner: null,
   fortifyArmies: 0,
   turnNumber: 0,
+  cinematicIntroActive: false,
   deployUnitType: 'swordsman',
   activeTactics: [],
   selectedTactic: null,
@@ -236,6 +243,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       selectedTerritory: null,
       targetTerritory: null,
       battleResult: null,
+      battleAnimation: null,
       battleLog: [],
       winner: null,
       turnNumber: 1,
@@ -249,6 +257,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       deployUnitType: 'swordsman',
       activeTactics: [],
       selectedTactic: null,
+      cinematicIntroActive: true,
     });
 
     // Queue story beats: prologue → character intro for player 1
@@ -264,16 +273,17 @@ export const useGameStore = create<GameState>((set, get) => ({
       playerConfig.image
     );
 
-    // Queue story beats: prologue → chapter 1 title → character intro for player 1
-    get().showStory(PROLOGUE);
-
-    if (get().isCampaignMode) {
-      const chapter1 = CHAPTERS[0];
-      const chapterBeat = getChapterTitleBeat(chapter1);
-      get().queueStory(chapterBeat);
-    }
-
-    get().queueStory(introBeat);
+    // Delay story queue until cinematic intro finishes
+    const queueGameStories = () => {
+      get().showStory(PROLOGUE);
+      if (get().isCampaignMode) {
+        const chapter1 = CHAPTERS[0];
+        const chapterBeat = getChapterTitleBeat(chapter1);
+        get().queueStory(chapterBeat);
+      }
+      get().queueStory(introBeat);
+    };
+    (get() as any)._pendingStoryQueue = queueGameStories;
   },
 
   deployArmy: (territoryId, unitType) => {
@@ -510,6 +520,12 @@ export const useGameStore = create<GameState>((set, get) => ({
       territories: newTerritories,
       players: newPlayers,
       battleResult,
+      battleAnimation: {
+        fromTerritory: state.selectedTerritory,
+        toTerritory: state.targetTerritory,
+        conquered,
+        timestamp: Date.now(),
+      },
       battleLog: newLog,
       attackerDiceCount: conquered ? 0 : Math.min(state.attackerDiceCount, maxAttack),
       defenderDiceCount: conquered ? 0 : maxDefend,
@@ -519,6 +535,13 @@ export const useGameStore = create<GameState>((set, get) => ({
       phase: winner ? 'gameover' : state.phase,
       activeTactics: newActiveTactics,
     });
+
+    // Auto-clear battle animation after 2 seconds
+    setTimeout(() => {
+      if (get().battleAnimation?.timestamp === Date.now() - 2000 || get().battleAnimation) {
+        set({ battleAnimation: null });
+      }
+    }, 2000);
   },
 
   setFortifyArmies: (count) => set({ fortifyArmies: count }),
@@ -867,6 +890,10 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   dismissEvent: () => {
     set({ currentEvent: null });
+  },
+
+  dismissCinematicIntro: () => {
+    set({ cinematicIntroActive: false });
   },
 
   // Campaign mode functions

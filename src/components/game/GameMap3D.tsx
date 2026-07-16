@@ -519,6 +519,7 @@ function TerritoryMesh({ territoryId, path, labelX, labelY, onHover, onClick }: 
   const currentPlayerIndex = useGameStore(s => s.currentPlayerIndex);
   const selectTerritory = useGameStore(s => s.selectTerritory);
   const deployArmy = useGameStore(s => s.deployArmy);
+  const battleAnimation = useGameStore(s => s.battleAnimation);
 
   const territory = territories[territoryId];
   if (!territory) return null;
@@ -572,27 +573,67 @@ function TerritoryMesh({ territoryId, path, labelX, labelY, onHover, onClick }: 
   const edgesRef = useRef<THREE.LineSegments>(null);
 
   useFrame((state) => {
-    if (meshRef.current) {
-      const mat = meshRef.current.material as THREE.MeshStandardMaterial;
+    if (!meshRef.current) return;
+
+    const mat = meshRef.current.material as THREE.MeshStandardMaterial;
+    const edgeMat = edgesRef.current?.material as THREE.LineBasicMaterial | undefined;
+
+    // Battle animation effects
+    const isBattleTarget = battleAnimation?.toTerritory === territoryId;
+    const isBattleSource = battleAnimation?.fromTerritory === territoryId;
+    const battleAge = battleAnimation ? (Date.now() - battleAnimation.timestamp) / 1000 : 999;
+
+    if (isBattleTarget && battleAge < 2) {
+      // Target: flash red, pulsing emissive
+      const flash = Math.max(0, 1 - battleAge / 2);
+      const pulse = Math.sin(battleAge * 15) * 0.5 + 0.5;
+      mat.emissive.set(battleAnimation.conquered ? '#FF6600' : '#FF0000');
+      mat.emissiveIntensity = flash * (0.5 + pulse * 0.5);
+      // Shake effect
+      const shake = Math.max(0, 1 - battleAge / 1.5) * 0.08;
+      meshRef.current.position.y = Math.sin(battleAge * 30) * shake;
+      meshRef.current.position.x = Math.cos(battleAge * 25) * shake * 0.5;
+      if (edgeMat) {
+        edgeMat.color.set(battleAnimation.conquered ? '#FF8800' : '#FF3333');
+        edgeMat.opacity = 0.6 + flash * 0.4;
+      }
+    } else if (isBattleSource && battleAge < 1.5) {
+      // Source: brief gold flash
+      const flash = Math.max(0, 1 - battleAge / 1.5);
+      mat.emissive.set('#FFD700');
+      mat.emissiveIntensity = flash * 0.3;
+      meshRef.current.position.y = 0;
+      meshRef.current.position.x = 0;
+      if (edgeMat) {
+        edgeMat.color.set('#FFD700');
+        edgeMat.opacity = 0.6 + flash * 0.3;
+      }
+    } else {
+      // Normal selection/target logic
+      meshRef.current.position.y = 0;
+      meshRef.current.position.x = 0;
+
       if (isSelected) {
+        mat.emissive.set('#FFD700');
         mat.emissiveIntensity = 0.3 + Math.sin(state.clock.elapsedTime * 3) * 0.15;
       } else if (isTarget) {
+        mat.emissive.set('#FF0000');
         mat.emissiveIntensity = 0.4 + Math.sin(state.clock.elapsedTime * 4) * 0.2;
       } else {
         mat.emissiveIntensity = 0;
       }
-    }
-    if (edgesRef.current) {
-      const mat = edgesRef.current.material as THREE.LineBasicMaterial;
-      if (isSelected) {
-        mat.color.set('#FFD700');
-        mat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 3) * 0.3;
-      } else if (isTarget) {
-        mat.color.set('#FF0000');
-        mat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 4) * 0.3;
-      } else {
-        mat.color.set('#3D2B1F');
-        mat.opacity = 0.8;
+
+      if (edgeMat) {
+        if (isSelected) {
+          edgeMat.color.set('#FFD700');
+          edgeMat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 3) * 0.3;
+        } else if (isTarget) {
+          edgeMat.color.set('#FF0000');
+          edgeMat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 4) * 0.3;
+        } else {
+          edgeMat.color.set('#3D2B1F');
+          edgeMat.opacity = 0.8;
+        }
       }
     }
   });
@@ -927,6 +968,97 @@ function SceneLighting() {
 }
 
 // ========================
+// Battle Explosion Particles
+// ========================
+function BattleExplosion() {
+  const battleAnimation = useGameStore(s => s.battleAnimation);
+  const territories = useGameStore(s => s.territories);
+  const TERRITORY_DEFS_LOCAL = TERRITORY_DEFS;
+  const pointsRef = useRef<THREE.Points>(null);
+  const [active, setActive] = useState(false);
+  const [positions, setPositions] = useState<Float32Array | null>(null);
+  const [velocities] = useState(() => {
+    // Pre-compute random velocities for 40 particles
+    const vels = new Float32Array(40 * 3);
+    for (let i = 0; i < 40; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.5 + Math.random() * 2;
+      const upSpeed = 1 + Math.random() * 3;
+      vels[i * 3] = Math.cos(angle) * speed;
+      vels[i * 3 + 1] = upSpeed;
+      vels[i * 3 + 2] = Math.sin(angle) * speed;
+    }
+    return vels;
+  });
+  const startTimeRef = useRef(0);
+
+  useEffect(() => {
+    if (battleAnimation) {
+      const targetDef = TERRITORY_DEFS_LOCAL.find(t => t.id === battleAnimation.toTerritory);
+      if (!targetDef) return;
+      const [cx, cz] = svgTo3D(targetDef.labelX, targetDef.labelY);
+      const height = (TERRITORY_VISUAL[battleAnimation.toTerritory]?.height || 0.2) + 0.3;
+
+      // Initialize particle positions at the target location
+      const pos = new Float32Array(40 * 3);
+      for (let i = 0; i < 40; i++) {
+        pos[i * 3] = cx + (Math.random() - 0.5) * 0.3;
+        pos[i * 3 + 1] = height;
+        pos[i * 3 + 2] = cz + (Math.random() - 0.5) * 0.3;
+      }
+      setPositions(pos);
+      setActive(true);
+      startTimeRef.current = Date.now();
+    }
+  }, [battleAnimation, territories, TERRITORY_DEFS_LOCAL]);
+
+  useFrame(() => {
+    if (!active || !pointsRef.current || !positions) return;
+    const age = (Date.now() - startTimeRef.current) / 1000;
+    if (age > 1.5) {
+      setActive(false);
+      return;
+    }
+
+    const posArr = pointsRef.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < 40; i++) {
+      const t = age;
+      posArr[i * 3] = posArr[i * 3] + velocities[i * 3] * 0.008;
+      posArr[i * 3 + 1] = posArr[i * 3 + 1] + velocities[i * 3 + 1] * 0.008 - t * t * 2 * 0.008; // gravity
+      posArr[i * 3 + 2] = posArr[i * 3 + 2] + velocities[i * 3 + 2] * 0.008;
+    }
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
+
+    // Fade out
+    const mat = pointsRef.current.material as THREE.PointsMaterial;
+    mat.opacity = Math.max(0, 1 - age / 1.5);
+    mat.size = 0.12 * (1 + age * 0.5);
+  });
+
+  if (!active || !positions) return null;
+
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.12}
+        color={battleAnimation?.conquered ? '#FF8800' : '#FF3333'}
+        transparent
+        opacity={1}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
+// ========================
 // Main Scene
 // ========================
 
@@ -967,6 +1099,7 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
 
       <ConnectionLines />
       <MagicalParticles />
+      <BattleExplosion />
 
       {/* Map title in 3D space */}
       <Html position={[0, -0.1, 9]} center>
@@ -1029,6 +1162,7 @@ function Fallback2DMap({ onTerritoryHover }: { onTerritoryHover: (id: string | n
   const selectedTerritory = useGameStore(s => s.selectedTerritory);
   const selectTerritory = useGameStore(s => s.selectTerritory);
   const phase = useGameStore(s => s.phase);
+  const battleAnimation = useGameStore(s => s.battleAnimation);
 
   return (
     <div
@@ -1055,6 +1189,8 @@ function Fallback2DMap({ onTerritoryHover }: { onTerritoryHover: (id: string | n
           const owner = tState.ownerId ? players.find(p => p.id === tState.ownerId) : null;
           const isSelected = selectedTerritory === tDef.id;
           const unitCount = tState.units.length;
+          const isBattleTarget = battleAnimation?.toTerritory === tDef.id;
+          const isBattleSource = battleAnimation?.fromTerritory === tDef.id;
 
           return (
             <g
@@ -1062,13 +1198,20 @@ function Fallback2DMap({ onTerritoryHover }: { onTerritoryHover: (id: string | n
               onClick={() => (phase === 'attack' || phase === 'fortify' || phase === 'deploy') && selectTerritory(tDef.id)}
               onMouseEnter={() => onTerritoryHover(tDef.id)}
               onMouseLeave={() => onTerritoryHover(null)}
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                animation: isBattleTarget ? 'battleFlash2D 0.15s ease-in-out 6' :
+                             isBattleSource ? 'battleFlashGold2D 0.2s ease-in-out 3' : 'none',
+              }}
             >
               <path
                 d={tDef.path}
-                fill={owner ? owner.color + '44' : 'rgba(60,50,40,0.3)'}
-                stroke={isSelected ? '#D4A017' : owner ? owner.color + '88' : 'rgba(139,115,85,0.3)'}
-                strokeWidth={isSelected ? 2.5 : 1.2}
+                fill={isBattleTarget ? (battleAnimation?.conquered ? '#FF660088' : '#FF000066') :
+                      owner ? owner.color + '44' : 'rgba(60,50,40,0.3)'}
+                stroke={isSelected ? '#D4A017' :
+                        isBattleTarget ? (battleAnimation?.conquered ? '#FF8800' : '#FF3333') :
+                        owner ? owner.color + '88' : 'rgba(139,115,85,0.3)'}
+                strokeWidth={isSelected ? 2.5 : isBattleTarget ? 3 : 1.2}
                 style={{ transition: 'fill 0.2s, stroke 0.2s' }}
               />
               {/* Territory label */}
@@ -1121,6 +1264,16 @@ function Fallback2DMap({ onTerritoryHover }: { onTerritoryHover: (id: string | n
       >
         ⚠️ 3D Unavailable — Showing 2D Map
       </div>
+      <style jsx global>{`
+        @keyframes battleFlash2D {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.02); }
+        }
+        @keyframes battleFlashGold2D {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+      `}</style>
     </div>
   );
 }

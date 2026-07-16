@@ -11,6 +11,7 @@ import { UnitPortrait } from './UnitCards';
 import { useAIController } from '@/hooks/useAIController';
 import StoryOverlay from './StoryOverlay';
 import AIDialogueBubble from './AIDialogueBubble';
+import CinematicIntro from './CinematicIntro';
 import dynamic from 'next/dynamic';
 import {
   initAudio, startMusic, resumeAudio,
@@ -131,7 +132,21 @@ export default function GameBoard() {
 
   // Audio: play battle sounds when battleResult changes
   const battleResult = useGameStore(s => s.battleResult);
+  const battleAnimation = useGameStore(s => s.battleAnimation);
+  const [screenShake, setScreenShake] = useState(false);
   const prevBattleResultRef = useRef(battleResult);
+  const prevBattleAnimRef = useRef(battleAnimation);
+
+  // Screen shake on battle
+  useEffect(() => {
+    if (battleAnimation && battleAnimation !== prevBattleAnimRef.current) {
+      setScreenShake(true);
+      const timer = setTimeout(() => setScreenShake(false), 600);
+      return () => clearTimeout(timer);
+    }
+    prevBattleAnimRef.current = battleAnimation;
+  }, [battleAnimation]);
+
   useEffect(() => {
     if (battleResult && battleResult !== prevBattleResultRef.current) {
       // Only play audio for human player battles (AI handles its own audio)
@@ -275,7 +290,13 @@ export default function GameBoard() {
       <div className="flex-1 flex min-h-0">
         {/* Map */}
         <div className="flex-1 relative p-2 md:p-4">
-          <div className="w-full h-full rounded-lg overflow-hidden relative" style={{ border: '2px solid rgba(139,115,85,0.2)' }}>
+          <div
+            className="w-full h-full rounded-lg overflow-hidden relative"
+            style={{
+              border: '2px solid rgba(139,115,85,0.2)',
+              animation: screenShake ? 'mapShake 0.15s ease-in-out 4' : 'none',
+            }}
+          >
             <div className="w-full h-full">
               <GameMap3D onTerritoryHover={handleTerritoryHover} />
             </div>
@@ -414,12 +435,21 @@ export default function GameBoard() {
               0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
               100% { opacity: 1; transform: translateX(-50%) translateY(0); }
             }
+            @keyframes mapShake {
+              0%, 100% { transform: translate(0, 0); }
+              25% { transform: translate(-3px, 2px); }
+              50% { transform: translate(3px, -2px); }
+              75% { transform: translate(-2px, -1px); }
+            }
           `}</style>
         </div>
       )}
 
       {/* Story Overlay */}
       {storyBeat && <StoryOverlay beat={storyBeat} onDismiss={dismissStory} />}
+
+      {/* Cinematic Intro (plays before story on first game start) */}
+      {!storyBeat && <CinematicIntro />}
     </div>
   );
 }
