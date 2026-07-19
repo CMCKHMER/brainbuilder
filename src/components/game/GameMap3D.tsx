@@ -48,22 +48,27 @@ interface TerritoryVisualData {
 }
 
 const TERRITORY_VISUAL: Record<string, TerritoryVisualData> = {
-  ironhold:        { structure: 'fortress',  height: 0.35, structureColor: '#8B8682', terrainColor: '#7A8A9A', terrainSideColor: '#4A5A6A' },
-  wintermere:      { structure: 'ice',       height: 0.25, structureColor: '#B0D4E8', terrainColor: '#9AB8CC', terrainSideColor: '#5A7888' },
-  frostpeak:       { structure: 'mountain',  height: 0.45, structureColor: '#9E9E9E', terrainColor: '#8A9AAE', terrainSideColor: '#4A5A6E' },
-  dragonspine:     { structure: 'mountain',  height: 0.40, structureColor: '#7A7A7A', terrainColor: '#7A8A9A', terrainSideColor: '#3A4A5A' },
-  goldshire:       { structure: 'castle',    height: 0.20, structureColor: '#C4A882', terrainColor: '#8A9A6A', terrainSideColor: '#5A6A3A' },
-  silverdale:      { structure: 'tower',     height: 0.25, structureColor: '#C0C0C0', terrainColor: '#7A9A6A', terrainSideColor: '#4A6A3A' },
-  thornwall:       { structure: 'fortress',  height: 0.30, structureColor: '#8B7355', terrainColor: '#8A9A6A', terrainSideColor: '#5A6A3A' },
-  ashenvale:       { structure: 'forest',    height: 0.20, structureColor: '#2D6B1E', terrainColor: '#6A8A4A', terrainSideColor: '#3A5A2A' },
-  sunforge:        { structure: 'temple',    height: 0.25, structureColor: '#D4A76A', terrainColor: '#B8A46A', terrainSideColor: '#7A6A3A' },
-  ravencrest:      { structure: 'tower',     height: 0.30, structureColor: '#4A3A4A', terrainColor: '#7A8A5A', terrainSideColor: '#4A5A2A' },
-  stormhold:       { structure: 'fortress',  height: 0.35, structureColor: '#5A6A7A', terrainColor: '#8A8A5A', terrainSideColor: '#5A5A3A' },
-  moonhaven:       { structure: 'temple',    height: 0.20, structureColor: '#8B7DB8', terrainColor: '#9A8A6A', terrainSideColor: '#6A5A3A' },
-  port_brighthelm: { structure: 'port',      height: 0.15, structureColor: '#C4A882', terrainColor: '#7A9A7A', terrainSideColor: '#3A6A5A' },
-  crystal_lake:    { structure: 'crystal',   height: 0.18, structureColor: '#88BBDD', terrainColor: '#6A9A8A', terrainSideColor: '#3A6A5A' },
-  darkwood:        { structure: 'forest',    height: 0.28, structureColor: '#1A3A1A', terrainColor: '#3A5A2A', terrainSideColor: '#1A3A1A' },
-  misthollow:      { structure: 'ruins',     height: 0.22, structureColor: '#5A5A5A', terrainColor: '#5A6A4A', terrainSideColor: '#2A3A1A' },
+  // THE FROSTLANDS — elevated, rocky, cold
+  ironhold:        { structure: 'fortress',  height: 0.45, structureColor: '#8B8682', terrainColor: '#7A8A9A', terrainSideColor: '#4A5A6A' },
+  wintermere:      { structure: 'ice',       height: 0.35, structureColor: '#B0D4E8', terrainColor: '#9AB8CC', terrainSideColor: '#5A7888' },
+  frostpeak:       { structure: 'mountain',  height: 0.65, structureColor: '#9E9E9E', terrainColor: '#8A9AAE', terrainSideColor: '#4A5A6E' },
+  dragonspine:     { structure: 'mountain',  height: 0.55, structureColor: '#7A7A7A', terrainColor: '#7A8A9A', terrainSideColor: '#3A4A5A' },
+  // THE HEARTLANDS — rolling green hills
+  goldshire:       { structure: 'castle',    height: 0.30, structureColor: '#C4A882', terrainColor: '#8A9A6A', terrainSideColor: '#5A6A3A' },
+  silverdale:      { structure: 'tower',     height: 0.35, structureColor: '#C0C0C0', terrainColor: '#7A9A6A', terrainSideColor: '#4A6A3A' },
+  thornwall:       { structure: 'fortress',  height: 0.40, structureColor: '#8B7355', terrainColor: '#8A9A6A', terrainSideColor: '#5A6A3A' },
+  ashenvale:       { structure: 'forest',    height: 0.30, structureColor: '#2D6B1E', terrainColor: '#6A8A4A', terrainSideColor: '#3A5A2A' },
+  // THE SOUTHERN REALMS — warm, golden, temple lands
+  sunforge:        { structure: 'temple',    height: 0.35, structureColor: '#D4A76A', terrainColor: '#B8A46A', terrainSideColor: '#7A6A3A' },
+  ravencrest:      { structure: 'tower',     height: 0.38, structureColor: '#4A3A4A', terrainColor: '#7A8A5A', terrainSideColor: '#4A5A2A' },
+  stormhold:       { structure: 'fortress',  height: 0.42, structureColor: '#5A6A7A', terrainColor: '#8A8A5A', terrainSideColor: '#5A5A3A' },
+  moonhaven:       { structure: 'temple',    height: 0.28, structureColor: '#8B7DB8', terrainColor: '#9A8A6A', terrainSideColor: '#6A5A3A' },
+  // THE EASTERN SHORES — coastal, teal
+  port_brighthelm: { structure: 'port',      height: 0.20, structureColor: '#C4A882', terrainColor: '#7A9A7A', terrainSideColor: '#3A6A5A' },
+  crystal_lake:    { structure: 'crystal',   height: 0.22, structureColor: '#88BBDD', terrainColor: '#6A9A8A', terrainSideColor: '#3A6A5A' },
+  // THE WESTERN REACHES — deep forest, dark
+  darkwood:        { structure: 'forest',    height: 0.38, structureColor: '#1A3A1A', terrainColor: '#3A5A2A', terrainSideColor: '#1A3A1A' },
+  misthollow:      { structure: 'ruins',     height: 0.30, structureColor: '#5A5A5A', terrainColor: '#5A6A4A', terrainSideColor: '#2A3A1A' },
 };
 
 // ========================
@@ -95,7 +100,137 @@ function svgTo3D(sx: number, sy: number): [number, number] {
   return [(sx - CENTER_X) * SCALE, -(sy - CENTER_Y) * SCALE];
 }
 
-function createTerritoryGeometry(pathStr: string, height: number): THREE.ExtrudeGeometry {
+// ========================
+// Simple noise for terrain
+// ========================
+function simpleNoise(x: number, z: number): number {
+  const dot = x * 12.9898 + z * 78.233;
+  return (Math.sin(dot) * 43758.5453) % 1;
+}
+
+function smoothNoise(x: number, z: number): number {
+  const ix = Math.floor(x);
+  const iz = Math.floor(z);
+  const fx = x - ix;
+  const fz = z - iz;
+  const a = simpleNoise(ix, iz);
+  const b = simpleNoise(ix + 1, iz);
+  const c = simpleNoise(ix, iz + 1);
+  const d = simpleNoise(ix + 1, iz + 1);
+  const ux = fx * fx * (3 - 2 * fx);
+  const uz = fz * fz * (3 - 2 * fz);
+  return a + (b - a) * ux + (c - a) * uz + (a - b - c + d) * ux * uz;
+}
+
+function fbmNoise(x: number, z: number, octaves: number = 4): number {
+  let val = 0;
+  let amp = 1;
+  let freq = 1;
+  let max = 0;
+  for (let i = 0; i < octaves; i++) {
+    val += smoothNoise(x * freq, z * freq) * amp;
+    max += amp;
+    amp *= 0.5;
+    freq *= 2;
+  }
+  return val / max;
+}
+
+// ========================
+// Height-based color gradient
+// ========================
+interface RegionPalette {
+  lowColor: [number, number, number];    // Deep valleys
+  midColor: [number, number, number];    // Plains/hills
+  highColor: [number, number, number];   // Elevated terrain
+  peakColor: [number, number, number];   // Highest points
+  sideColor: string;
+}
+
+const REGION_PALETTES: Record<string, RegionPalette> = {
+  // Frostlands - cool blues and grays
+  frost: {
+    lowColor: [0.25, 0.35, 0.45],
+    midColor: [0.45, 0.55, 0.65],
+    highColor: [0.65, 0.70, 0.75],
+    peakColor: [0.85, 0.88, 0.92],
+    sideColor: '#3A4A5A',
+  },
+  // Heartlands - lush greens
+  heartland: {
+    lowColor: [0.18, 0.32, 0.12],
+    midColor: [0.30, 0.48, 0.20],
+    highColor: [0.50, 0.55, 0.30],
+    peakColor: [0.65, 0.60, 0.45],
+    sideColor: '#3A5A2A',
+  },
+  // Southern - warm golds and browns
+  southern: {
+    lowColor: [0.30, 0.25, 0.12],
+    midColor: [0.50, 0.42, 0.22],
+    highColor: [0.60, 0.50, 0.30],
+    peakColor: [0.72, 0.62, 0.42],
+    sideColor: '#5A4A2A',
+  },
+  // Eastern shores - teal greens
+  eastern: {
+    lowColor: [0.15, 0.30, 0.28],
+    midColor: [0.25, 0.45, 0.38],
+    highColor: [0.40, 0.52, 0.42],
+    peakColor: [0.55, 0.60, 0.50],
+    sideColor: '#2A5A4A',
+  },
+  // Western - deep dark forest
+  western: {
+    lowColor: [0.10, 0.18, 0.08],
+    midColor: [0.18, 0.30, 0.14],
+    highColor: [0.28, 0.38, 0.20],
+    peakColor: [0.40, 0.45, 0.30],
+    sideColor: '#1A3A1A',
+  },
+};
+
+function getRegionPalette(region: string): RegionPalette {
+  if (region.includes('Frost')) return REGION_PALETTES.frost;
+  if (region.includes('Heart')) return REGION_PALETTES.heartland;
+  if (region.includes('Southern')) return REGION_PALETTES.southern;
+  if (region.includes('Eastern')) return REGION_PALETTES.eastern;
+  if (region.includes('Western')) return REGION_PALETTES.western;
+  return REGION_PALETTES.heartland;
+}
+
+function sampleGradient(palette: RegionPalette, t: number): [number, number, number] {
+  t = Math.max(0, Math.min(1, t));
+  if (t < 0.33) {
+    const f = t / 0.33;
+    return [
+      palette.lowColor[0] + (palette.midColor[0] - palette.lowColor[0]) * f,
+      palette.lowColor[1] + (palette.midColor[1] - palette.lowColor[1]) * f,
+      palette.lowColor[2] + (palette.midColor[2] - palette.lowColor[2]) * f,
+    ];
+  } else if (t < 0.66) {
+    const f = (t - 0.33) / 0.33;
+    return [
+      palette.midColor[0] + (palette.highColor[0] - palette.midColor[0]) * f,
+      palette.midColor[1] + (palette.highColor[1] - palette.midColor[1]) * f,
+      palette.midColor[2] + (palette.highColor[2] - palette.midColor[2]) * f,
+    ];
+  } else {
+    const f = (t - 0.66) / 0.34;
+    return [
+      palette.highColor[0] + (palette.peakColor[0] - palette.highColor[0]) * f,
+      palette.highColor[1] + (palette.peakColor[1] - palette.highColor[1]) * f,
+      palette.highColor[2] + (palette.peakColor[2] - palette.highColor[2]) * f,
+    ];
+  }
+}
+
+function createTerritoryGeometry(
+  pathStr: string,
+  baseHeight: number,
+  territoryId: string,
+  region: string,
+): THREE.BufferGeometry {
   const points = parseSVGPath(pathStr);
   if (points.length < 3) {
     return new THREE.ExtrudeGeometry(new THREE.Shape(), { depth: 0.1 });
@@ -111,7 +246,7 @@ function createTerritoryGeometry(pathStr: string, height: number): THREE.Extrude
 
   const geo = new THREE.ExtrudeGeometry(shape, {
     steps: 1,
-    depth: height,
+    depth: baseHeight,
     bevelEnabled: true,
     bevelThickness: 0.015,
     bevelSize: 0.015,
@@ -120,6 +255,109 @@ function createTerritoryGeometry(pathStr: string, height: number): THREE.Extrude
   });
   geo.rotateX(-Math.PI / 2);
   geo.translate(0, 0.05, 0);
+
+  // ---- Vertex displacement for hills ----
+  const posAttr = geo.attributes.position;
+  const posArr = posAttr.array as Float32Array;
+  const vertexCount = posAttr.count;
+
+  // Find the Y range to identify top face vs sides
+  let minY = Infinity, maxY = -Infinity;
+  for (let i = 0; i < vertexCount; i++) {
+    const y = posArr[i * 3 + 1];
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  const topThreshold = maxY - 0.06; // Top face vertices
+
+  // Compute centroid for distance-based height falloff
+  let cx = 0, cz = 0, count = 0;
+  for (let i = 0; i < vertexCount; i++) {
+    if (posArr[i * 3 + 1] >= topThreshold) {
+      cx += posArr[i * 3];
+      cz += posArr[i * 3 + 2];
+      count++;
+    }
+  }
+  cx /= (count || 1);
+  cz /= (count || 1);
+
+  // Compute max distance from centroid for normalization
+  let maxDist = 0;
+  for (let i = 0; i < vertexCount; i++) {
+    if (posArr[i * 3 + 1] >= topThreshold) {
+      const dx = posArr[i * 3] - cx;
+      const dz = posArr[i * 3 + 2] - cz;
+      const d = Math.sqrt(dx * dx + dz * dz);
+      if (d > maxDist) maxDist = d;
+    }
+  }
+
+  // Hill height parameters per territory (seeded by territory name hash)
+  let seed = 0;
+  for (let c = 0; c < territoryId.length; c++) seed = seed * 31 + territoryId.charCodeAt(c);
+  const hillScale = 0.15 + (Math.abs(seed) % 100) / 100 * 0.2; // 0.15 - 0.35
+  const noiseScale = 3 + (Math.abs(seed * 7) % 100) / 100 * 4; // 3 - 7
+  const ridgeFactor = (Math.abs(seed * 13) % 100) / 100; // 0-1
+
+  // Displace top face vertices
+  const heights: number[] = new Array(vertexCount).fill(0);
+  for (let i = 0; i < vertexCount; i++) {
+    if (posArr[i * 3 + 1] >= topThreshold) {
+      const x = posArr[i * 3];
+      const z = posArr[i * 3 + 2];
+      const dx = x - cx;
+      const dz = z - cz;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      const distNorm = maxDist > 0 ? dist / maxDist : 0;
+
+      // Distance falloff: higher near center, lower at edges
+      const falloff = Math.max(0, 1 - distNorm * distNorm);
+
+      // Multi-octave noise for natural terrain
+      const n1 = fbmNoise(x * noiseScale + seed, z * noiseScale + seed * 0.7, 4);
+      const n2 = fbmNoise(x * noiseScale * 0.5 + seed * 2, z * noiseScale * 0.5 + seed, 3);
+
+      // Ridge noise: creates mountain ridges
+      const ridge = 1 - Math.abs(n1 * 2 - 1);
+      const heightVal = (n1 * 0.5 + n2 * 0.3 + ridge * ridgeFactor * 0.4) * hillScale * falloff;
+
+      posArr[i * 3 + 1] += heightVal;
+      heights[i] = heightVal;
+    }
+  }
+  posAttr.needsUpdate = true;
+  geo.computeVertexNormals();
+
+  // ---- Vertex colors for gradient shading ----
+  const palette = getRegionPalette(region);
+  const colors = new Float32Array(vertexCount * 3);
+
+  // Find the max height for normalization
+  let maxH = 0;
+  for (let i = 0; i < vertexCount; i++) {
+    if (heights[i] > maxH) maxH = heights[i];
+  }
+
+  for (let i = 0; i < vertexCount; i++) {
+    const y = posArr[i * 3 + 1];
+    const isTop = y >= topThreshold - 0.01;
+
+    if (isTop && maxH > 0) {
+      const t = heights[i] / maxH;
+      const [r, g, b] = sampleGradient(palette, t);
+      colors[i * 3] = r;
+      colors[i * 3 + 1] = g;
+      colors[i * 3 + 2] = b;
+    } else {
+      // Side faces: darken version of the low color
+      colors[i * 3] = palette.lowColor[0] * 0.6;
+      colors[i * 3 + 1] = palette.lowColor[1] * 0.6;
+      colors[i * 3 + 2] = palette.lowColor[2] * 0.6;
+    }
+  }
+
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   return geo;
 }
 
@@ -537,7 +775,11 @@ function TerritoryMesh({ territoryId, path, labelX, labelY, onHover, onClick }: 
   const isSelected = territoryId === selectedTerritory;
   const isTarget = territoryId === targetTerritory;
 
-  const geometry = useMemo(() => createTerritoryGeometry(path, visual.height), [path, visual.height]);
+  const geometry = useMemo(() => {
+    const tDef = TERRITORY_DEFS.find(t => t.id === territoryId);
+    const region = tDef?.region || '';
+    return createTerritoryGeometry(path, visual.height, territoryId, region);
+  }, [path, visual.height, territoryId]);
   const edgesGeometry = useMemo(() => new THREE.EdgesGeometry(geometry, 25), [geometry]);
 
   const [cx, cz] = svgTo3D(labelX, labelY);
@@ -675,7 +917,8 @@ function TerritoryMesh({ territoryId, path, labelX, labelY, onHover, onClick }: 
         onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial
-          color={topColor}
+          color={owner ? topColor : '#ffffff'}
+          vertexColors={!owner}
           roughness={0.75}
           metalness={0.05}
           emissive={emissiveColor}
@@ -968,6 +1211,122 @@ function SceneLighting() {
 }
 
 // ========================
+// Animated Rivers
+// ========================
+function Rivers() {
+  const materialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
+
+  // Define river paths as sequences of territory label positions
+  const riverData = useMemo(() => {
+    const data: { points: [number, number][]; curve: THREE.Curve<THREE.Vector3>; tubeGeo: THREE.TubeGeometry; texture: THREE.CanvasTexture }[] = [];
+
+    const riverDefs: { territories: string[]; ox: number; oz: number }[] = [
+      { territories: ['frostpeak', 'wintermere', 'ironhold', 'silverdale', 'goldshire'], ox: 0.3, oz: 0.15 },
+      { territories: ['dragonspine', 'thornwall', 'crystal_lake', 'stormhold'], ox: -0.2, oz: 0.25 },
+      { territories: ['darkwood', 'silverdale', 'ashenvale', 'sunforge'], ox: -0.35, oz: -0.2 },
+      { territories: ['ravencrest', 'moonhaven', 'misthollow', 'darkwood'], ox: 0.25, oz: -0.3 },
+    ];
+
+    for (const { territories, ox, oz } of riverDefs) {
+      const pts: [number, number][] = [];
+      for (const tid of territories) {
+        const t = TERRITORY_DEFS.find(d => d.id === tid);
+        if (t) {
+          const [x, z] = svgTo3D(t.labelX, t.labelY);
+          pts.push([x + ox, z + oz]);
+        }
+      }
+      if (pts.length < 2) continue;
+
+      const curvePoints = pts.map(p => new THREE.Vector3(p[0], 0.08, p[1]));
+      const curve = curvePoints.length === 2
+        ? new THREE.LineCurve3(curvePoints[0], curvePoints[1]) as unknown as THREE.Curve<THREE.Vector3>
+        : new THREE.CatmullRomCurve3(curvePoints, false, 'catmullrom', 0.3);
+
+      const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.06, 8, false);
+
+      // Create flowing water texture
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = '#1a4a6a';
+      ctx.fillRect(0, 0, 64, 64);
+      for (let i = 0; i < 8; i++) {
+        ctx.strokeStyle = `rgba(100, 180, 220, ${0.15 + Math.random() * 0.15})`;
+        ctx.lineWidth = 1 + Math.random() * 2;
+        ctx.beginPath();
+        const y = 4 + i * 8 + Math.random() * 4;
+        ctx.moveTo(0, y);
+        for (let x = 0; x < 64; x += 4) {
+          ctx.lineTo(x, y + Math.sin(x * 0.3 + i) * 3);
+        }
+        ctx.stroke();
+      }
+      for (let i = 0; i < 12; i++) {
+        ctx.fillStyle = `rgba(150, 210, 240, ${0.05 + Math.random() * 0.1})`;
+        ctx.fillRect(Math.random() * 64, Math.random() * 64, 2 + Math.random() * 6, 1);
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(3, 1);
+
+      data.push({ points: pts, curve, tubeGeo, texture });
+    }
+    return data;
+  }, []);
+
+  // Animate all river textures
+  useFrame(() => {
+    for (const mat of materialsRef.current) {
+      if (mat.map) {
+        mat.map.offset.x -= 0.003;
+        mat.map.offset.y -= 0.001;
+      }
+    }
+  });
+
+  return (
+    <group>
+      {riverData.map((rd, ri) => (
+        <mesh key={`river-${ri}`} geometry={rd.tubeGeo}>
+          <meshStandardMaterial
+            ref={(el) => { if (el) materialsRef.current[ri] = el; }}
+            map={rd.texture}
+            color="#3388AA"
+            emissive="#114466"
+            emissiveIntensity={0.3}
+            transparent
+            opacity={0.75}
+            roughness={0.2}
+            metalness={0.3}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
+
+      {/* River glow pools at mid-points */}
+      {riverData.flatMap((rd, ri) =>
+        rd.points.slice(1, -1).map((p, pi) => (
+          <mesh key={`glow-${ri}-${pi}`} position={[p[0], 0.12, p[1]]}>
+            <sphereGeometry args={[0.08, 8, 6]} />
+            <meshStandardMaterial
+              color="#44AACC"
+              emissive="#2266AA"
+              emissiveIntensity={0.5}
+              transparent
+              opacity={0.3}
+              roughness={0.1}
+            />
+          </mesh>
+        ))
+      )}
+    </group>
+  );
+}
+
+// ========================
 // Battle Explosion Particles
 // ========================
 function BattleExplosion() {
@@ -1084,6 +1443,7 @@ function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null
 
       <FloatingPlatform />
       <Ocean />
+      <Rivers />
 
       {territoryList.map(t => (
         <TerritoryMesh
