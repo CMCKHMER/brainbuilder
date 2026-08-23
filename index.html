@@ -443,16 +443,22 @@
         .block-btn:hover .label { color: white; text-shadow: 0 0 8px rgba(0,212,255,0.6); }
         .block-btn.selected .label { color: var(--accent); text-shadow: 0 0 10px rgba(0,212,255,0.7); }
 
-        /* COLOR BUTTONS */
+        /* COLOR BUTTONS - Professional/Architectural Palette */
         .color-btn {
-            width: 26px; height: 26px; border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.12); cursor: pointer;
-            transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease, border-color 0.15s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
-            flex-shrink: 0; position: relative;
+            width: 30px; height: 30px; border-radius: 6px;
+            border: 2px solid rgba(255,255,255,0.15); cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            flex-shrink: 0; position: relative; overflow: hidden;
         }
-        .color-btn:hover { transform: scale(1.28) translateY(-2px); border-color: rgba(255,255,255,0.7); box-shadow: 0 6px 18px rgba(0,0,0,0.5), 0 0 10px currentColor; z-index: 1; }
-        .color-btn.active { border-color: #ffffff; box-shadow: 0 0 0 2px #ffffff, 0 0 14px rgba(255,255,255,0.5); transform: scale(1.22); }
+        .color-btn::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0; transition: opacity 0.2s; border-radius: 4px;
+        }
+        .color-btn:hover::after { opacity: 1; }
+        .color-btn:hover { transform: scale(1.15) translateY(-2px); border-color: rgba(255,255,255,0.8); box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 0 12px currentColor; z-index: 1; }
+        .color-btn.active { border-color: #ffffff; box-shadow: 0 0 0 2px #ffffff, 0 0 18px rgba(255,255,255,0.6), inset 0 0 10px rgba(255,255,255,0.3); transform: scale(1.12); }
 
         /* SIZE CONTROL */
         .size-control { display: flex; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 3px; border: 1px solid rgba(255,255,255,0.08); gap: 2px; }
@@ -1140,30 +1146,40 @@
         <!-- Colors -->
         <div class="field-label" style="margin-bottom:6px;">Color</div>
         <div id="colors" style="display:flex; gap:5px; flex-wrap:wrap; padding:8px; background:rgba(0,0,0,0.3); border-radius:10px; border:1px solid rgba(255,255,255,0.07); margin-bottom:14px;">
-            <div class="color-btn active" style="background:#CC0000;" onclick="setColor('#CC0000', this)" title="Red"></div>
-            <div class="color-btn" style="background:#DD5500;" onclick="setColor('#DD5500', this)" title="Orange"></div>
-            <div class="color-btn" style="background:#CC8800;" onclick="setColor('#CC8800', this)" title="Amber"></div>
-            <div class="color-btn" style="background:#BBAA00;" onclick="setColor('#BBAA00', this)" title="Yellow"></div>
-            <div class="color-btn" style="background:#55AA00;" onclick="setColor('#55AA00', this)" title="Lime"></div>
-            <div class="color-btn" style="background:#007700;" onclick="setColor('#007700', this)" title="Green"></div>
-            <div class="color-btn" style="background:#007755;" onclick="setColor('#007755', this)" title="Teal"></div>
-            <div class="color-btn" style="background:#008899;" onclick="setColor('#008899', this)" title="Mint"></div>
-            <div class="color-btn" style="background:#0088AA;" onclick="setColor('#0088AA', this)" title="Cyan"></div>
-            <div class="color-btn" style="background:#0066CC;" onclick="setColor('#0066CC', this)" title="Sky"></div>
-            <div class="color-btn" style="background:#0033AA;" onclick="setColor('#0033AA', this)" title="Blue"></div>
-            <div class="color-btn" style="background:#220099;" onclick="setColor('#220099', this)" title="Indigo"></div>
-            <div class="color-btn" style="background:#5500AA;" onclick="setColor('#5500AA', this)" title="Violet"></div>
-            <div class="color-btn" style="background:#7700AA;" onclick="setColor('#7700AA', this)" title="Purple"></div>
-            <div class="color-btn" style="background:#AA0088;" onclick="setColor('#AA0088', this)" title="Magenta"></div>
-            <div class="color-btn" style="background:#BB0044;" onclick="setColor('#BB0044', this)" title="Hot Pink"></div>
-            <div class="color-btn" style="background:#CC2233;" onclick="setColor('#CC2233', this)" title="Rose"></div>
-            <div class="color-btn" style="background:#FFFFFF; border:2px solid #444;" onclick="setColor('#FFFFFF', this)" title="White"></div>
-            <div class="color-btn" style="background:#AAAAAA;" onclick="setColor('#AAAAAA', this)" title="Silver"></div>
-            <div class="color-btn" style="background:#666666;" onclick="setColor('#666666', this)" title="Gray"></div>
-            <div class="color-btn" style="background:#333333;" onclick="setColor('#333333', this)" title="Dark Gray"></div>
-            <div class="color-btn" style="background:#7A3300;" onclick="setColor('#7A3300', this)" title="Brown"></div>
-            <div class="color-btn" style="background:#997733;" onclick="setColor('#997733', this)" title="Tan"></div>
-            <div class="color-btn" style="background:#111111; border:2px solid #444;" onclick="setColor('#111111', this)" title="Black"></div>
+            <!-- Neutrals / Construction -->
+            <div class="color-btn active" style="background:#CCCCCC;" onclick="setColor('#CCCCCC', this)" title="Concrete Gray"></div>
+            <div class="color-btn" style="background:#999999;" onclick="setColor('#999999', this)" title="Steel Gray"></div>
+            <div class="color-btn" style="background:#666666;" onclick="setColor('#666666', this)" title="Dark Steel"></div>
+            <div class="color-btn" style="background:#333333;" onclick="setColor('#333333', this)" title="Charcoal"></div>
+            <div class="color-btn" style="background:#F5F5F5;" onclick="setColor('#F5F5F5', this)" title="White"></div>
+            <div class="color-btn" style="background:#1a1a1a; border-color:#444;" onclick="setColor('#1a1a1a', this)" title="Black"></div>
+            <!-- Earth Tones -->
+            <div class="color-btn" style="background:#C2A87D;" onclick="setColor('#C2A87D', this)" title="Sand"></div>
+            <div class="color-btn" style="background:#8B4513;" onclick="setColor('#8B4513', this)" title="Brown"></div>
+            <div class="color-btn" style="background:#A0522D;" onclick="setColor('#A0522D', this)" title="Sienna"></div>
+            <div class="color-btn" style="background:#DEB887;" onclick="setColor('#DEB887', this)" title="Tan"></div>
+            <div class="color-btn" style="background:#5d4037;" onclick="setColor('#5d4037', this)" title="Wood"></div>
+            <div class="color-btn" style="background:#3e2723;" onclick="setColor('#3e2723', this)" title="Dark Wood"></div>
+            <!-- Architectural Reds/Bricks -->
+            <div class="color-btn" style="background:#B22222;" onclick="setColor('#B22222', this)" title="Brick Red"></div>
+            <div class="color-btn" style="background:#CC5555;" onclick="setColor('#CC5555', this)" title="Terracotta"></div>
+            <div class="color-btn" style="background:#8B3A3A;" onclick="setColor('#8B3A3A', this)" title="Rust"></div>
+            <div class="color-btn" style="background:#CD5C5C;" onclick="setColor('#CD5C5C', this)" title="Indian Red"></div>
+            <!-- Blues / Glass -->
+            <div class="color-btn" style="background:#4A90E2;" onclick="setColor('#4A90E2', this)" title="Sky Blue"></div>
+            <div class="color-btn" style="background:#5B9BD5;" onclick="setColor('#5B9BD5', this)" title="Glass Blue"></div>
+            <div class="color-btn" style="background:#2E5C8A;" onclick="setColor('#2E5C8A', this)" title="Navy"></div>
+            <div class="color-btn" style="background:#7FB8D8;" onclick="setColor('#7FB8D8', this)" title="Light Blue"></div>
+            <!-- Greens / Landscape -->
+            <div class="color-btn" style="background:#4a9c52;" onclick="setColor('#4a9c52', this)" title="Grass Green"></div>
+            <div class="color-btn" style="background:#2d5a3d;" onclick="setColor('#2d5a3d', this)" title="Forest"></div>
+            <div class="color-btn" style="background:#6B8E23;" onclick="setColor('#6B8E23', this)" title="Olive"></div>
+            <div class="color-btn" style="background:#8FBC8F;" onclick="setColor('#8FBC8F', this)" title="Sage"></div>
+            <!-- Accents / Safety -->
+            <div class="color-btn" style="background:#FF8C00;" onclick="setColor('#FF8C00', this)" title="Safety Orange"></div>
+            <div class="color-btn" style="background:#FFD700;" onclick="setColor('#FFD700', this)" title="Gold"></div>
+            <div class="color-btn" style="background:#C0C0C0;" onclick="setColor('#C0C0C0', this)" title="Silver"></div>
+            <div class="color-btn" style="background:#B87333;" onclick="setColor('#B87333', this)" title="Copper"></div>
         </div>
         <!-- Snap + Symmetry -->
         <div style="display:flex; gap:12px; align-items:center; margin-bottom:14px;">
@@ -1219,8 +1235,10 @@
         </div>
         <div style="width:1px; height:26px; background:rgba(255,255,255,0.1);"></div>
         <div class="tool-pill">
-            <button onclick="setTool('build')" class="tool-pill-btn active" id="tool-build"><i class="fas fa-hammer" style="font-size:12px;"></i> Build</button>
-            <button onclick="setTool('erase')" class="tool-pill-btn" id="tool-erase"><i class="fas fa-eraser" style="font-size:12px;"></i> Erase</button>
+            <button onclick="setTool('build')" class="tool-pill-btn active" id="tool-build"><i class="fas fa-cubes" style="font-size:12px;"></i> Build</button>
+            <button onclick="setTool('erase')" class="tool-pill-btn" id="tool-erase"><i class="fas fa-trash-alt" style="font-size:12px;"></i> Erase</button>
+            <button onclick="setTool('select')" class="tool-pill-btn" id="tool-select"><i class="fas fa-mouse-pointer" style="font-size:12px;"></i> Select</button>
+            <button onclick="setTool('move')" class="tool-pill-btn" id="tool-move"><i class="fas fa-arrows-alt" style="font-size:12px;"></i> Move</button>
         </div>
         <div style="width:1px; height:26px; background:rgba(255,255,255,0.1);"></div>
         <div class="block-counter" style="flex-shrink:0;">
@@ -3711,7 +3729,21 @@ function setTool(t) {
     document.querySelectorAll('.tool-pill-btn').forEach(b => b.classList.remove('active'));
     const activeBtn = document.getElementById('tool-' + t);
     if (activeBtn) activeBtn.classList.add('active');
-    toast('Tool: ' + t.charAt(0).toUpperCase() + t.slice(1), 'warning');
+    
+    // Update cursor and interaction mode based on tool
+    if (t === 'build') {
+        document.body.style.cursor = 'crosshair';
+        toast('Build Mode: Click to place blocks', 'success');
+    } else if (t === 'erase') {
+        document.body.style.cursor = 'pointer';
+        toast('Erase Mode: Click to remove blocks', 'warning');
+    } else if (t === 'select') {
+        document.body.style.cursor = 'default';
+        toast('Select Mode: Click to select objects', 'info');
+    } else if (t === 'move') {
+        document.body.style.cursor = 'move';
+        toast('Move Mode: Drag to reposition', 'info');
+    }
 }
 
 function pickBlock(type, el) {
