@@ -1348,6 +1348,8 @@ let camDist = 40, camTheta = 0.785, camPhi = 0.65, camTarget = {x:0,y:5,z:0};
 // Smooth camera transition
 let camAnimTarget = null;
 let isRot = false, isPan = false, lastX, lastY;
+let isMouseDown = false; // Track mouse state for drag building
+let isDrawing = false; // Drag-to-build mode for fences, walls, stairs
 let keyRotationSpeed = 0.03;
 let keysPressed = {};
 let blockCount = 0;
@@ -1703,6 +1705,22 @@ function onMouseMove(e) {
         updateCam();
     } else if (currentTool === 'build') {
         updateGhostPosition();
+        // Drag-to-build for linear blocks (fences, walls, stairs, streets)
+        if (isMouseDown && isDrawing && ghost.visible) {
+            const linearBlocks = ['fence', 'wall', 'stair', 'railing', 'pipe_horizontal', 'pipe_vertical', 'curb', 'crosswalk'];
+            if (linearBlocks.includes(currentBlock)) {
+                build();
+                // Auto-move ghost to continue drawing in direction of movement
+                const moveDelta = 0.5; // Half block size for continuous placement
+                if (Math.abs(e.movementX) > Math.abs(e.movementY)) {
+                    ghost.position.x += e.movementX > 0 ? moveDelta : -moveDelta;
+                } else {
+                    ghost.position.z += e.movementY > 0 ? moveDelta : -moveDelta;
+                }
+                ghost.position.x = Math.round(ghost.position.x / moveDelta) * moveDelta;
+                ghost.position.z = Math.round(ghost.position.z / moveDelta) * moveDelta;
+            }
+        }
     }
     lastX = e.clientX;
     lastY = e.clientY;
@@ -1712,8 +1730,15 @@ function onMouseDown(e) {
     initAudio();
     if (e.target.closest('.ui-interactive')) return;
     if (e.button === 0) {
+        isMouseDown = true; // Track mouse state
         hideContextMenu();
         if (currentTool === 'build' && ghost.visible) {
+            // Check if building linear blocks - enable drag mode
+            const linearBlocks = ['fence', 'wall', 'stair', 'railing', 'pipe_horizontal', 'pipe_vertical', 'curb', 'crosswalk'];
+            if (linearBlocks.includes(currentBlock)) {
+                isDrawing = true;
+                toast('Drag Mode: Draw ' + currentBlock + 's continuously', 'info');
+            }
             build();
         } else if (currentTool === 'erase') {
             raycaster.setFromCamera(mouse, camera);
@@ -1725,6 +1750,28 @@ function onMouseDown(e) {
                     eraseBlock(target);
                 }
             }
+        } else if (currentTool === 'select') {
+            // Select mode: highlight block under cursor
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(placedBlocks, true);
+            if (hits.length > 0) {
+                let target = hits[0].object;
+                while (target.parent && !placedBlocks.includes(target)) target = target.parent;
+                if (placedBlocks.includes(target)) {
+                    selectBlock(target);
+                }
+            }
+        } else if (currentTool === 'move') {
+            // Move mode: start dragging selected block
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(placedBlocks, true);
+            if (hits.length > 0) {
+                let target = hits[0].object;
+                while (target.parent && !placedBlocks.includes(target)) target = target.parent;
+                if (placedBlocks.includes(target)) {
+                    startMoveBlock(target);
+                }
+            }
         }
     } else if (e.button === 1) {
         isRot = true; lastX = e.clientX; lastY = e.clientY;
@@ -1733,7 +1780,11 @@ function onMouseDown(e) {
     }
 }
 
-function onMouseUp() { isRot = false; isPan = false; }
+function onMouseUp() { 
+    isRot = false; 
+    isPan = false;
+    finishMoveBlock();
+}
 
 function onWheel(e) {
     e.preventDefault();
@@ -1819,6 +1870,54 @@ function eraseBlock(target) {
     updateBlockCounter(--blockCount);
     playSound('erase');
     toast('Block erased', 'error');
+}
+
+// Select mode: highlight a block for inspection/info
+let selectedBlock = null;
+function selectBlock(target) {
+    // Clear previous selection
+    if (selectedBlock && selectedBlock !== target) {
+        selectedBlock.material.emissive.setHex(selectedBlock.userData.prevEmissive || 0x000000);
+    }
+    
+    selectedBlock = target;
+    // Store current emissive and highlight
+    if (!target.userData.prevEmissive) {
+        target.userData.prevEmissive = target.material.emissive.getHex();
+    }
+    target.material.emissive.setHex(0x333333);
+    
+    const info = target.userData.blockType || 'custom';
+    const color = target.material.color.getStyle();
+    const pos = target.position.clone().round(2);
+    toast(`Selected: ${info} | ${color} | Pos: ${pos.x}, ${pos.y}, ${pos.z}`, 'info');
+}
+
+// Move mode: prepare to drag a block
+let movingBlock = null;
+let movePlane = null;
+function startMoveBlock(target) {
+    movingBlock = target;
+    toast('Drag to move block. Click to place.', 'warning');
+    
+    // Create a horizontal plane at the block's height for raycasting during move
+    const planeGeo = new THREE.PlaneGeometry(100, 100);
+    const planeMat = new THREE.MeshBasicMaterial({ visible: false });
+    movePlane = new THREE.Mesh(planeGeo, planeMat);
+    movePlane.rotation.x = -Math.PI / 2;
+    movePlane.position.y = target.position.y;
+    scene.add(movePlane);
+}
+
+function finishMoveBlock() {
+    if (movingBlock) {
+        movingBlock = null;
+        if (movePlane) {
+            scene.remove(movePlane);
+            movePlane = null;
+        }
+        toast('Block moved', 'success');
+    }
 }
 
 // ==================== TOUCH HANDLING ====================
