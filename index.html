@@ -1338,8 +1338,8 @@ function selectRole(el, role) {
 
 // ==================== GLOBAL STATE ====================
 let currentTool = 'build', currentBlock = 'cube', currentSize = 1, currentColor = '#CC0000', ghostRotation = 0;
-let scene, camera, renderer, ground, grid, ghost, skyMesh, cloudMesh;
-let raycaster, mouse, placedBlocks = [], showGrid = true;
+let scene, camera, renderer, ground, ghost, skyMesh, cloudMesh;
+let raycaster, mouse, placedBlocks = [];
 let undoStack = [], redoStack = [];
 let lastTouchMoveTime = 0;
 let touchMidX = 0, touchMidY = 0;
@@ -1649,18 +1649,9 @@ function init() {
     createMoon();
     createGround('flat', 'tan');
 
-    grid = new THREE.GridHelper(100, 100, 0x998866, 0x887755);
-    grid.position.y = 0.02;
-    grid.material.opacity = 0.25;
-    grid.material.transparent = true;
-    scene.add(grid);
-
-    const subGrid = new THREE.GridHelper(100, 20, 0x776644, 0x776644);
-    subGrid.position.y = 0.01;
-    subGrid.material.opacity = 0.15;
-    subGrid.material.transparent = true;
-    scene.add(subGrid);
-
+    // Grid is now invisible - terrain provides visual reference
+    // No visible grid overlay - clean professional look
+    
     createGhost();
 
     raycaster = new THREE.Raycaster();
@@ -1783,6 +1774,8 @@ function onMouseDown(e) {
 function onMouseUp() { 
     isRot = false; 
     isPan = false;
+    isMouseDown = false;
+    isDrawing = false;
     finishMoveBlock();
 }
 
@@ -3884,10 +3877,6 @@ function setPlatform(type) {
 function setGround(matType) {
     const type = ground && ground.userData ? ground.userData.type : 'flat';
     createGround(type, matType);
-    // Tint the grid to complement the ground surface
-    const gridTints = { grass:0x2a5a2a, dirt:0x5a2a0a, stone:0x444444, rock:0x404040, sand:0x8a6a20, snow:0x8888cc, tan:0x887755 };
-    const tint = gridTints[matType] || 0x887755;
-    if (grid) { grid.material.color.setHex(tint); }
     // Highlight the active ground button
     document.querySelectorAll('.ground-mat-btn').forEach(b => b.classList.remove('selected'));
     const activeBtn = document.querySelector(`.ground-mat-btn[data-mat="${matType}"]`);
@@ -3896,12 +3885,8 @@ function setGround(matType) {
 }
 
 function toggleGrid() {
-    showGrid = !showGrid;
-    grid.visible = showGrid;
-    const btn = document.getElementById('grid-btn');
-    btn.classList.toggle('active');
-    if (showGrid && grid) { grid.material.opacity = 0.8; clearTimeout(grid._opacityTimer); grid._opacityTimer = setTimeout(() => { grid.material.opacity = 0.4; }, 300); }
-    toast(showGrid ? 'Grid: ON' : 'Grid: OFF');
+    // Grid is now invisible - terrain provides visual reference
+    toast('Grid visibility not applicable - using terrain-based reference');
 }
 
 function rotateGhost() {
@@ -4557,7 +4542,6 @@ function setScene(sceneName) {
     if (rimLight) { rimLight.color.setHex(s.rimColor); rimLight.intensity = s.rimInt; }
     const tex = createGroundTexture(s.groundTexture);
     if (ground) { ground.material.map = tex; ground.material.color.setHex(0xffffff); ground.material.needsUpdate = true; }
-    if (grid) grid.material.color.setHex(s.gridColor);
     updateSkyForScene(sceneName);
     // Show stars for space/fantasy
     scene.traverse(child => { if (child.userData && child.userData.isStars) child.visible = (sceneName === 'space' || sceneName === 'fantasy'); });
@@ -5020,7 +5004,6 @@ function setTheme(themeName) {
     document.body.style.background = `linear-gradient(135deg, ${t.bgGrad1} 0%, ${t.bgGrad2} 50%, ${t.bgGrad3} 100%)`;
     if (scene && scene.fog) { scene.fog.color = new THREE.Color(t.fogColor); }
     if (hemiLight) { hemiLight.color.setHex(t.hemiSky); hemiLight.groundColor.setHex(t.hemiGround); }
-    if (grid) { grid.material.color.setHex(t.gridColor); }
     document.querySelectorAll('.theme-card').forEach(c => { c.classList.toggle('active-theme', c.dataset.theme === themeName); });
     toast('Theme: ' + t.name);
 }
