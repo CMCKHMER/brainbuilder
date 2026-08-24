@@ -1,0 +1,985 @@
+     1→// ========================================
+     2→// KHMER EMPIRE STORY SYSTEM
+     3→// ========================================
+     4→
+     5→export interface StoryPage {
+     6→  text: string;
+     7→  speaker?: string;       // Character name speaking
+     8→  speakerColor?: string;  // Speaker's faction color
+     9→  portrait?: string;      // Hero image path
+    10→}
+    11→
+    12→export interface StoryBeat {
+    13→  id: string;
+    14→  title: string;
+    15→  subtitle?: string;
+    16→  pages: StoryPage[];
+    17→  bgStyle: 'dark' | 'battle' | 'victory' | 'defeat' | 'dramatic';
+    18→  skippable?: boolean;
+    19→}
+    20→
+    21→// ========================================
+    22→// PROLOGUE — Why the war began
+    23→// ========================================
+    24→
+    25→export const PROLOGUE: StoryBeat = {
+    26→  id: 'prologue',
+    27→  title: 'THE SHATTERING',
+    28→  subtitle: 'A History of the Khmer Empire',
+    29→  bgStyle: 'dramatic',
+    30→  skippable: true,
+    31→  pages: [
+    32→    {
+    33→      text: 'In ages past, the continent of the Khmer Empire was unified beneath the Khmer Throne — a seat of power that channeled the raw magical essence of the land itself. For a thousand years, the Khmer Wardens maintained peace across the five realms, and the people flourished under the Throne\'s golden light.',
+    34→    },
+    35→    {
+    36→      text: 'But the last Warden, Aldric the Unbroken, died without an heir. As his final breath faded, the Khmer Throne cracked — then shattered into four fragments, each hurtling across the continent to bond with a different soul. The land groaned. The skies darkened. The age of peace was over.',
+    37→    },
+    38→    {
+    39→      text: 'Now four warlords rise, each wielding a fragment of the Throne\'s ancient power. They wage war across the Frostlands, the Heartlands, the Southern Realms, the Eastern Shores, and the Western Reaches — each believing that only by reuniting the fragments can the Khmer Crown be reforged.',
+    40→    },
+    41→    {
+    42→      text: 'But the fragments twist their bearers. With every battle fought upon the land, the Khmer Empire itself suffers. The floating continent drifts lower toward the Endless Abyss with each drop of blood spilled upon its soil. The war must end — one way or another — before the Khmer Empire falls into darkness forever.',
+    43→    },
+    44→  ],
+    45→};
+    46→
+    47→// ========================================
+    48→// CHARACTER INTRODUCTIONS
+    49→// ========================================
+    50→
+    51→export function getCharacterIntro(characterClass: string, playerName: string, color: string, colorLight: string, portrait: string): StoryBeat {
+    52→  const intros: Record<string, { pages: StoryPage[] }> = {
+    53→    knight: {
+    54→      pages: [
+    55→        {
+    56→          text: `${playerName} stands upon the battlements of Ironhold, the northern wind whipping crimson banners against a sky the color of old iron. The fragment of the Khmer Throne pulses warm against their chest — a constant reminder of the duty that fell upon them when the old world died.`,
+    57→          portrait,
+    58→          speaker: playerName,
+    59→          speakerColor: color,
+    60→        },
+    61→        {
+    62→          text: `"There is no peace in hesitation," ${playerName} declares, gauntleted fist clenched around a sword that hums with fragment energy. "The people need order. They need walls. They need someone willing to bear the weight of command \u2014 and the cost of war."`,
+    63→          speaker: playerName,
+    64→          speakerColor: color,
+    65→        },
+    66→        {
+    67→          text: `The Knight's fragment amplifies the strength of every soldier who marches under their banner. Swordsmen strike harder. Cavalry charges with devastating force. But the fragment feeds on conflict — the longer the war rages, the more it demands. ${playerName} knows this, and fights anyway.`,
+    68→          speaker: playerName,
+    69→          speakerColor: color,
+    70→        },
+    71→      ],
+    72→    },
+    73→    mage: {
+    74→      pages: [
+    75→        {
+    76→          text: `${playerName} sits cross-legged in the Sunforge arcana chamber, surrounded by floating glyphs that spiral in slow, golden orbits. The Khmer fragment hovers before them, rotating, whispering secrets in a language that predates the written word.`,
+    77→          portrait,
+    78→          speaker: playerName,
+    79→          speakerColor: color,
+    80→        },
+    81→        {
+    82→          text: `"The Throne was never meant to be one," ${playerName} murmurs, fingers tracing the fragment\u2019s crystalline surface. "It was four pillars holding up reality itself. When it shattered, the pillars scattered \u2014 and the weight of the world fell on us all."`,
+    83→          speaker: playerName,
+    84→          speakerColor: color,
+    85→        },
+    86→        {
+    87→          text: `The Mage's fragment grants boundless arcane insight and reduces the cost of conjuring magical allies. Mages under ${playerName}'s command deploy in greater numbers, their spells weaving barriers of raw aether. But the fragment whispers forbidden knowledge — secrets that could unmake the world if spoken aloud.`,
+    88→          speaker: playerName,
+    89→          speakerColor: color,
+    90→        },
+    91→      ],
+    92→    },
+    93→    rogue: {
+    94→      pages: [
+    95→        {
+    96→          text: `${playerName} materializes from the shadows of Darkwood's ancient canopy, the Khmer fragment concealed beneath a cloak woven from living darkness. The forest itself seems to lean away — trees creaking, roots shifting, as if the land recognizes the danger that walks among it.`,
+    97→          portrait,
+    98→          speaker: playerName,
+    99→          speakerColor: color,
+   100→        },
+   101→        {
+   102→          text: `"Honor is a luxury the strong afford themselves," ${playerName} says with a thin smile, producing a blade that seems to absorb light rather than reflect it. "I learned that in the shadows of the old court. Trust no one. Strike first. And never \u2014 ever \u2014 fight fair."`,
+   103→          speaker: playerName,
+   104→          speakerColor: color,
+   105→        },
+   106→        {
+   107→          text: `The Rogue's fragment grants preternatural luck — dice fall in their favor, impossible shots find their mark, and defeats transform into narrow escapes. Each battle, ${playerName} can reroll fate itself. But the fragment consumes its bearer's humanity, and the shadows grow longer with every use.`,
+   108→          speaker: playerName,
+   109→          speakerColor: color,
+   110→        },
+   111→      ],
+   112→    },
+   113→    paladin: {
+   114→      pages: [
+   115→        {
+   116→          text: `${playerName} kneels in the ruins of what was once the Khmer Empire's grandest cathedral, now little more than shattered columns and moss-covered stone. The Khmer fragment rests in the center of a broken altar, pulsing with a light that is almost painful to behold.`,
+   117→          portrait,
+   118→          speaker: playerName,
+   119→          speakerColor: color,
+   120→        },
+   121→        {
+   122→          text: `"The Shattering was not a tragedy \u2014 it was a judgment," ${playerName} intones, rising to full height. A shield of pure light materializes at their left arm, radiating warmth. "We sinned in our complacency. Now we must earn salvation through sacrifice and unwavering faith."`,
+   123→          speaker: playerName,
+   124→          speakerColor: color,
+   125→        },
+   126→        {
+   127→          text: `The Paladin's fragment creates unbreakable defenses — Shield Bearers and Paladins under ${playerName}'s command gain preternatural resilience, turning aside blows that would fell lesser warriors. But the fragment demands absolute faith, and doubt is punished with crushing weakness.`,
+   128→          speaker: playerName,
+   129→          speakerColor: color,
+   130→        },
+   131→      ],
+   132→    },
+   133→  };
+   134→
+   135→  const intro = intros[characterClass] || intros.knight;
+   136→
+   137→  return {
+   138→    id: `intro-${characterClass}`,
+   139→    title: `${playerName.toUpperCase()}`,
+   140→    subtitle: `The ${characterClass.charAt(0).toUpperCase() + characterClass.slice(1)} Rises`,
+   141→    bgStyle: 'dramatic',
+   142→    skippable: true,
+   143→    pages: intro.pages,
+   144→  };
+   145→}
+   146→
+   147→// ========================================
+   148→// ELIMINATION NARRATIVES
+   149→// ========================================
+   150→
+   151→export function getEliminationBeat(playerName: string, characterClass: string, color: string): StoryBeat {
+   152→  const narratives: Record<string, string> = {
+   153→    knight: `${playerName}'s armies have been shattered. The crimson banners that once flew over the Frostlands now lie trampled in mud and ash. ${playerName} kneels on a blood-soaked battlefield, sword broken, fragment flickering weakly. "I... failed them," they whisper, watching the last of their soldiers fall. The fragment dims — then goes dark. ${playerName} collapses, another casualty of the Khmer Empire's endless war.`,
+   154→    mage: `The arcana chamber crumbles around ${playerName} as enemy forces breach the final wards. Glyphs shatter like glass, and the floating tomes of Sunforge erupt into arcane fire. "The knowledge... it's all burning..." ${playerName} reaches for the fragment, but it slips through fingers turned translucent with magical exhaustion. The aether that sustained them drains away, and ${playerName} fades — not dying, but simply... ceasing, like a spell that has run its course.`,
+   155→    rogue: `${playerName} tries to shadow-walk one last time, but the darkness rejects them. The fragment — their passport through the shadows — sputters and dies. "No. No, I always have an exit. I ALWAYS have an exit—" But the shadows close in, and for the first time, ${playerName} has nowhere to hide. The final blow comes from behind, the way ${playerName} would have wanted it. At least, that's what they tell themselves.`,
+   156→    paladin: `${playerName} stands alone in the ruins of their last stronghold, shield cracked, armor dented, but still on their feet. "Even now... I do not waver." The fragment's holy light pulses one final time — blinding, defiant, magnificent. Then silence. ${playerName} falls to their knees, the last light of faith extinguished. The battlefield falls quiet. Even the enemy soldiers lower their weapons for a moment, honoring the fallen guardian.`,
+   157→  };
+   158→
+   159→  const text = narratives[characterClass] || narratives.knight;
+   160→
+   161→  return {
+   162→    id: `elimination-${playerName}`,
+   163→    title: 'FALLEN',
+   164→    subtitle: `${playerName} Has Been Defeated`,
+   165→    bgStyle: 'defeat',
+   166→    skippable: false,
+   167→    pages: [{ text }],
+   168→  };
+   169→}
+   170→
+   171→// ========================================
+   172→// VICTORY EPILOGUES
+   173→// ========================================
+   174→
+   175→export function getVictoryBeat(playerName: string, characterClass: string, color: string, colorLight: string, portrait: string): StoryBeat {
+   176→  const epilogues: Record<string, { pages: StoryPage[] }> = {
+   177→    knight: {
+   178→      pages: [
+   179→        {
+   180→          text: `The final fortress falls. The last enemy banner is torn from its pole. Across all five realms of the Khmer Empire, silence descends — the silence that follows the end of all things. ${playerName} stands at the summit of the Khmer Spire, four fragments now fused into a single, blazing crown of crimson gold.`,
+   181→          portrait,
+   182→          speaker: playerName,
+   183→          speakerColor: color,
+   184→        },
+   185→        {
+   186→          text: `"I told you," ${playerName} says quietly, placing the Khmer Crown upon their brow. The continent shudders — then stabilizes, rising slightly from the abyss. "Order. Discipline. Strength. That is what the Khmer Empire needed. Not magic. Not shadows. Not faith. Steel."`,
+   187→          speaker: playerName,
+   188→          speakerColor: color,
+   189→        },
+   190→        {
+   191→          text: `And so ${playerName} takes the Khmer Throne, ruling as the first of a new line of Wardens. The armies disband. The people rebuild. The continent heals. But in the darkest hours of the night, the Crown whispers to its new bearer — and ${playerName} listens, and is afraid.`,
+   192→          portrait,
+   193→          speaker: playerName,
+   194→          speakerColor: color,
+   195→        },
+   196→      ],
+   197→    },
+   198→    mage: {
+   199→      pages: [
+   200→        {
+   201→          text: `The last enemy army dissolves as ${playerName} unleashes the combined might of all four Khmer fragments in a single, devastating spell. The sky tears open, revealing the raw arcane substrate beneath reality — and for one terrifying moment, everyone on the Khmer Empire sees the truth of the world.`,
+   202→          portrait,
+   203→          speaker: playerName,
+   204→          speakerColor: color,
+   205→        },
+   206→        {
+   207→          text: `"Now I understand," ${playerName} breathes, eyes wide with revelation. "The Throne was never a weapon. It was a key. A key to something far greater than any of us imagined." The four fragments spiral upward, fusing not into a crown, but into a doorway — a portal to something beyond the veil of stars.`,
+   208→          speaker: playerName,
+   209→          speakerColor: color,
+   210→        },
+   211→        {
+   212→          text: `${playerName} steps through the portal, and the Khmer Crown hovers behind, waiting. Whether the Mage returns is a question only time will answer. But in their absence, the Khmer Empire enters an age of peace — guided not by a ruler, but by the arcane wisdom ${playerName} left behind in every stone, every river, every whispering wind.`,
+   213→          portrait,
+   214→          speaker: playerName,
+   215→          speakerColor: color,
+   216→        },
+   217→      ],
+   218→    },
+   219→    rogue: {
+   220→      pages: [
+   221→        {
+   222→          text: `Nobody sees ${playerName} when it happens. The last enemy warlord simply... falls, in the middle of their own throne room, with no witnesses and no explanation. The fragment-shadows retreat into the corners, and ${playerName} emerges from the darkness with four Khmer fragments in hand and a smile that doesn't reach their eyes.`,
+   223→          portrait,
+   224→          speaker: playerName,
+   225→          speakerColor: color,
+   226→        },
+   227→        {
+   228→          text: `"The smart ones never fight the last battle themselves," ${playerName} says to no one, letting the fragments dissolve into motes of shadow-light that sink into their skin. "You find the moment. You take it. You don't announce it with trumpets and banners."`,
+   229→          speaker: playerName,
+   230→          speakerColor: color,
+   231→        },
+   232→        {
+   233→          text: `${playerName} vanishes the same day, leaving no trace, no throne, no crown. Some say the Rogue became the shadow of the Khmer Empire itself — a guardian who watches from the darkness, striking only when necessary. Others say ${playerName} simply grew tired of winning. Either way, the continent is at peace. And somewhere, in a shadow that has no source, someone is smiling.`,
+   234→          portrait,
+   235→          speaker: playerName,
+   236→          speakerColor: color,
+   237→        },
+   238→      ],
+   239→    },
+   240→    paladin: {
+   241→      pages: [
+   242→        {
+   243→          text: `The final battle is not won with strength or cunning, but with faith. ${playerName} walks unarmed through the enemy gates, the four Khmer fragments orbiting like holy satellites, and every soldier who raises a weapon against them finds their arms too heavy to lift. Not by magic — by conviction.`,
+   244→          portrait,
+   245→          speaker: playerName,
+   246→          speakerColor: color,
+   247→        },
+   248→        {
+   249→          text: `"Lay down your arms," ${playerName} commands, and the voice carries not just sound but weight — the weight of absolute certainty. "The war is over. Not because I have defeated you, but because you know — in your hearts — that this was never the answer." One by one, weapons clatter to the ground.`,
+   250→          speaker: playerName,
+   251→          speakerColor: color,
+   252→        },
+   253→        {
+   254→          text: `${playerName} reforges the Khmer Crown not as a symbol of power, but as a relic of remembrance. It is placed in the center of a new temple — not to be worn, but to be contemplated. "The Crown does not choose a ruler," ${playerName} declares. "It chooses a guardian. And I will be the last." the Khmer Empire enters an age of peace, protected by a Paladin whose faith never wavered — and never will.`,
+   255→          portrait,
+   256→          speaker: playerName,
+   257→          speakerColor: color,
+   258→        },
+   259→      ],
+   260→    },
+   261→  };
+   262→
+   263→  const epilogue = epilogues[characterClass] || epilogues.knight;
+   264→
+   265→  return {
+   266→    id: `victory-${playerName}`,
+   267→    title: 'THE CROWN REFORGED',
+   268→    subtitle: `${playerName} Has Conquered the Khmer Empire`,
+   269→    bgStyle: 'victory',
+   270→    skippable: false,
+   271→    pages: epilogue.pages,
+   272→  };
+   273→}
+   274→
+   275→// ========================================
+   276→// TURN NARRATIVE EVENTS — Random events that fire during gameplay
+   277→// ========================================
+   278→
+   279→export interface CampaignEvent {
+   280→  id: string;
+   281→  title: string;
+   282→  text: string;
+   283→  effect?: string;  // Description of any mechanical effect
+   284→  triggerChance: number; // 0-1, chance per turn
+   285→  minTurn: number;   // Minimum turn number to trigger
+   286→  maxTurn?: number;  // Maximum turn number (optional)
+   287→}
+   288→
+   289→export const CAMPAIGN_EVENTS: CampaignEvent[] = [
+   290→  {
+   291→    id: 'aether_storm',
+   292→    title: 'AETHER STORM',
+   293→    text: 'The fragmented Khmer energy surges across the continent, crackling through the air like golden lightning. Soldiers on both sides report hearing whispers — the voices of the ancient Wardens, warning of the abyss below.',
+   294→    effect: 'The storm passes, but the land groans. All warlords feel the continent sink slightly lower.',
+   295→    triggerChance: 0.12,
+   296→    minTurn: 3,
+   297→  },
+   298→  {
+   299→    id: 'merchant_caravan',
+   300→    title: 'TRAVELING MERCHANTS',
+   301→    text: 'A caravan of neutral merchants braves the war-torn roads, offering supplies to any warlord willing to pay in aether-shards. Their wagons are laden with weapons, armor, and provisions.',
+   302→    effect: 'Reinforcements are plentiful this turn.',
+   303→    triggerChance: 0.15,
+   304→    minTurn: 2,
+   305→  },
+   306→  {
+   307→    id: 'ancient_ruins',
+   308→    title: 'RUINS AWAKEN',
+   309→    text: 'Deep within Misthollow, ancient ruins pulse with forgotten power. The stone walls glow with faded runes, and the air smells of ozone and old magic. Something stirs beneath the rubble — something that has slept since before the Shattering.',
+   310→    effect: 'The awakening energy grants additional tactical options.',
+   311→    triggerChance: 0.08,
+   312→    minTurn: 4,
+   313→  },
+   314→  {
+   315→    id: 'dragon_sighting',
+   316→    title: 'DRAGON IN THE FROSTLANDS',
+   317→    text: 'Shepherds in the northern Frostlands report seeing a vast shape moving through the clouds above Dragonspine. Scales glint in the pale light. The mountain itself seems to tremble. It has been centuries since a dragon was last sighted in the Khmer Empire.',
+   318→    effect: 'The dragon\'s presence unsettles all forces. Attacks in the Frostlands are more cautious this turn.',
+   319→    triggerChance: 0.06,
+   320→    minTurn: 5,
+   321→  },
+   322→  {
+   323→    id: 'plague_outbreak',
+   324→    title: 'BLOOD FEVER',
+   325→    text: 'A mysterious illness sweeps through the Southern Realms. Healers are overwhelmed, and soldiers fall sick in their camps. Moonhaven\'s temples are filled with the dying, and even the strongest warriors weaken.',
+   326→    effect: 'Units across the Southern Realms are weakened by the fever.',
+   327→    triggerChance: 0.07,
+   328→    minTurn: 6,
+   329→  },
+   330→  {
+   331→    id: 'rebel_uprising',
+   332→    title: 'PEASANT REVOLT',
+   333→    text: 'The common people have had enough. Farmers and craftsmen take up pitchforks and torches, marching against the nearest garrison. "We feed your armies! We die in your wars! We will be silent no more!" their leader shouts.',
+   334→    effect: 'Fortifications in the Heartlands are temporarily weakened by the uprising.',
+   335→    triggerChance: 0.08,
+   336→    minTurn: 4,
+   337→  },
+   338→  {
+   339→    id: 'eclipse',
+   340→    title: 'THE DARKENING',
+   341→    text: 'Without warning, the sun dims. Not slowly — instantly, as if something vast has passed between the Khmer Empire and the light. For three heartbeats, absolute darkness. Then the light returns, but everything feels... different. The Khmer fragments all pulse in unison.',
+   342→    effect: 'The Darkening\'s aftermath leaves all forces disoriented. No tactical advantage can be gained this turn.',
+   343→    triggerChance: 0.05,
+   344→    minTurn: 8,
+   345→  },
+   346→  {
+   347→    id: 'berserker_rage',
+   348→    title: 'BLOOD FRENZY',
+   349→    text: 'A strange red mist rolls across the battlefield, and soldiers on all sides feel an inexplicable surge of fury. Reason flees. Commands go unheeded. Warriors charge with reckless abandon, howling like beasts.',
+   350→    effect: 'Attack power surges, but defenses crumble in the frenzy.',
+   351→    triggerChance: 0.09,
+   352→    minTurn: 3,
+   353→  },
+   354→  {
+   355→    id: 'holy_light',
+   356→    title: 'DIVINE INTERVENTION',
+   357→    text: 'A column of brilliant white light descends from the heavens, illuminating a random territory with blinding radiance. Those within it feel their wounds close and their spirits lift. The light is warm, protective, and absolutely undeniable.',
+   358→    effect: 'The blessed territory\'s defenders gain extraordinary protection this turn.',
+   359→    triggerChance: 0.06,
+   360→    minTurn: 5,
+   361→  },
+   362→  {
+   363→    id: 'fragment_whisper',
+   364→    title: 'THE THRONE WHISPERS',
+   365→    text: 'Every Khmer fragment-bearing warlord hears the same voice at the same moment: a voice like grinding stone and flowing water, ancient and impossibly vast. "You fight for unity, but you bring only division. The Crown cannot be reforged in blood." Then — silence. The voice does not come again.',
+   366→    effect: 'The whisper shakes all warlords\' confidence. Reinforcements are reduced this turn.',
+   367→    triggerChance: 0.04,
+   368→    minTurn: 10,
+   369→  },
+   370→];
+   371→
+   372→// ========================================
+   373→// REGION LORE — for potential future use
+   374→// ========================================
+   375→
+   376→export const REGION_LORE: Record<string, string> = {
+   377→  'The Frostlands': 'The northernmost region of the Khmer Empire, where eternal winter grips the mountains and ancient fortresses guard the frontier. Ironhold, the greatest fortress in the known world, anchors the north against whatever horrors lurk beyond the ice. The Frostlands breed hard people — soldiers, miners, and dragon hunters who laugh at the cold.',
+   378→  'The Heartlands': 'The fertile center of the Khmer Empire, where the majority of the population lives and farms. Goldshire\'s markets, Silverdale\'s vineyards, Thornwall\'s military academy, and Ashenvale\'s ancient forests form the economic and cultural heart of the continent. Control the Heartlands, and you control the Khmer Empire.',
+   379→  'The Southern Realms': 'A land of extremes — the scorching forges of Sunforge, the haunted ruins of Misthollow, the storm-wracked towers of Ravencrest, and the sacred temples of Moonhaven. The Southern Realms are where old magic still lingers in the stones, and the dead do not always stay buried.',
+   380→  'The Eastern Shores': 'the Khmer Empire\'s gateway to the sea. Port Brighthelm handles all trade with distant continents, while Crystal Lake\'s shimmering waters are said to hold prophetic visions. The Eastern Shores are wealthy, exposed, and perpetually contested.',
+   381→  'The Western Reaches': 'Dark, wild, and largely unexplored. The ancient forest of Darkwood has never been fully mapped, and Misthollow\'s perpetually fog-shrouded valleys hide secrets from before the Shattering. Only the desperate or the foolhardy venture deep into the Western Reaches.',
+   382→};
+   383→
+   384→// ========================================
+   385→// CHAPTER SYSTEM
+   386→// ========================================
+   387→
+   388→export interface Chapter {
+   389→  id: string;
+   390→  number: number;
+   391→  title: string;
+   392→  subtitle: string;
+   393→  description: string;        // Short preview text for chapter select
+   394→  bgStyle: StoryBeat['bgStyle'];
+   395→}
+   396→
+   397→export const CHAPTERS: Chapter[] = [
+   398→  {
+   399→    id: 'ch1_assembly',
+   400→    number: 1,
+   401→    title: 'THE ASSEMBLY',
+   402→    subtitle: 'Where Four Become Warlords',
+   403→    description: 'The fragments have chosen their bearers. Four warlords gather their forces as the continent descends into war for the first time in a thousand years.',
+   404→    bgStyle: 'dramatic',
+   405→  },
+   406→  {
+   407→    id: 'ch2_first_blood',
+   408→    number: 2,
+   409→    title: 'FIRST BLOOD',
+   410→    subtitle: 'The Price of Ambition',
+   411→    description: 'Borders are tested. The first battles are fought, and the true cost of the war becomes clear as the first territory falls.',
+   412→    bgStyle: 'battle',
+   413→  },
+   414→  {
+   415→    id: 'ch3_escalation',
+   416→    number: 3,
+   417→    title: 'THE ESCALATION',
+   418→    subtitle: 'Alliances Shatter, Empires Rise',
+   419→    description: 'The war intensifies. One warlord falls, their fragment dimming forever. The remaining three eye each other with growing hunger.',
+   420→    bgStyle: 'dark',
+   421→  },
+   422→  {
+   423→    id: 'ch4_turning_tide',
+   424→    number: 4,
+   425→    title: 'THE TURNING TIDE',
+   426→    subtitle: 'When Hope Flickers',
+   427→    description: 'A dominant power emerges. The continent groans under the weight of endless battle. Ancient powers stir in response to the Khmer imbalance.',
+   428→    bgStyle: 'dramatic',
+   429→  },
+   430→  {
+   431→    id: 'ch5_final_stand',
+   432→    number: 5,
+   433→    title: 'THE FINAL STAND',
+   434→    subtitle: 'Two Fragments, One Crown',
+   435→    description: 'Only two warlords remain. The fate of the Khmer Empire hangs in the balance as the final war for the Khmer Crown begins.',
+   436→    bgStyle: 'battle',
+   437→  },
+   438→];
+   439→
+   440→// ========================================
+   441→// CHAPTER TRANSITION TITLE CARDS
+   442→// ========================================
+   443→
+   444→const CHAPTER_DRAMATIC_LINES: Record<string, string> = {
+   445→  ch1_assembly: 'The fragments have chosen. The die is cast. the Khmer Empire will never be the same.',
+   446→  ch2_first_blood: 'The first blade has been drawn. There is no turning back now.',
+   447→  ch3_escalation: 'One warlord has fallen. The fragments grow heavier. The hunger deepens.',
+   448→  ch4_turning_tide: 'The balance of power tilts. Ancient forces stir beneath the shattered Throne.',
+   449→  ch5_final_stand: 'Two remain. The abyss watches. The Crown waits for its sovereign.',
+   450→};
+   451→
+   452→export function getChapterTitleBeat(chapter: Chapter): StoryBeat {
+   453→  const dramaticLine = CHAPTER_DRAMATIC_LINES[chapter.id]
+   454→    || 'The war for the Khmer Empire continues.';
+   455→
+   456→  return {
+   457→    id: `chapter-title-${chapter.id}`,
+   458→    title: chapter.title,
+   459→    subtitle: chapter.subtitle,
+   460→    bgStyle: chapter.bgStyle,
+   461→    skippable: true,
+   462→    pages: [
+   463→      {
+   464→        text: `Chapter ${chapter.number}`,
+   465→      },
+   466→      {
+   467→        text: chapter.title,
+   468→      },
+   469→      {
+   470→        text: chapter.subtitle,
+   471→      },
+   472→      {
+   473→        text: dramaticLine,
+   474→      },
+   475→    ],
+   476→  };
+   477→}
+   478→
+   479→// ========================================
+   480→// MID-GAME STORY TRIGGERS
+   481→// ========================================
+   482→
+   483→export interface StoryTrigger {
+   484→  id: string;
+   485→  type: 'first_blood' | 'territory_capture' | 'region_dominance' | 'rival_clash' | 'desperate_hour' | 'dominant_force' | 'chapter_transition';
+   486→  condition: string; // descriptive
+   487→  minTurn: number;
+   488→  oneTime: boolean;
+   489→}
+   490→
+   491→export function getFirstBloodBeat(
+   492→  attackerName: string,
+   493→  attackerClass: string,
+   494→  attackerColor: string,
+   495→  attackerColorLight: string,
+   496→  attackerPortrait: string,
+   497→  defenderName: string,
+   498→  territoryName: string,
+   499→): StoryBeat {
+   500→  const classTitle = attackerClass.charAt(0).toUpperCase() + attackerClass.slice(1);
+   501→
+   502→  return {
+   503→    id: 'trigger-first-blood',
+   504→    title: 'FIRST BLOOD',
+   505→    subtitle: `${attackerName} Strikes the Opening Blow`,
+   506→    bgStyle: 'battle',
+   507→    skippable: false,
+   508→    pages: [
+   509→      {
+   510→        text: `The first clash of the war for the Khmer Crown has begun. Across the Khmer Empire, the very air seems to hold its breath as the four warlords' fragments pulse in eerie unison — sensing, perhaps, that the age of peace has truly ended. Somewhere in the heavens above the floating continent, the ghost of Aldric the Unbroken looks down upon his shattered legacy and weeps.`,
+   511→      },
+   512→      {
+   513→        text: `${attackerName} the ${classTitle} has drawn first blood, seizing ${territoryName} from ${defenderName} in a battle that will echo through the ages. The ground still smolders where the Khmer fragment's power was unleashed, and the defenders who survived speak of a force that felt less like an army and more like an avalanche given purpose. The other warlords take note. The game has begun in earnest.`,
+   514→        speaker: attackerName,
+   515→        speakerColor: attackerColor,
+   516→        portrait: attackerPortrait,
+   517→      },
+   518→      {
+   519→        text: `But the land pays the price. Where ${territoryName}'s soil was once rich and verdant, thin cracks of golden light now spider across the surface — the aether bleeding out from the violence done upon it. Old scholars knew this sign. They called it the Throne's Sorrow, and they said it meant the continent was sinking. Closer to the Endless Abyss. Closer to the dark.`,
+   520→      },
+   521→    ],
+   522→  };
+   523→}
+   524→
+   525→export function getTerritoryCaptureBeat(
+   526→  territoryId: string,
+   527→  territoryName: string,
+   528→  playerName: string,
+   529→  characterClass: string,
+   530→  color: string,
+   531→  colorLight: string,
+   532→  portrait: string,
+   533→): StoryBeat | null {
+   534→  const classTitle = characterClass.charAt(0).toUpperCase() + characterClass.slice(1);
+   535→
+   536→  const keyTerritories: Record<string, { title: string; subtitle: string; pages: StoryPage[] }> = {
+   537→    ironhold: {
+   538→      title: 'THE GREATEST FORTRESS',
+   539→      subtitle: `${playerName} Claims Ironhold`,
+   540→      pages: [
+   541→        {
+   542→          text: `Ironhold — the unconquerable fortress, the northern bulwark that has stood since the first Warden raised its walls from living granite. For a thousand years, no army has breached its gates. No siege has lasted more than a fortnight against its layered defenses and the fanatical resolve of its garrison. It is a monument to military perfection, and now it has a new master.`,
+   543→        },
+   544→        {
+   545→          text: `${playerName} the ${classTitle} stands atop Ironhold's highest tower, the Khmer fragment blazing at their chest like a second sun. The fortress stretches below in all directions — curtain walls, watchtowers, killing grounds, and the vast armories that have supplied a thousand campaigns. "This is what power looks like," ${playerName} says, voice carried on the northern wind. "Not a throne. Not a crown. Walls."`,
+   546→          speaker: playerName,
+   547→          speakerColor: color,
+   548→          portrait,
+   549→        },
+   550→        {
+   551→          text: `But within Ironhold's deepest vault, sealed behind doors that have not opened since Aldric's reign, something stirs. Old mechanisms grind. Khmer conduits buried in the mountain's roots flicker with golden light. Whatever the first Warden hid beneath the fortress is awakening — and it is responding to the fragment's call. The fortress was never just a fortress. It was a lock. And ${playerName} may have just turned the key.`,
+   552→        },
+   553→      ],
+   554→    },
+   555→    dragonspine: {
+   556→      title: 'THE DRAGON WAKES',
+   557→      subtitle: `${playerName} Ascends Dragonspine`,
+   558→      pages: [
+   559→        {
+   560→          text: `The mountain called Dragonspine has always been sacred ground. Shepherds and miners avoid its upper reaches, telling stories of vast shapes moving through the clouds and eyes the color of molten copper watching from caverns too deep for human light. The fragments of the Khmer Throne were forged in dragonfire, the old texts say — and the dragons never forgave the Wardens for taking their gift.`,
+   561→        },
+   562→        {
+   563→          text: `${playerName} the ${classTitle} has claimed the mountain, planting their banner at the summit where the air is thin and the sky is close enough to touch. The Khmer fragment howls at the altitude, resonating with something ancient that sleeps beneath the stone. ${playerName} can feel it — a heartbeat, slow and vast, like the pulse of a mountain-sized dream.`,
+   564→          speaker: playerName,
+   565→          speakerColor: color,
+   566→          portrait,
+   567→        },
+   568→        {
+   569→          text: `And then the ground shakes. Not with the tremor of battle, but with something far older. A crack opens in the mountainside, and from within pours a breath of heat so intense it melts the snow for a mile in every direction. Somewhere in the depths, a dragon opens one enormous eye. It has been sleeping since before the Shattering. But the fragment has woken it. And it is hungry.`,
+   570→        },
+   571→      ],
+   572→    },
+   573→    goldshire: {
+   574→      title: 'HEART OF THE HEARTLANDS',
+   575→      subtitle: `${playerName} Seizes Goldshire`,
+   576→      pages: [
+   577→        {
+   578→          text: `Goldshire is the beating heart of the Khmer Empire — not because of its armies or its magic, but because of its gold. The markets of Goldshire supply every warlord on the continent with the coin needed to fund campaigns, hire mercenaries, and bribe officials. Its fall is never merely a military event; it is an economic earthquake that reshapes the war itself.`,
+   579→        },
+   580→        {
+   581→          text: `${playerName} the ${classTitle} rides through Goldshire's gilded gates as merchants scatter and the great trading houses lower their flags. The Khmer fragment hums with something almost like satisfaction — the Throne understood the value of gold, once. "Wealth is not power," ${playerName} declares, surveying the captured treasury. "But it is the shadow of power. And where the shadow falls, the substance follows."`,
+   582→          speaker: playerName,
+   583→          speakerColor: color,
+   584→          portrait,
+   585→        },
+   586→        {
+   587→          text: `The fall of Goldshire sends shockwaves across all five realms. Supply lines falter. Mercenary contracts are renegotiated. The three remaining warlords must now reckon with a ${classTitle.toLowerCase()} who controls the purse strings of the continent. The Heartlands have a new master, and the price of everything — from bread to blood — has just changed.`,
+   588→        },
+   589→      ],
+   590→    },
+   591→    misthollow: {
+   592→      title: 'SECRETS OF THE MIST',
+   593→      subtitle: `${playerName} Dares the Misthollow`,
+   594→      pages: [
+   595→        {
+   596→          text: `Misthollow is not a place that welcomes conquerors. The perpetual fog that gives the valley its name is not natural — it is the exhalation of something vast and ancient that lies beneath the earth, breathing in slow, geologic rhythms. Those who enter the mist speak of voices, of visions, of memories that are not their own. Many do not return at all.`,
+   597→        },
+   598→        {
+   599→          text: `${playerName} the ${classTitle} pushes through the fog, the Khmer fragment blazing like a lantern against the unnatural darkness. The mist recoils from the fragment's light — but only for a moment. Then it closes in again, thicker, hungrier, as if it recognizes a kindred power. "The Throne was built on secrets," ${playerName} whispers, eyes straining into the white void. "Let us see what it was trying to hide."`,
+   600→          speaker: playerName,
+   601→          speakerColor: color,
+   602→          portrait,
+   603→        },
+   604→        {
+   605→          text: `Deep within the hollow, the fog clears to reveal ruins that predate the Khmer Wardens by millennia. Stone pillars covered in writing that no living scholar can read. A pit that descends into absolute darkness, from which a cold wind rises endlessly. And at the center, a pedestal where a fifth fragment-shaped depression sits empty — as if the Throne was never meant to have only four pieces. ${playerName} has found something that changes everything.`,
+   606→        },
+   607→      ],
+   608→    },
+   609→    port_brighthelm: {
+   610→      title: 'THE GATEWAY OPENS',
+   611→      subtitle: `${playerName} Takes Port Brighthelm`,
+   612→      pages: [
+   613→        {
+   614→          text: `Port Brighthelm is the Khmer Empire's window to the world beyond the Endless Abyss — the only harbor capable of receiving ships from distant continents, and the lifeline through which exotic weapons, rare reagents, and foreign mercenaries flow. Control the port, and you control the flow of the outside world into the war.`,
+   615→        },
+   616→        {
+   617→          text: `${playerName} the ${classTitle} watches the foreign merchant fleet from Brighthelm's lighthouse, the Khmer fragment casting long shadows across the harbor below. The captured ships bring news: the continents across the Abyss have felt the Shattering too. The magical shockwave rippled through reality itself, and distant kingdoms are sending envoys — some to help, some to conquer, all to claim a piece of the Khmer Throne's legacy.`,
+   618→          speaker: playerName,
+   619→          speakerColor: color,
+   620→          portrait,
+   621→        },
+   622→        {
+   623→          text: `With Brighthelm under their control, ${playerName} can now choose which foreign powers gain access to the Khmer Empire — and which are turned away. It is a different kind of power than the fragment provides: the power of connection, of trade, of a world that is suddenly much larger than four warlords and their private war. The Eastern Shores have a new admiral, and the tides of the conflict are about to shift.`,
+   624→        },
+   625→      ],
+   626→    },
+   627→    darkwood: {
+   628→      title: 'THE UNCHARTED DEPTHS',
+   629→      subtitle: `${playerName} Claims Darkwood`,
+   630→      pages: [
+   631→        {
+   632→          text: `Darkwood has never been fully mapped. The ancient forest stretches across the Western Reaches like a living wall, its canopy so thick that noon looks like midnight beneath the boughs. Paths appear and vanish. Trees move when no one is watching. The wood elves who once lived here vanished centuries ago, and no one knows where they went — though some say they never left, and that the forest itself is their body, grown vast and strange with age.`,
+   633→        },
+   634→        {
+   635→          text: `${playerName} the ${classTitle} presses deeper into Darkwood than any army has dared before, the Khmer fragment pulsing in rhythm with the forest's heartbeat. The trees lean in, curious. The shadows lengthen, watchful. "The Throne's power came from the land itself," ${playerName} realizes, hand resting on the bark of a tree older than human civilization. "And the land remembers."`,
+   636→          speaker: playerName,
+   637→          speakerColor: color,
+   638→          portrait,
+   639→        },
+   640→        {
+   641→          text: `At the forest's heart, ${playerName} finds a clearing that should not exist — a perfect circle of grass and wildflowers, lit by a sunbeam that has no source. In the center grows a single tree, white as bone, its roots intertwined with veins of pure arcane crystal. This is the Worldtree, the oldest living thing on the Khmer Empire, the source from which the first Warden drew the power to create the Throne. And it is still alive. Still growing. Still waiting.`,
+   642→        },
+   643→      ],
+   644→    },
+   645→  };
+   646→
+   647→  const beat = keyTerritories[territoryId];
+   648→  if (!beat) return null;
+   649→
+   650→  return {
+   651→    id: `trigger-capture-${territoryId}`,
+   652→    title: beat.title,
+   653→    subtitle: beat.subtitle,
+   654→    bgStyle: 'battle',
+   655→    skippable: false,
+   656→    pages: beat.pages,
+   657→  };
+   658→}
+   659→
+   660→export function getRegionDominanceBeat(
+   661→  regionName: string,
+   662→  playerName: string,
+   663→  color: string,
+   664→  regionLore: string,
+   665→): StoryBeat {
+   666→  return {
+   667→    id: `trigger-dominance-${regionName.replace(/\s+/g, '_').toLowerCase()}`,
+   668→    title: 'REGION DOMINANCE',
+   669→    subtitle: `${playerName} Controls ${regionName}`,
+   670→    bgStyle: 'dramatic',
+   671→    skippable: false,
+   672→    pages: [
+   673→      {
+   674→        text: `The last banner of resistance in ${regionName} has fallen. Every territory, every fortress, every village now answers to a single warlord — and that warlord is ${playerName}. The Khmer fragment blazes with fierce approval, drinking deep of the region's concentrated arcane energy. For a moment, the very sky above ${regionName} turns the color of ${playerName}'s banner.`,
+   675→      },
+   676→      {
+   677→        text: `${regionLore}`,
+   678→      },
+   679→      {
+   680→        text: `But dominion is a double-edged sword. With total control of ${regionName} comes total responsibility — and total vulnerability. Every rival warlord now sees ${playerName} as the threat to be destroyed, and the fragment's surge of power has not gone unnoticed. The other bearers feel it in their blood, a primal alarm that says: one of us has grown too strong. The hunt begins.`,
+   681→      },
+   682→    ],
+   683→  };
+   684→}
+   685→
+   686→export function getRivalClashBeat(
+   687→  attackerName: string,
+   688→  attackerClass: string,
+   689→  attackerColor: string,
+   690→  attackerPortrait: string,
+   691→  defenderName: string,
+   692→  defenderClass: string,
+   693→  defenderColor: string,
+   694→  defenderPortrait: string,
+   695→): StoryBeat {
+   696→  const attackerTitle = `${attackerName} the ${attackerClass.charAt(0).toUpperCase() + attackerClass.slice(1)}`;
+   697→  const defenderTitle = `${defenderName} the ${defenderClass.charAt(0).toUpperCase() + defenderClass.slice(1)}`;
+   698→
+   699→  return {
+   700→    id: `trigger-rival-clash-${attackerName}-${defenderName}`,
+   701→    title: 'THE RIVALS CLASH',
+   702→    subtitle: `${attackerName} vs. ${defenderName}`,
+   703→    bgStyle: 'battle',
+   704→    skippable: false,
+   705→    pages: [
+   706→      {
+   707→        text: `There are wars of convenience, and then there are wars of destiny. When ${attackerTitle} first turned their armies toward ${defenderTitle}'s territory, every oracle and seer on the Khmer Empire felt the shift — two Khmer fragments resonating in violent harmony, their frequencies clashing like the grinding of tectonic plates. The air between their territories crackled with golden lightning, and soldiers on both sides reported the same vision: two thrones, side by side, one of them empty.`,
+   708→        speaker: attackerName,
+   709→        speakerColor: attackerColor,
+   710→        portrait: attackerPortrait,
+   711→      },
+   712→      {
+   713→        text: `"So we finally meet on the field of honor," ${defenderName} says, ${defenderClass === 'paladin' || defenderClass === 'knight' ? 'shield raised and resolve unbroken' : defenderClass === 'mage' ? 'fingers already weaving defensive wards' : 'materializing from shadows with a predator\'s grace'}. "I have watched you grow stronger from a distance. Let us see if your strength is matched by your wisdom." The fragment at ${defenderName}'s chest flares — not in attack, but in acknowledgment. A worthy foe, at last.`,
+   714→        speaker: defenderName,
+   715→        speakerColor: defenderColor,
+   716→        portrait: defenderPortrait,
+   717→      },
+   718→      {
+   719→        text: `The battle that follows is unlike any other in the war. Two fragments of the Khmer Throne, each amplifying their bearer's will, collide with a force that reshapes the terrain itself. Hills flatten. Rivers change course. The sky tears open, and for one brief, terrifying instant, both warlords catch a glimpse of the completed Crown — whole, radiant, impossibly beautiful — before the vision shatters and the war continues. the Khmer Empire shudders. The abyss below grows a little closer.`,
+   720→      },
+   721→    ],
+   722→  };
+   723→}
+   724→
+   725→export function getDesperateHourBeat(
+   726→  playerName: string,
+   727→  characterClass: string,
+   728→  color: string,
+   729→  colorLight: string,
+   730→  portrait: string,
+   731→  territoryCount: number,
+   732→): StoryBeat {
+   733→  const classTitle = characterClass.charAt(0).toUpperCase() + characterClass.slice(1);
+   734→
+   735→  const classSpecificPages: Record<string, StoryPage[]> = {
+   736→    knight: [
+   737→      {
+   738→        text: `${playerName} surveys the map with the cold precision of a general who has lost too many battles to indulge in hope. ${territoryCount} territories. That is all that remains of the northern empire. The great fortresses have fallen, the armies are scattered, and the crimson banners that once flew from every watchtower now gather dust in abandoned armories.`,
+   739→        portrait,
+   740→        speaker: playerName,
+   741→        speakerColor: color,
+   742→      },
+   743→      {
+   744→        text: `But a knight does not surrender. Not when the walls are breached. Not when the odds are impossible. ${playerName} rallies the last loyal soldiers — barely a company, scarred and weary, but still standing. "A fortress can be rebuilt," ${playerName} declares, sword drawn. "An army can be raised again. But the will to fight? That either lives in you or it doesn't. And mine is burning."`,
+   745→        speaker: playerName,
+   746→        speakerColor: color,
+   747→        portrait,
+   748→      },
+   749→      {
+   750→        text: `The fragment flickers uncertainly at ${playerName}'s chest, its light guttering like a candle in a storm. It senses the desperation of its bearer — and responds in the only way it knows how. It burns brighter, feeding on ${playerName}'s defiance, transforming desperation into something harder and sharper than steel. The war is not over. Not while the ${classTitle.toLowerCase()} still draws breath.`,
+   751→      },
+   752→    ],
+   753→    mage: [
+   754→      {
+   755→        text: `The arcana chambers are dark. The floating glyphs that once illuminated ${playerName}'s sanctum have dimmed to barely visible embers, starved of the arcane energy that ${playerName} can no longer spare. ${territoryCount} territories remain — barely enough to sustain the fragment's connection to the land, and nowhere near enough to fuel the spells that once bent reality to ${playerName}'s will.`,
+   756→        portrait,
+   757→        speaker: playerName,
+   758→        speakerColor: color,
+   759→      },
+   760→      {
+   761→        text: `"Seventeen futures," ${playerName} murmurs, gazing into a scrying pool that shows nothing but static. "I once saw seventeen futures. Now I see only one — and it ends in darkness." The Mage's fingers trace the fragment's surface, seeking the patterns, the equations, the hidden variables. There must be something. Some possibility unaccounted for. Some thread of fate that has not yet been pulled.`,
+   762→        speaker: playerName,
+   763→        speakerColor: color,
+   764→        portrait,
+   765→      },
+   766→      {
+   767→        text: `And then ${playerName} finds it — a sliver of probability so thin it almost doesn't exist. A path through seventeen billion possible outcomes that leads not to survival, but to victory. The fragment responds, flooding ${playerName}'s mind with forbidden knowledge and terrible clarity. The cost will be enormous. But the Mage has never been afraid of knowledge, no matter how dark its source.`,
+   768→      },
+   769→    ],
+   770→    rogue: [
+   771→      {
+   772→        text: `${playerName} crouches in the ruins of a watchtower, the last of the shadows offering what little concealment remains. ${territoryCount} territories. The shadows are shrinking — fewer places to hide, fewer paths to escape, fewer allies willing to harbor a warlord on the run. The game that was supposed to be won through cunning and stealth has become a desperate scramble for survival.`,
+   773→        portrait,
+   774→        speaker: playerName,
+   775→        speakerColor: color,
+   776→      },
+   777→      {
+   778→        text: `"Everyone runs out of shadows eventually," ${playerName} says to no one, testing the edge of a blade that has lost its fragment-enhanced sheen. "But they always forget — the shadow doesn't just hide you. It shows you things. And I have seen things in the dark that would make the other warlords weep."`,
+   779→        speaker: playerName,
+   780→        speakerColor: color,
+   781→        portrait,
+   782→      },
+   783→      {
+   784→        text: `The fragment stirs — not with power, but with something older and more dangerous. It whispers of the spaces between heartbeats, the moments when reality blinks, the instants when a shadow-walker can step between worlds. ${playerName} has never used this ability before. The cost is steep: a piece of the bearer's soul for every shadow-step. But with ${territoryCount} territories remaining, the Rogue is running out of options — and running out of soul is better than running out of time.`,
+   785→      },
+   786→    ],
+   787→    paladin: [
+   788→      {
+   789→        text: `${playerName} kneels in the rubble of what was once a temple, hands clasped in prayer, fragment casting its fading holy light across broken pews and shattered stained glass. ${territoryCount} territories. The faithful are scattered, the temples desecrated, and the light that once guided ${playerName}'s armies has dimmed to a flicker. The continent groans under the weight of war, and the abyss below grows ever closer.`,
+   790→        portrait,
+   791→        speaker: playerName,
+   792→        speakerColor: color,
+   793→      },
+   794→      {
+   795→        text: `"You test me," ${playerName} whispers to the fragment, to the sky, to whatever force shaped the Khmer Throne and then shattered it. "You test my faith when everything I built lies in ruins. But faith is not a tower — it does not crumble when the wind blows. Faith is the wind itself." The fragment hears. And for the first time since the war began, it does not demand — it gives.`,
+   796→        speaker: playerName,
+   797→        speakerColor: color,
+   798→        portrait,
+   799→      },
+   800→      {
+   801→        text: `The light swells. Not the cold, analytical glow of the Mage's aether, nor the hungry crimson of the Knight's fragment, but something warmer — something that feels like absolution. The Paladin rises, shield reforming from pure light, and the last ${territoryCount} territories pulse with renewed holy energy. ${playerName} will not win through strength or cunning. ${playerName} will win because the light refuses to go out.`,
+   802→      },
+   803→    ],
+   804→  };
+   805→
+   806→  const pages = classSpecificPages[characterClass] || classSpecificPages.knight;
+   807→
+   808→  return {
+   809→    id: `trigger-desperate-${playerName}`,
+   810→    title: 'THE DESPERATE HOUR',
+   811→    subtitle: `${playerName}'s Back Against the Wall`,
+   812→    bgStyle: 'dark',
+   813→    skippable: false,
+   814→    pages,
+   815→  };
+   816→}
+   817→
+   818→export function getDominantForceBeat(
+   819→  playerName: string,
+   820→  color: string,
+   821→  territoryCount: number,
+   822→  totalPlayers: number,
+   823→): StoryBeat {
+   824→  const remainingRivals = totalPlayers - 1;
+   825→
+   826→  return {
+   827→    id: `trigger-dominant-${playerName}`,
+   828→    title: 'THE TIDE OF WAR',
+   829→    subtitle: `${playerName} Controls ${territoryCount} Territories`,
+   830→    bgStyle: 'victory',
+   831→    skippable: false,
+   832→    pages: [
+   833→      {
+   834→        text: `The map of the Khmer Empire has been redrawn. Where once four warlords held roughly equal sway, a single power now dominates — and that power is ${playerName}. With ${territoryCount} territories under their banner and ${remainingRivals} rival${remainingRivals !== 1 ? 's' : ''} left to challenge them, the war for the Khmer Crown is approaching its endgame.`,
+   835→      },
+   836→      {
+   837→        text: `The Khmer fragment responds to this dominance with terrifying enthusiasm. It burns hotter, pulses stronger, and whispers more insistently — urging its bearer onward, promising ultimate power, unity, the reforged Crown. The land itself seems to lean toward ${playerName}'s territories, arcane currents flowing like rivers toward a dominant gravitational center. The other fragments grow dimmer in comparison, their bearers weakened by the imbalance.`,
+   838→      },
+   839→      {
+   840→        text: `But ${remainingRivals > 1 ? 'the remaining warlords' : 'the last rival'} will not surrender quietly. Desperation is a potent fuel, and those who fight with nothing to lose are often the most dangerous. Across the continent, alliances of convenience form, last-ditch strategies are hatched, and ancient weapons are dragged from vaults sealed since before the Shattering. The end of the war is near — but the bloodiest chapter may yet be unwritten.`,
+   841→      },
+   842→    ],
+   843→  };
+   844→}
+   845→
+   846→// ========================================
+   847→// RIVAL DIALOGUE SYSTEM
+   848→// ========================================
+   849→
+   850→export interface RivalDialogue {
+   851→  id: string;
+   852→  speakerClass: string;   // Which class speaks this
+   853→  context: 'turn_start' | 'attacking' | 'defending' | 'losing' | 'winning';
+   854→  minTurn: number;
+   855→  lines: string[];
+   856→}
+   857→
+   858→export const RIVAL_DIALOGUES: RivalDialogue[] = [
+   859→  // Knight dialogue lines
+   860→  { id: 'knight_turn_early', speakerClass: 'knight', context: 'turn_start', minTurn: 1, lines: [
+   861→    'My armies stand ready. The north does not wait for the hesitant.',
+   862→    'Steel and discipline. That is all the Khmer Empire needs now.',
+   863→    'The fragment pulses. It hungers for order.',
+   864→  ]},
+   865→  { id: 'knight_attacking', speakerClass: 'knight', context: 'attacking', minTurn: 1, lines: [
+   866→    'Charge! Let them feel the weight of true resolve!',
+   867→    'For the north! For order! Break their lines!',
+   868→    'No retreat. No surrender. Forward!',
+   869→  ]},
+   870→  { id: 'knight_defending', speakerClass: 'knight', context: 'defending', minTurn: 1, lines: [
+   871→    'Hold the line! Not one step back!',
+   872→    'Let them come. Our walls have never fallen.',
+   873→    'A shield wall does not break. It only grows stronger.',
+   874→  ]},
+   875→  // Mage dialogue lines
+   876→  { id: 'mage_turn_early', speakerClass: 'mage', context: 'turn_start', minTurn: 1, lines: [
+   877→    'The arcane currents shift... interesting. The threads of fate are tangled.',
+   878→    'I have seen seventeen possible futures today. In twelve of them, I win.',
+   879→    'Knowledge is the sharpest blade. And I have an entire library.',
+   880→  ]},
+   881→  { id: 'mage_attacking', speakerClass: 'mage', context: 'attacking', minTurn: 1, lines: [
+   882→    'Let them burn. Arcane fire cares nothing for armor.',
+   883→    'The equations of war are simple. I have already solved them.',
+   884→    'Witness the power that shattered a throne!',
+   885→  ]},
+   886→  { id: 'mage_defending', speakerClass: 'mage', context: 'defending', minTurn: 1, lines: [
+   887→    'My wards are unbreakable. Try and see.',
+   888→    'Every spell I cast is a calculation. They cannot outthink the inevitable.',
+   889→    'The aether bends to my will. Your armies will not.',
+   890→  ]},
+   891→  // Rogue dialogue lines
+   892→  { id: 'rogue_turn_early', speakerClass: 'rogue', context: 'turn_start', minTurn: 1, lines: [
+   893→    'They think they see me coming. They are wrong.',
+   894→    'The shadows are full of secrets. I know all of them.',
+   895→    'Every warlord here has a weakness. I intend to find them all.',
+   896→  ]},
+   897→  { id: 'rogue_attacking', speakerClass: 'rogue', context: 'attacking', minTurn: 1, lines: [
+   898→    'You never saw it coming. None of them ever do.',
+   899→    'From the darkness, swift and certain.',
+   900→    'Why fight fair when you can fight smart?',
+   901→  ]},
+   902→  { id: 'rogue_defending', speakerClass: 'rogue', context: 'defending', minTurn: 1, lines: [
+   903→    'You think you have me cornered? I am exactly where I want to be.',
+   904→    'The shadows protect their own.',
+   905→    'Catch me if you can.',
+   906→  ]},
+   907→  // Paladin dialogue lines
+   908→  { id: 'paladin_turn_early', speakerClass: 'paladin', context: 'turn_start', minTurn: 1, lines: [
+   909→    'The light guides my path. Even in this darkness, I do not waver.',
+   910→    'Faith is not a weapon. It is a shield. And mine is unbreakable.',
+   911→    'the Khmer Empire will be saved — not by conquest, but by conviction.',
+   912→  ]},
+   913→  { id: 'paladin_attacking', speakerClass: 'paladin', context: 'attacking', minTurn: 1, lines: [
+   914→    'In the name of the light, I strike!',
+   915→    'Your darkness ends here. Justice comes for all.',
+   916→    'Holy fire cleanses all. Even the battlefield.',
+   917→  ]},
+   918→  { id: 'paladin_defending', speakerClass: 'paladin', context: 'defending', minTurn: 1, lines: [
+   919→    'The light shall not be extinguished!',
+   920→    'My faith is my fortress. You cannot breach it.',
+   921→    'Even in defeat, I do not yield. For I know the truth.',
+   922→  ]},
+   923→  // Losing dialogue (any class)
+   924→  { id: 'knight_losing', speakerClass: 'knight', context: 'losing', minTurn: 5, lines: [
+   925→    'The walls are crumbling... but I will fight from the rubble.',
+   926→    'A knight does not beg. But I admit... the situation is dire.',
+   927→  ]},
+   928→  { id: 'mage_losing', speakerClass: 'mage', context: 'losing', minTurn: 5, lines: [
+   929→    'This outcome was... not in my calculations. Fascinating.',
+   930→    'The aether... is draining. I must conserve what remains.',
+   931→  ]},
+   932→  { id: 'rogue_losing', speakerClass: 'rogue', context: 'losing', minTurn: 5, lines: [
+   933→    'Everyone runs out of shadows eventually.',
+   934→    'I always have an exit strategy. ...I think.',
+   935→  ]},
+   936→  { id: 'paladin_losing', speakerClass: 'paladin', context: 'losing', minTurn: 5, lines: [
+   937→    'Even now, I do not doubt. The light tests those who are worthy.',
+   938→    'A guardian falls... but the light endures.',
+   939→  ]},
+   940→  // Winning dialogue (any class)
+   941→  { id: 'knight_winning', speakerClass: 'knight', context: 'winning', minTurn: 5, lines: [
+   942→    'The pieces are in place. the Khmer Empire will know order once more.',
+   943→    'One by one, the banners fall. Soon, only mine will remain.',
+   944→  ]},
+   945→  { id: 'mage_winning', speakerClass: 'mage', context: 'winning', minTurn: 5, lines: [
+   946→    'The pattern is becoming clear. Victory is simply the next logical step.',
+   947→    'I have calculated every variable. The outcome is no longer in doubt.',
+   948→  ]},
+   949→  { id: 'rogue_winning', speakerClass: 'rogue', context: 'winning', minTurn: 5, lines: [
+   950→    'The game is almost over. And they never even saw me playing.',
+   951→    'Checkmate. Though I prefer the term... shadow-check.',
+   952→  ]},
+   953→  { id: 'paladin_winning', speakerClass: 'paladin', context: 'winning', minTurn: 5, lines: [
+   954→    'The light grows stronger with every territory freed from darkness.',
+   955→    'Soon, this war will end. And peace will finally reign.',
+   956→  ]},
+   957→];
+   958→
+   959→export function getRivalDialogue(characterClass: string, context: RivalDialogue['context'], turnNumber: number): { text: string } | null {
+   960→  const cls = characterClass.toLowerCase();
+   961→  const eligible = RIVAL_DIALOGUES.filter(d => {
+   962→    if (d.speakerClass !== cls) return false;
+   963→    if (d.context !== context) return false;
+   964→    if (turnNumber < d.minTurn) return false;
+   965→    return true;
+   966→  });
+   967→  if (eligible.length === 0) return null;
+   968→  const dialogue = eligible[Math.floor(Math.random() * eligible.length)];
+   969→  const line = dialogue.lines[Math.floor(Math.random() * dialogue.lines.length)];
+   970→  return { text: line };
+   971→}
+   972→
+   973→// ========================================
+   974→// CAMPAIGN PROGRESS STATE
+   975→// ========================================
+   976→
+   977→export interface CampaignProgress {
+   978→  currentChapter: number;       // 1-5
+   979→  totalConquests: number;        // territories captured by human player
+   980→  firstBloodFired: boolean;
+   981→  firedTriggers: Set<string>;    // IDs of one-time triggers that have fired
+   982→  rivalClashes: Set<string>;     // "playerA-playerB" pairs that have clashed
+   983→  regionDominanceFired: Set<string>; // region names already triggered
+   984→  turnStoryFired: Set<number>;   // turn numbers where story already fired
+   985→}

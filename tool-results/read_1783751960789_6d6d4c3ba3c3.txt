@@ -1,0 +1,345 @@
+     1→     1→// ============================================================
+     2→     2→// CAMPAIGN DATA — Realm Of The Khmer Empire
+     3→     3→// Cambodian Folklore Epic: Ancestral Spirits, Naga Serpents, Sacred Flames
+     4→     4→// ============================================================
+     5→     5→
+     6→     6→export interface CampaignChapter {
+     7→     7→  id: string;
+     8→     8→  chapterNumber: number;
+     9→     9→  title: string;
+    10→    10→  subtitle: string;
+    11→    11→  introNarration: string;
+    12→    12→  victoryNarration: string;
+    13→    13→  defeatNarration: string;
+    14→    14→  objectives: string[];
+    15→    15→  battleSetup?: {
+    16→    16→    territoryAssignments?: Record<string, { ownerId: string; units: string[] }>;
+    17→    17→    bonusReinforcements?: number;
+    18→    18→  };
+    19→    19→}
+    20→    20→
+    21→    21→// ============================================================
+    22→    22→// WORLD LORE
+    23→    23→// ============================================================
+    24→    24→
+    25→    25→export const WORLD_LORE = {
+    26→    26→  title: "The Chronicle of the Khmer Empire",
+    27→    27→  history: `Before the Shattering, the Khmer Empire was a single, magnificent civilization ruled from the sacred temples of Angkor Wat — a city of stone and gold that crowned the empire like a lotus blossom upon the earth. The empire's power came from the Sacred Crown, a divine regalia forged in the fire temples of Phnom Kulen from jade blessed by the naga serpent kings and tempered in the eternal flames that burn at the mountain's peak. In the hands of the Temple Guardians, the Crown's power sustained harmony across the five provinces, keeping the monsoons in their season, the rivers in their courses, and the boundary between the living world and the spirit realm intact.
+    28→    28→
+    29→    29→The empire endured for nine centuries under the Guardian Dynasty, each ruler more devoted to maintaining the sacred balance between the mortal and spirit worlds. The temples of Angkor stood as bridges between realms, their spires piercing the veil that separates the living from the ancestors. The naga serpents, ancient beings of immense power who dwelt beneath the rivers and in the mist between worlds, served as the empire's most sacred allies — their wisdom guiding the Guardians, their strength protecting the borders, and their blessings ensuring bountiful harvests.
+    30→    30→
+    31→    31→But the last Guardian, King Jayavarman the Unbroken, grew obsessed with a forbidden teaching: the belief that the Sacred Crown could grant not just harmony, but immortality. He performed a ritual at the heart of Angkor Wat's inner sanctuary, seeking to fuse his spirit with the Crown's divine essence. The ritual succeeded, but not as Jayavarman had envisioned. The sheer spiritual power shattered his mortal mind, splitting his consciousness into a thousand fractured spirits that screamed in unison through the temple halls. The Sacred Crown cracked and shattered into four fragments that hurtled across the empire. The temple bells rang in mourning. The naga fled from the rivers. The monsoons went wild.
+    32→    32→
+    33→    33→This was the Shattering. In a single night, a thousand years of harmony collapsed into ruin.
+    34→    34→
+    35→    35→The survivors called the thing that King Jayavarman had become "the Hollow King" — a spirit of immense power but no humanity, trapped between the living world and the spirit realm, feeding on the land's vital energy. He retreated into the deepest caves beneath Phnom Kulen, attended by corrupted spirit servants — former priests and warriors whose spirits had been twisted by his influence. From his subterranean lair, the Hollow King dreams of completing what the Shattering interrupted: absorbing every fragment of the Sacred Crown and becoming a god of both worlds.
+    36→    36→
+    37→    37→Three generations have passed since the Shattering. Four warlords have risen from the empire's ashes, each wielding a fragment of the Sacred Crown. They fight for territory, resources, and survival — but the Hollow King stirs. His influence creeps upward through the earth, corrupting the land, driving the naga deeper into hiding, and awakening ancient guardian spirits that were sealed since the first Guardian's reign. The warlords can no longer afford to fight only each other. Something must be done about the Hollow King — before the boundary between worlds collapses entirely.`,
+    38→    38→
+    39→    39→  aetheriumLore: `Sacred jade is the crystalline lifeblood of the Khmer Empire, a mineral that exists at the intersection of the mortal and spirit realms. In its raw form, it appears as luminous green crystals veined with gold, warm to the touch and humming with ancestral energy. When properly blessed by temple priests and channeled through ritual, it can amplify spiritual power, heal wounds, strengthen weapons, and sustain the barrier between the living world and the spirit realm.
+    40→    40→
+    41→    41→The empire developed two primary schools of sacred jade application. The first was Temple Forging — using blessed jade crystals as power sources for sacred weapons and armor. The curved jade blades of the Strategists, the storm-spears of the Stormcallers, and the serpent crowns of the Shadow Queens were all forged with jade at their core. The second was Spirit Channeling — the dangerous practice of directly channeling jade energy through a living body. This granted enhanced abilities — foresight, elemental control, shadow-walking, and divine fire — but at the cost of gradual spiritual erosion, culminating in the "hollowing" process that created the Hollow King and his corrupted servants.
+    42→    42→
+    43→    43→After the Shattering, most knowledge of jade blessing was lost. The surviving warlords each recovered fragments of the old empire's spiritual practices and developed their own distinct approaches. King Soryan favors the disciplined ways of Angkor's war temples. Lord Chanreth channels the raw fury of the monsoon storms. Queen Veasna commands the naga's shadow arts. Emperor Kiriath wields the eternal flames of Phnom Kulen.`,
+    44→    44→
+    45→    45→  theHollowKing: `King Jayavarman the Unbroken was once a brilliant but deeply paranoid ruler who believed that death was the only true enemy worth fighting. His obsession with immortality drove him to perform the forbidden ritual at Angkor Wat — a ceremony so dangerous it required the blessing of all seven naga kings and the concentrated spiritual energy of the entire Sacred Crown.
+    46→    46→
+    47→    47→When the ritual went wrong, Jayavarman's consciousness shattered. What remains is not a man, not even a spirit, but something far worse: a void wearing a king's crown. The Hollow King does not speak. He does not scheme in the traditional sense. Instead, he emits a constant spiritual pressure that bends the weak-willed to his service and corrupts the sacred places around him. His mere presence causes sacred jade deposits to destabilize, creating zones where the boundary between worlds grows thin and dangerous.
+    48→    48→
+    49→    49→His corrupted servants — once the empire's greatest priests and warriors — serve as his enforcers. These hollowed spirits wear the ceremonial armor of the old empire and wield jade-cursed weapons that have been absorbing spiritual energy for three generations. They feel no pain, no fear, and no mercy. They are the Hollow King's will made manifest, and they are the reason no warlord has dared to venture into the deep places beneath Phnom Kulen where the Hollow King waits.
+    50→    50→
+    51→    51→But the wait is ending. Temple priests across the empire report that the sacred flames are flickering. The naga grow agitated in the deep rivers. And in the darkest corners of the Khmer Empire, people are beginning to hear a voice — not in their ears, but in the jade beneath their feet — whispering of unity, of peace, of the beautiful silence that comes when all things are made hollow.`,
+    52→    52→};
+    53→    53→
+    54→    54→// ============================================================
+    55→    55→// FACTION BACKSTORIES
+    56→    56→// ============================================================
+    57→    57→
+    58→    58→export const FACTION_STORIES: Record<string, {
+    59→    59→  name: string;
+    60→    60→  leader: string;
+    61→    61→  motto: string;
+    62→    62→  backstory: string;
+    63→    63→  motivation: string;
+    64→    64→  secret: string;
+    65→    65→}> = {
+    66→    66→  knight: {
+    67→    67→    name: "The Angkor War Temple Order",
+    68→    68→    leader: "King Soryan the Iron Strategist",
+    69→    69→    motto: "Wisdom carved in stone outlasts the strongest storm.",
+    70→    70→    backstory: `The Angkor War Temple Order traces its lineage directly to the Khmer Dynasty's Royal Guard — an elite military order that protected the Sacred Crown and the Guardian Kings for nine centuries. When the Shattering tore the empire apart, it was Commander Soryan's grandfather who held the temple gates open long enough for ten thousand civilians to escape Angkor Wat's collapse. He paid for it with his life, crushed beneath falling stone carved with the teachings of a thousand ancestors.
+    71→    71→
+    72→    72→Three generations later, the Soryan family still carries the weight of that sacrifice. King Soryan commands the most disciplined military force on the continent, renowned for their ironclad formations and their mastery of Angkor's ancient war teachings. Soryan himself wears bronze armor carved with runes of wisdom passed down through generations, and carries the curved jade blade — his family's sacred heirloom, representing foresight and discipline. His cavalry rides war elephants sheathed in jade-reinforced armor, and his siege engines hurl jade-tipped bolts that shatter fortress walls with the force of ancestral spirits.
+    73→    73→
+    74→    74→Legends say King Soryan can see ten moves ahead in any battle, guided by the ancestral spirits that whisper through the temple walls. Whether this is truth or battlefield legend, none can deny the results: Soryan has never lost a campaign he personally directed, and his enemies have learned to fear the calm, calculating gaze of a man who already knows how the battle will end.`,
+    75→    75→    motivation: `King Soryan fights to restore order to the Khmer Empire. Born in the shadow of Angkor Wat and trained from youth in the art of war and diplomacy, he believes the empire needs a strong central authority rooted in the wisdom of the ancestors. He is not cruel, but he is rigid — he sees war as a necessary tool for unification, and he will not hesitate to crush those who stand in the way of what he believes is the greater good. His ultimate goal is to reforge the Sacred Crown and place it upon the throne of Angkor, restoring the Guardian Dynasty.`,
+    76→    76→    secret: `The Angkor War Temple Order possesses a fragment of the original Crown-forging ritual, recovered from the ruins of Angkor Wat's inner sanctuary by Soryan's grandfather. Soryan has kept this secret even from his own commanders. He does not intend to repeat Jayavarman's ritual — but he believes its principles could be used to construct a device that could either amplify or suppress sacred jade energy across the continent. If he can build it, he could either weaponize every jade deposit on the map or render the Hollow King powerless. He has not yet decided which.`,
+    77→    77→  },
+    78→    78→
+    79→    79→  mage: {
+    80→    80→    name: "The Monsoon Covenant",
+    81→    81→    leader: "Lord Chanreth the Stormcaller",
+    82→    82→    motto: "The storm does not ask permission to strike.",
+    83→    83→    backstory: `The Monsoon Covenant was born from the empire's most powerful spiritual tradition: the storm temples of the eastern mountains, where priests communed with the monsoon gods and learned to channel the raw fury of the sky. When the Shattering destroyed the sacred balance, the surviving storm priests fled to the high peaks, where they established a new covenant among the lightning-scarred ruins of ancient weather shrines.
+    84→    84→
+    85→    85→Lord Chanreth is the Covenant's most gifted Stormcaller in living memory — literally. He was born during the great monsoon of three generations ago, the same night the Sacred Crown shattered, and the storm gods blessed him at birth with power that no mortal has possessed since the first Guardian. His war cries echo like thunder across battlefields, and his legendary storm-spear channels divine lightning that can split stone and shatter armies.
+    86→    86→
+    87→    87→The Covenant's military might lies in its battle shamans and storm-called warriors. Where King Soryan builds disciplined formations, the Covenant unleashes the fury of the sky itself. Their armies include Lightning Speakers who can call down bolts of divine wrath, Wind Walkers who move at impossible speeds on the storm's breath, and Monsoon Bringers who can summon rain and flood to drown enemy positions.
+    88→    88→
+    89→    89→Villagers for a hundred leagues tell stories of Lord Chanreth — of how he can calm a devastating typhoon with a whisper, or unleash one upon his enemies with a single war cry. The storm-spear he carries, representing divine wrath and untamed power, was forged in the heart of a lightning strike and has never been cooled by water or blood.`,
+    90→    90→    motivation: `Lord Chanreth is driven by a genuine desire to restore the natural balance that the Shattering destroyed. The monsoons have grown wilder and more destructive with each passing year, and Chanreth believes this is because the Sacred Crown's fragments are pulling the sky's energy in four different directions. He views the other warlords as obstacles to restoring harmony, short-sighted fighters who would rather wage territorial wars than address the spiritual imbalance that threatens to tear the sky itself apart.`,
+    91→    91→    secret: `Deep within the Covenant's mountain sanctuaries, Lord Chanreth has been conducting private rituals to commune with the naga kings — the ancient serpent beings who were the Sacred Crown's original blessers. The naga have been silent since the Shattering, retreating to the deepest rivers and refusing all contact with the mortal world. But Chanreth has found a way to reach them through dreams, and the naga have shown him a terrifying vision: the Hollow King is not merely a corrupted human spirit. He is becoming something else entirely — a bridge between worlds that, if completed, will allow the spirit realm to flood into the mortal world, drowning both in chaos. Chanreth has not shared this vision with anyone, fearing it would cause panic.`,
+    92→    92→  },
+    93→    93→
+    94→    94→  rogue: {
+    95→    95→    name: "The Naga Shadow Network",
+    96→    96→    leader: "Queen Veasna of Shadows",
+    97→    97→    motto: "The serpent sees what the eagle cannot.",
+    98→    98→    backstory: `The Naga Shadow Network is not a kingdom, not an army, and not a nation by any traditional definition. It is a web — a vast, sprawling network of spirit-walkers, mist-dancers, temple outcasts, and river traders that spans every settlement on the continent. The Network was born in the chaos immediately following the Shattering, when the old empire's spiritual order collapsed and those who walked between worlds found themselves without guidance or restraint.
+    99→    99→
+   100→   100→Queen Veasna is the Network's supreme leader, a title she earned not through inheritance but through the naga's explicit blessing. Daughter of a temple priestess, she was raised among the naga serpent rituals of the deep rivers, learning arts that no mortal should possess: the ability to walk between the living world and the spirit realm, to command the mist that rises from sacred waters, and to summon the spirits of fallen soldiers to fight again. Tales claim she can step through shadows as easily as a water snake glides through a river.
+   101→   101→
+   102→   102→The Network's military strength is unconventional but formidable. They do not field armies in the traditional sense. Instead, they deploy small teams of highly specialized operatives: Mist Walkers who can pass through walls as if they were water, Shadow Dancers who strike from the fog and vanish before a cry can be raised, and Spirit Speakers who can turn enemy soldiers against their commanders by channeling the voices of their dead ancestors. In open battle, the Network relies on ambush tactics, supernatural stealth, and a network of hidden mist-paths that allow them to appear and disappear at will.
+   103→   103→
+   104→   104→The other warlords despise the Network but cannot afford to ignore it. Every faction has, at some point, hired Network operatives for tasks too delicate for regular soldiers. This web of debts and secrets gives Queen Veasna an outsized influence over the empire's politics — an influence that far exceeds her territorial holdings.`,
+   105→   105→    motivation: `Queen Veasna's true motivation is known only to the naga who advise her. Some say she seeks to rule the Khmer Empire from the spirit realm, creating a mirror government that controls the mortal world through dreams and visions. Others believe she is searching for the fifth fragment — the empty space on the pedestal in Misthollow's ancient ruins that suggests the Crown was never meant to have only four pieces. What is certain is that Veasna is playing a game within a game, and every move on the imperial chessboard serves some purpose that only the naga can see.`,
+   106→   106→    secret: `Queen Veasna has already made contact with the Hollow King — not physically, but through the spirit realm, where her powers are strongest. She did not go seeking him; he came to her in a dream, wearing the face of her dead mother and speaking with the voice of the naga. The Hollow King showed her something: the true purpose of the Sacred Crown. It was never meant to be worn by a mortal ruler. It was a seal — a lock placed by the first Guardian and the seven naga kings to keep something far worse than the Hollow King trapped beneath Phnom Kulen. The Shattering did not create the Hollow King. It released him. And if the Crown is reforged, it will not grant power to its bearer. It will seal the door again — trapping whatever the Hollow King has become on this side, forever. Veasna has not yet decided whether sealing the door is worth the price of never reuniting the Crown.`,
+   107→   107→  },
+   108→   108→
+   109→   109→  paladin: {
+   110→   110→    name: "The Order of the Eternal Flame",
+   111→   111→    leader: "Emperor Kiriath the Eternal Flame",
+   112→   112→    motto: "The fire that purifies also protects.",
+   113→   113→    backstory: `The Order of the Eternal Flame was founded in the immediate aftermath of the Shattering by a group of fire temple priests, warriors, and refugees who believed that the catastrophe was a spiritual judgment upon the empire's arrogance. They saw the Hollow King not as a political problem to be solved but as a spiritual wound to be healed through sacred fire. Their founding charter declared three sacred duties: protect the innocent, purify corrupted jade, and ultimately seal the Hollow King away forever.
+   114→   114→
+   115→   115→Emperor Kiriath is the Order's current Fire Sovereign, a title earned not through birthright but through decades of unwavering devotion and three near-death experiences in the fire temples of Phnom Kulen that should have consumed any ordinary mortal. He carries the Sun-Disk Crown — a sacred circlet forged from purified jade and eternally burning gold that glows with warm divine light. The Sun-Disk is one of the few artifacts known to cause lasting damage to hollowed spirits, and Kiriath has used it to destroy three of the Hollow King's corrupted generals over the course of his career.
+   116→   116→
+   117→   117→The Order's military forces are the most spiritually disciplined on the continent. Their flame warriors undergo years of meditation and ritual purification before they are allowed to wield jade-blessed equipment, ensuring that the spiritual corruption that creates hollowed servants is kept at bay. Their signature units are the Ember Guard — heavy infantry wearing sacred flame armor that generates a shimmering heat shield capable of deflecting both physical and spiritual attacks. The Order also fields Fire Keepers, specialized priests who can channel the eternal flames to heal allies and burn away corruption, and Sun Riders — elite warriors mounted on flame-shrouded war elephants that can charge through any defense.
+   118→   118→
+   119→   119→The Order's rigid spiritual code makes them both respected and frustrated by the other factions. They refuse to use ambushes, poison, or any tactic they consider unholy. They will not attack non-combatants. They will not break sacred truces. This code has cost them dearly in a war where their opponents feel no such constraints. But the Order's unwavering principles have also earned them something no other faction possesses: the genuine trust and devotion of the common people.`,
+   120→   120→    motivation: `Emperor Kiriath is driven by an unshakable conviction that the Hollow King must be sealed, not destroyed. He believes that destroying the Hollow King would release the concentrated spiritual energy within him in an uncontrolled burst that would cause a second Shattering — potentially collapsing the boundary between the living world and the spirit realm entirely. The Order's mission, as Kiriath sees it, is not to win the war but to prevent an apocalypse. Every battle he fights, every territory he claims, is in service of gathering enough purified jade to construct a new sealing device — one that will be strong enough to contain the Hollow King for another thousand years.`,
+   121→   121→    secret: `Emperor Kiriath has already been partially hollowed. During his third encounter with a corrupted general, the creature's jade-cursed weapon pierced his flame armor and injected a sliver of tainted spiritual energy directly into his body. Kiriath has kept this secret from everyone, including his own fire temple priests. He can feel the corruption spreading slowly — a cold numbness that creeps through his veins a little further each year, the eternal flame within him flickering slightly more each time. He estimates he has perhaps five years before the hollowing process claims him completely. This is why he is in such a desperate hurry to complete the sealing device. He is not just trying to save the Khmer Empire. He is racing against his own extinction.`,
+   122→   122→  },
+   123→   123→};
+   124→   124→
+   125→   125→// ============================================================
+   126→   126→// CAMPAIGN CHAPTERS
+   127→   127→// ============================================================
+   128→   128→
+   129→   129→export const CAMPAIGN_CHAPTERS: CampaignChapter[] = [
+   130→   130→  {
+   131→   131→    id: "prologue",
+   132→   132→    chapterNumber: 0,
+   133→   133→    title: "The Shattering",
+   134→   134→    subtitle: "Where the Sacred Crown broke and an empire fell",
+   135→   135→    introNarration: `The night the Sacred Crown shattered, the sky over Angkor Wat wept rain of gold.
+   136→   136→
+   137→   137→You have heard the stories a thousand times — told by grandparents who heard them from their own grandparents, each retelling adding fresh horror. King Jayavarman's forbidden ritual. The Crown cracking like a lotus stem snapped in two. The shockwave that toppled temple spires and boiled the sacred pools. The three days of darkness that followed, during which the naga fled the rivers and no one dared to light a fire for fear of attracting the hollowed spirits that crawled from the broken earth.
+   138→   138→
+   139→   139→Three generations later, the scars of the Shattering still define every aspect of life in the Khmer Empire. The monsoons grow wilder each year, the rivers change course without warning, and the naga — once the empire's most sacred allies — have retreated to the deepest waters, refusing all contact with the mortal world.
+   140→   140→
+   141→   141→And beneath Phnom Kulen, growing stronger with each passing year, the Hollow King waits in his subterranean lair — dreaming his hollow dreams, and slowly, patiently, reaching upward through the stone.
+   142→   142→
+   143→   143→You are one of the four warlords who have claimed fragments of the Sacred Crown. Whether you seek to reforge it, seal the Hollow King, or simply survive, the time for waiting is over. The ancestral spirits stir. The old borders will not hold. And the war for the Khmer Empire begins now.`,
+   144→   144→    victoryNarration: `The first blows have been struck. The land trembles not from the Shattering this time, but from the march of armies and the clash of jade-tempered steel.
+   145→   145→
+   146→   146→Your banner flies over new territory tonight. But the victories feel hollow already — you can feel it in the sacred jade beneath your boots, vibrating with a frequency that makes your teeth ache. The Hollow King's influence is growing. Whatever you are fighting for, you had better fight fast. The monsoons wait for no one.`,
+   147→   147→    defeatNarration: `Defeat. Bitter, swift, and absolute. Your forces are scattered, your banners torn, your claim on this land reduced to a memory. But defeat in the Khmer Empire is rarely final — the shattered empire has a way of offering second chances to those desperate enough to seek the naga's blessing.
+   148→   148→
+   149→   149→Lick your wounds. Rebuild. And remember: the Hollow King does not care which warlord wins this battle. He only cares that they are too busy fighting each other to notice him clawing his way back toward the surface.`,
+   150→   150→    objectives: [
+   151→   151→      "Secure your home territories and establish a foothold",
+   152→   152→      "Deploy reinforcements to strengthen border positions",
+   153→   153→      "Eliminate at least one rival warlord's presence in your region",
+   154→   154→    ],
+   155→   155→  },
+   156→   156→
+   157→   157→  {
+   158→   158→    id: "chapter_1",
+   159→   159→    chapterNumber: 1,
+   160→   160→    title: "The Gathering Storm",
+   161→   161→    subtitle: "Four warlords, four fragments, one shattered empire",
+   162→   162→    introNarration: `The border skirmishes have begun in earnest. What started as probes and raids has escalated into full-scale territorial warfare as each warlord pushes to control the empire's most sacred sites.
+   163→   163→
+   164→   164→King Soryan's war elephants thunder across the Heartlands, their jade-reinforced armor gleaming in the monsoon light. Soryan's strategy is characteristically precise: overwhelming force applied at decisive points, supported by ancestral wisdom that seems to predict enemy movements before they happen. His commanders call it "the jade mind." His enemies call it "fighting a ghost who already knows your plan."
+   165→   165→
+   166→   166→Lord Chanreth's Stormcallers respond with the fury of the sky. Lightning bolts rain upon enemy positions, wind warriors move at impossible speeds, and the very weather seems to obey Chanreth's commands. His battle shamans do not march in formation — they ride the storm itself, striking from above like divine judgment.
+   167→   167→
+   168→   168→Queen Veasna watches from the mist, as always. Her Shadow Network operatives have infiltrated every warlord's supply lines. Spirit-walkers pass through walls to gather intelligence. And when a territory changes hands, it is rarely because of a fair fight — the naga spirits have already prepared the ground with visions, whispers, and strategically placed fear.
+   169→   169→
+   170→   170→Emperor Kiriath's flame warriors march with sacred purpose. He does not seek territory for its own sake — he seeks the sacred fire temples where purified jade can be harvested for his sealing device. His Ember Guard fights with a ferocity that belies their spiritual code, driving hard toward ancient temples where the old empire's purest jade caches might still lie hidden.
+   171→   171→
+   172→   172→The storm is gathering. Choose your battles wisely — the wrong war at the wrong time could leave you vulnerable to far worse than a rival warlord.`,
+   173→   173→    victoryNarration: `The first true campaign of the war is yours. Your rivals reel from your advances, and the common folk of the territories you have liberated whisper your name with a mixture of hope and fear.
+   174→   174→
+   175→   175→But hope is a dangerous thing in the Khmer Empire. It makes people lower their guard. And something is stirring in the deep places beneath Phnom Kulen — something that feeds on hope and turns it to despair.
+   176→   176→
+   177→   177→The naga grow restless. The sacred flames flicker. The next chapter of this war will not be fought against your rivals alone.`,
+   178→   178→    defeatNarration: `Your campaign has stalled. Rival warlords have seized the initiative, and your forces are stretched thin across too many fronts. In the Khmer Empire, weakness invites predators — and there is no predator more dangerous than a rival who smells blood in the water.
+   179→   179→
+   180→   180→But take heart. The war is far from over. Your rivals may have won battles, but they have not won the war. And the naga have not yet chosen a side.`,
+   181→   181→    objectives: [
+   182→   182→      "Control at least 6 territories to establish regional dominance",
+   183→   183→      "Capture an enemy territory to demonstrate military strength",
+   184→   184→      "Defend your territories against rival counterattacks",
+   185→   185→      "Begin gathering sacred jade resources for the battles ahead",
+   186→   186→    ],
+   187→   187→  },
+   188→   188→
+   189→   189→  {
+   190→   190→    id: "chapter_2",
+   191→   191→    chapterNumber: 2,
+   192→   192→    title: "The Hollow King Stirs",
+   193→   193→    subtitle: "The spirits do not sleep — they merely wait",
+   194→   194→    introNarration: `It begins with the temple flames.
+   195→   195→
+   196→   196→They flicker and dim across the empire — not all at once, but one by one, as if something is moving beneath the earth and extinguishing them in sequence. Fire temple priests report that their eternal flames, which have burned without interruption since the first Guardian's reign, are guttering like candles in a wind that has no source.
+   197→   197→
+   198→   198→Then come the hollowed ones.
+   199→   199→
+   200→   200→They emerge from fissures in the earth — not the great corrupted generals, but lesser creatures: hollowed stalkers, humanoid figures with ceremonial armor fused to their spirits, moving with jerky, puppet-like motions. They do not eat, sleep, or speak. They simply attack anything that moves, driven by the Hollow King's spiritual command. Entire villages are found emptied, their populations dragged into the spirit realm. Patrols vanish without a trace. And in the mist-shrouded territories of the Western Reaches, the boundary between worlds grows dangerously thin.
+   201→   201→
+   202→   202→The warlords are forced to divert forces from their war against each other to deal with this new threat. King Soryan dispatches war elephant columns to seal the underground fissures. Lord Chanreth sends storm shamans to study the emerging creatures, hoping to find a spiritual weakness. Queen Veasna's spirit-walkers report that the hollowed ones are not mindless — they are being directed by something, herded toward specific targets with tactical precision. And Emperor Kiriath knows, with a certainty that chills his partially corrupted blood, that this is only the beginning.
+   203→   203→
+   204→   204→The Hollow King is testing the surface dwellers. Probing their defenses. Learning their strengths and weaknesses. And when he is ready, he will send his true servants — the corrupted generals — to finish what the stalkers have started.`,
+   205→   205→    victoryNarration: `You have pushed back the hollowed incursion, but the victory tastes like ash. The creatures you destroyed were merely scouts — disposable spirits in a game whose scope you are only beginning to comprehend.
+   206→   206→
+   207→   207→The sacred jade deposits across the empire are behaving strangely. Crystals that have been stable for decades are suddenly resonating at new frequencies, as if responding to a signal from deep below. Your priests report that the eternal flames are burning hotter than usual, straining against some invisible spiritual pressure.
+   208→   208→
+   209→   209→And in your dreams, you hear it: a voice that is not a voice, a thought that is not your own, whispering from the jade beneath your feet.
+   210→   210→
+   211→   211→Soon.`,
+   212→   212→    defeatNarration: `The hollowed ones have overwhelmed your defenses. Territories you fought hard to claim are now no-man's-lands patrolled by corrupted abominations that feel no pain and know no mercy.
+   213→   213→
+   214→   214→But the war goes on. The other warlords have also suffered — the Hollow King's emergence is an equal-opportunity catastrophe. If anything, this shared threat might create opportunities for unexpected alliances.
+   215→   215→
+   216→   216→Or it might simply give the Hollow King more time to prepare his true assault. The naga stir in the deep rivers, and every territory lost to the hollowed ones feeds the enemy's growing strength.`,
+   217→   217→    objectives: [
+   218→   218→      "Defend your territories against hollowed stalker incursions",
+   219→   219→      "Recapture any territory lost to the Hollow King's forces",
+   220→   220→      "Push into corrupted regions to seal underground fissures",
+   221→   221→      "Maintain your military strength while fighting on two fronts",
+   222→   222→    ],
+   223→   223→  },
+   224→   224→
+   225→   225→  {
+   226→   226→    id: "chapter_3",
+   227→   227→    chapterNumber: 3,
+   228→   228→    title: "Blood and Betrayal",
+   229→   229→    subtitle: "In war, the enemy of my enemy is still my enemy",
+   230→   230→    introNarration: `The Hollow King's emergence has changed everything. The faction war that dominated the Khmer Empire for three generations is no longer the land's primary concern — but it has not stopped. If anything, the desperation born of the Hollow King's awakening has made the remaining warlords more ruthless, not less.
+   231→   231→
+   232→   232→King Soryan proposes an alliance. It is a logical proposition: the Angkor Order provides military discipline, the Monsoon Covenant provides storm power, the Eternal Flame Order provides purified jade, and the Naga Network... well, the Network provides intelligence and deniable operations. Together, the four warlords could mount a genuine campaign against the Hollow King.
+   233→   233→
+   234→   234→But trust is a currency in short supply in the Khmer Empire. Lord Chanreth suspects Soryan wants to use the alliance to absorb the other factions. Queen Veasna knows that any alliance would require the Network to reveal its hidden paths — a vulnerability they cannot afford. Emperor Kiriath wants the alliance, but only if the other warlords agree to submit their jade fragments to his order's purification ritual — a condition no warlord will accept.
+   235→   235→
+   236→   236→And so the betrayals begin.
+   237→   237→
+   238→   238→In the Frostlands, an Angkor convoy carrying jade warheads is ambushed — not by the Hollow King's forces, but by Network operatives who sell the weapons to the highest bidder. In the Heartlands, a Covenant storm shrine is destroyed by an "accidental" war elephant charge from Soryan's garrison stationed nearby. In the Southern Realms, Flame warriors discover that one of their own fire temples has been secretly housing a Covenant black-site where forbidden spirit-channeling experiments are being conducted.
+   239→   239→
+   240→   240→Alliances form and shatter within weeks. The naga watch from the rivers, serpentine eyes gleaming with ancient amusement. And through it all, the Hollow King's influence continues to spread.`,
+   241→   241→    victoryNarration: `You have emerged from the crucible of betrayal stronger than before. The alliances you forged — and broke — have reshaped the political landscape of the Khmer Empire. Rivals who underestimated you now know better.
+   242→   242→
+   243→   243→The Hollow King's influence continues to grow, but you have bought something precious: time. Time to gather sacred jade. Time to strengthen your forces. Time to prepare for the final confrontation that is coming, whether anyone is ready or not.
+   244→   244→
+   245→   245→The naga have begun to surface in the rivers once more. They sense the endgame approaching. The monsoons gather on the horizon.`,
+   246→   246→    defeatNarration: `Betrayal has cost you dearly. Allies turned enemies at the worst possible moment, territories you fought to secure were stolen by diplomatic knife-work, and your forces are demoralized.
+   247→   247→
+   248→   248→But here is the truth that no one in the Khmer Empire wants to admit: honor and trust will not save this empire alone. Only power will. And power is not won by being noble. It is won by being wise, being strong, and being willing to do what others will not.
+   249→   249→
+   250→   250→The Hollow King does not care about your principles. He only cares about his hunger. And every moment you spend licking your wounds is a moment he spends growing stronger beneath the mountain.`,
+   251→   251→    objectives: [
+   252→   252→      "Form or exploit at least one alliance with a rival warlord",
+   253→   253→      "Capture territories rich in sacred jade deposits",
+   254→   254→      "Defend against both rival attacks and hollowed incursions",
+   255→   255→      "Eliminate a rival warlord from the war entirely",
+   256→   256→    ],
+   257→   257→  },
+   258→   258→
+   259→   259→  {
+   260→   260→    id: "chapter_4",
+   261→   261→    chapterNumber: 4,
+   262→   262→    title: "The Siege of the Khmer Empire",
+   263→   263→    subtitle: "The final battle for the soul of a broken world",
+   264→   264→    introNarration: `The temple flames have gone out.
+   265→   265→
+   266→   266→Across the entire Khmer Empire, every sacred fire — from the grand braziers of Angkor Wat to the humble offering flames of village shrines — has been extinguished simultaneously. The fire temple priests are in panic. For the first time in a thousand years, the eternal flames of Phnom Kulen are dark. The darkness is absolute, and in the darkness, the boundary between worlds grows paper-thin.
+   267→   267→
+   268→   268→Emperor Kiriath knows what this means. He has seen it in the ancient texts, in the fragmented records recovered from the first Guardian's personal sanctuary. The Hollow King is not dormant. He is concentrating. Every ounce of spiritual energy in the empire's sacred sites — every jade crystal, every blessed flame, every ancestral spirit — is being drawn toward a single point deep beneath Phnom Kulen, funneling into the Hollow King's chamber like river water swirling down a drain.
+   269→   269→
+   270→   270→He is preparing his final form.
+   271→   271→
+   272→   272→On the surface, the effects are immediate and devastating. Jade-blessed weapons begin failing across the empire — the curved blades lose their edge, the storm-spears no longer channel lightning, the serpent crowns no longer grant their wearers the ability to walk between worlds. Without the jade's blessing, the warlords' most powerful artifacts are useless. King Soryan's ancestral foresight dims. Lord Chanreth's storms become ordinary weather. Queen Veasna's mist-paths close. Emperor Kiriath's flame armor goes cold.
+   273→   273→
+   274→   274→Only the hollowed ones grow stronger. Fed by the concentrated spiritual energy flowing toward their master, they emerge from the earth in vast numbers — no longer scouts and raiders but a full army of corrupted spirits, led by the hollowed generals themselves. Seven of them. Seven towering monstrosities of corrupted jade and twisted ceremonial armor, each one carrying a fragment of the Hollow King's will and a weapon that has been absorbing spiritual energy for three generations.
+   275→   275→
+   276→   276→The final battle for the Khmer Empire will not be won by the warlord with the most territory or the biggest army. It will be won by the one who can fight with nothing but steel, courage, and the strength of their own spirit — the old ways, the ways that existed before the Sacred Crown changed everything.
+   277→   277→
+   278→   278→This is it. The siege of the Khmer Empire. The last war.`,
+   279→   279→    victoryNarration: `Against all odds, you have held. The hollowed army has been driven back, the corrupted generals destroyed or scattered, and the empire — battered, bleeding, but alive — has survived the Hollow King's greatest assault.
+   280→   280→
+   281→   281→But it is not over. The temple flames have returned, burning brighter than ever, and the sacred jade is pulsing with renewed energy beneath the earth. The Hollow King has not been defeated — merely delayed. His final transformation is nearly complete.
+   282→   282→
+   283→   283→The naga have surfaced in every river in the empire. Their serpent eyes hold something the mortal world has not seen in three generations: fear. The final battle awaits. Gather your forces, sharpen your jade, pray to the ancestors, and prepare to descend into the hollow places beneath Phnom Kulen.`,
+   284→   284→    defeatNarration: `The hollowed army has broken through. Your defenses are shattered, your forces scattered, your territories overrun by a tide of corrupted spirits.
+   285→   285→
+   286→   286→But even in defeat, there is a sliver of hope. The naga have surfaced at last, and for the first time since the Shattering, they are speaking to mortals. They offer no help directly — ancient rules forbid it — but they whisper of a path through the spirit realm that leads to the Hollow King's weakness.
+   287→   287→
+   288→   288→The war is not over. Not yet. Not while you still draw breath, and the ancestors still watch from beyond the veil.`,
+   289→   289→    objectives: [
+   290→   290→      "Survive the hollowed army's massive assault",
+   291→   291→      "Destroy or repel at least 2 corrupted generals",
+   292→   292→      "Fight without jade-blessed powers — rely on courage and steel",
+   293→   293→      "Control the majority of the empire when the dust settles",
+   294→   294→    ],
+   295→   295→  },
+   296→   296→
+   297→   297→  {
+   298→   298→    id: "chapter_5",
+   299→   299→    chapterNumber: 5,
+   300→   300→    title: "Into the Hollow",
+   301→   301→    subtitle: "To face a god, you must become something more than mortal",
+   302→   302→    introNarration: `The entrance to the Hollow King's domain lies beneath the fire temples of Phnom Kulen — a gaping wound in the sacred mountain where the eternal flames once burned. Corrupted jade crystals line the descent, pulsing with sickly violet light that illuminates a staircase carved into the living rock, spiraling downward into darkness that seems to breathe.
+   303→   303→
+   304→   304→You are not going alone. Whatever alliances, betrayals, and sacrifices brought you to this moment, you stand at the threshold with whatever forces survive. The naga have opened spirit-paths through the mountain, allowing your army to bypass the worst of the hollowed defenses. In return, they demand only one thing: that the Sacred Crown be reforged, no matter the cost.
+   305→   305→
+   306→   306→The descent takes hours. The staircase opens into vast underground chambers that defy mortal architecture — spaces too large to exist beneath the mountain, illuminated by jade crystals that have grown to the size of temple spires. The air is thick with spiritual energy, so dense that it tastes of lotus and ash. And everywhere, the Hollow King's presence: a psychic pressure that presses against your mind like a physical weight, whispering promises of power, of peace, of the beautiful silence that comes when all things are made hollow.
+   307→   307→
+   308→   308→Your forces encounter resistance as they descend — hollowed stalkers by the thousand, animated temple guardians from the old empire that have been corrupted by three centuries of spiritual poison, and traps of corrupted jade crystal that can slice through armor like paper. But you press on, because the alternative is to turn back and let the Hollow King complete his transformation.
+   309→   309→
+   310→   310→And then, at the bottom of everything, you find him.
+   311→   311→
+   312→   312→King Jayavarman the Unbroken sits on a throne of corrupted jade, his body a ruin of fused spirit and stone, his eyes twin voids of swirling violet energy. Around him, the original Crown-forging altar still stands — not destroyed in the Shattering but merely cracked, operating at a fraction of its original capacity, slowly absorbing every trace of spiritual energy on the continent.
+   313→   313→
+   314→   314→He does not speak. He does not need to. The air itself carries his intent: absolute domination, absolute consumption, the reduction of all things to the beautiful, hollow peace of nothingness.
+   315→   315→
+   316→   316→The final battle begins. Not for territory. Not for jade. Not for pride or revenge or survival.
+   317→   317→
+   318→   318→For everything.`,
+   319→   319→    victoryNarration: `The Hollow King falls.
+   320→   320→
+   321→   321→Not easily. Not cleanly. Not without cost. But he falls. The corrupted jade that sustains him destabilizes, the Crown-forging altar cracks and shatters, and the entity that was once King Jayavarman the Unbroken collapses into a pile of fading crystal light and drifting ash. In his final moment, just before the void consumes him entirely, something flickers in those hollow eyes — not recognition, not regret, but perhaps something like relief. The agony of being a god is over. He is finally, after three centuries, allowed to die.
+   322→   322→
+   323→   323→The spiritual energy that was concentrated in his chamber explodes outward in a shockwave that ripples through the empire's foundations, healing the corrupted jade deposits and purifying the tainted sacred sites. Above ground, the wild monsoons begin to calm. The corrupted mist in the Western Reaches dissipates. The rivers run clear. And in every fire temple across the empire, the eternal flames reignite on their own, burning brighter and warmer than they have in three generations.
+   324→   324→
+   325→   325→You emerge from the depths into a changed world. The naga surface in every river, their serpent forms gleaming with approval. The ancestral spirits walk visibly among the living for the first time since the Shattering. And at Angkor Wat, where the Sacred Crown once sat upon the head of the first Guardian, a new light begins to glow — the light of a reforged Crown, waiting for a worthy bearer.
+   326→   326→
+   327→   327→The war for the Khmer Empire is over. What comes next is up to you.`,
+   328→   328→    defeatNarration: `The Hollow King stands victorious.
+   329→   329→
+   330→   330→Your armies lie broken at the foot of his corrupted jade throne, your weapons shattered, your allies fallen. The Hollow King does not gloat. He does not celebrate. He simply absorbs — drawing the spiritual energy from the fallen, from the air, from the very stones of his chamber, growing larger and more terrible with each passing moment.
+   331→   331→
+   332→   332→But this is not the end. The naga have revealed a truth that changes everything: the Hollow King's transformation is not yet complete. The crack in the Crown-forging altar still leaks spiritual energy, and his power is not yet absolute. There is still time. There is still a chance.
+   333→   333→
+   334→   334→In the depths of defeat, when all hope seems lost, that is when the ancestors reach down from the spirit realm and lift up those who refuse to kneel. Rise again. Gather new allies. Seek the naga's blessing. And return to the hollow places, because the Khmer Empire has no one else to save it.
+   335→   335→
+   336→   336→The King may be hollow, but you are not. And that makes all the difference.`,
+   337→   337→    objectives: [
+   338→   338→      "Descend into the Hollow King's domain beneath Phnom Kulen",
+   339→   339→      "Destroy the Hollow King's defensive layers of corrupted guardians",
+   340→   340→      "Shatter the Crown-forging altar to break his power source",
+   341→   341→      "Defeat the Hollow King in final combat",
+   342→   342→    ],
+   343→   343→  },
+   344→   344→];
+   345→   345→

@@ -1,0 +1,350 @@
+     1→// ============================================================
+     2→// CAMPAIGN DATA — Realm of Aethermoor
+     3→// Dark Fantasy Epic: Magic + Machinery, Political Intrigue
+     4→// ============================================================
+     5→
+     6→export interface CampaignChapter {
+     7→  id: string;
+     8→  chapterNumber: number;
+     9→  title: string;
+    10→  subtitle: string;
+    11→  introNarration: string;
+    12→  victoryNarration: string;
+    13→  defeatNarration: string;
+    14→  objectives: string[];
+    15→  battleSetup?: {
+    16→    territoryAssignments?: Record<string, { ownerId: string; units: string[] }>;
+    17→    bonusReinforcements?: number;
+    18→  };
+    19→}
+    20→
+    21→// ============================================================
+    22→// WORLD LORE
+    23→// ============================================================
+    24→
+    25→export const WORLD_LORE = {
+    26→  title: "The Chronicle of Aethermoor",
+    27→  history: `Before the Shattering, Aethermoor was not a continent of warring factions — it was a single, magnificent empire ruled from the Aetherspire, a tower of crystal and iron that pierced the sky at the continent's heart. The empire's power came from Aetherium: a luminous mineral that hummed with raw arcane energy. In the hands of Aethermoor's artificers, Aetherium bridged the gap between magic and machine, giving birth to wonders that no other realm could match — war constructs that marched without soldiers, siege engines that hurled bolts of concentrated spellfire, and clockwork soldiers that never tired, never faltered, and never asked why they fought.
+    28→
+    29→The empire endured for nine centuries under the Aetheric Dynasty, each ruler more obsessed with pushing the boundaries of Aetherium technology than the last. But power corrupts, and absolute power corrupts absolutely. The last emperor, Aldric the Undying, sought what no ruler before him had dared: immortality through Aetherium saturation. He ordered his artificers to construct the Hollowing Engine — a colossal machine designed to drain every vein of Aetherium from the continent's bedrock and channel it into a single, living vessel: himself.
+    30→
+    31→The ritual succeeded, but not as Aldric had envisioned. The sheer volume of raw Aetherium shattered his mortal mind, splitting it into a thousand fractured consciousnesses that screamed in unison. His body became a hollow shell — an immortal vessel of immense power but no humanity. The Aetherspire cracked and collapsed. The Aetherium veins beneath the earth ruptured, sending shockwaves that tore the continent apart. Mountain ranges rose where plains had been. Rivers reversed course. The western forests grew wild and dark, choked with corrupted Aetherium mist. The northern lands froze in an eternal winter born of disrupted arcane currents.
+    32→
+    33→This was the Shattering. In a single night, a thousand years of civilization collapsed into ruin and blood.
+    34→
+    35→The survivors called the thing that Emperor Aldric had become "the Hollow King." He retreated into the deepest caverns beneath the continent, attended by his Hollowed Generals — former commanders who had undergone partial Aetherium saturation and been reduced to loyal, mindless enforcers. From his subterranean throne, the Hollow King dreams of completing what the Shattering interrupted: absorbing every last fragment of Aetherium and becoming a god.
+    36→
+    37→Three generations have passed since the Shattering. The four great factions that rose from the empire's ashes have fought each other for territory, resources, and survival. But now the Hollow King stirs. His influence creeps upward through the earth, corrupting the land, poisoning Aetherium deposits, and awakening ancient war machines buried since the Shattering. The factions can no longer afford to fight only each other. Something must be done about the Hollow King — before there is nothing left to save.`,
+    38→
+    39→  aetheriumLore: `Aetherium is the crystalline lifeblood of Aethermoor, a mineral that exists at the intersection of matter and magic. In its raw form, it appears as jagged, luminous crystals ranging from pale blue to deep violet. When refined and properly channeled, it can power mechanical constructs, amplify arcane spells, and even sustain life beyond its natural limits.
+    40→
+    41→The empire developed two primary schools of Aetherium application. The first was Arcane Mechanization — using Aetherium crystals as power cores for mechanical devices. War constructs, siege engines, and clockwork soldiers all fell under this discipline. The second was Flesh Aetherization — the dangerous practice of infusing living tissue with refined Aetherium. This granted enhanced strength, reflexes, and in extreme cases, near-immortality — but at the cost of gradual loss of humanity, culminating in the "hollowing" process that created the Hollow King and his generals.
+    42→
+    43→After the Shattering, most knowledge of Aetherium refinement was lost. The surviving factions each recovered fragments of the old empire's technology and developed their own distinct approaches. The Iron Legion favors brute-force mechanization. The Arcane Conclave focuses on pure arcane channeling. The Underworld Syndicate developed stealth applications and poison mechanisms. The Order of the Radiant Dawn pursues a hybrid path, using "blessed" Aetherium that they claim has been purified of its corrupting influence.`,
+    44→
+    45→  theHollowKing: `Emperor Aldric the Undying was once a brilliant but deeply paranoid ruler who believed that death was the only true enemy worth fighting. His obsession with immortality drove him to commission the Hollowing Engine — a machine so vast it required the labor of ten thousand artificers and the Aetherium output of an entire province to construct.
+    46→
+    47→When the ritual went wrong, Aldric's consciousness shattered. What remains is not a man, not even a monster, but something far worse: a void wearing an emperor's face. The Hollow King does not speak. He does not scheme in the traditional sense. Instead, he emits a constant psychic pressure that bends the weak-willed to his service and corrupts the land around him. His mere presence causes Aetherium deposits to destabilize, creating zones of wild magic where reality itself becomes uncertain.
+    48→
+    49→His Hollowed Generals — once the empire's greatest military commanders — serve as his enforcers. These towering figures wear the rusted armor of the old empire and wield Aetherium-powered weapons that have been running continuously for three generations without refueling. They feel no pain, no fear, and no mercy. They are the Hollow King's will made manifest, and they are the reason no faction has dared to venture into the deep places where the Hollow King sleeps.
+    50→
+    51→But the sleep is ending. Seismographs in the Arcane Conclave's observatories have detected increasing tremors from beneath the continent. Aetherium deposits that were stable for decades are suddenly going critical. And in the darkest corners of Aethermoor, people are beginning to hear a voice — not in their ears, but in the Aetherium itself — whispering of unity, of perfection, of the peace that comes when all things are made hollow.`,
+    52→};
+    53→
+    54→// ============================================================
+    55→// FACTION BACKSTORIES
+    56→// ============================================================
+    57→
+    58→export const FACTION_STORIES: Record<string, {
+    59→  name: string;
+    60→  leader: string;
+    61→  motto: string;
+    62→  backstory: string;
+    63→  motivation: string;
+    64→  secret: string;
+    65→}> = {
+    66→  knight: {
+    67→    name: "The Iron Legion",
+    68→    leader: "Lord Kaelen Ashford",
+    69→    motto: "Steel endures where flesh fails.",
+    70→    backstory: `The Iron Legion traces its lineage directly to the Aetheric Dynasty's Royal Guard — an elite military order that protected the emperor and his family for nine centuries. When the Shattering tore the empire apart, it was Commander Aldric Ashford, Lord Kaelen's grandfather, who held the evacuation corridors open long enough for ten thousand civilians to escape the Aetherspire's collapse. He paid for it with his life, crushed beneath falling crystal.
+    71→
+    72→Three generations later, the Ashford family still carries the weight of that sacrifice. The Iron Legion they command is the most disciplined military force on the continent, renowned for their ironclad formations and their mastery of Aetherium-powered war machinery. Lord Kaelen Ashford himself wears a suit of Mechanized Aetheric Plate — a walking fortress of enchanted steel that amplifies his strength tenfold and can withstand direct hits from siege engines. His cavalry rides steam-powered warhorses with diamond-hard hooves, and his siege engines hurl Aetherium-tipped bolts that explode on impact, showering the battlefield with razor-sharp crystal shrapnel.
+    73→
+    74→But the Iron Legion's strength is also its curse. The old royal guard oath demands absolute loyalty to the throne — but there is no throne. There is only a hollow king in the deep dark. Some within the Legion whisper that the Ashford family's true duty is to the Hollow King himself, that Commander Aldric's dying wish was not to save the people but to preserve the dynasty's connection to its immortal emperor. Lord Kaelen violently rejects these rumors, but they persist, poisoning trust between the Legion and the other factions.`,
+    75→    motivation: `Lord Kaelen fights to restore order to Aethermoor. He believes the continent needs a strong central authority to resist the Hollow King, and he is convinced that authority should be his. He is not cruel, but he is rigid — he sees war as a necessary tool for unification, and he will not hesitate to crush those who stand in the way of what he believes is the greater good.`,
+    76→    secret: `The Iron Legion possesses a fragment of the original Hollowing Engine's schematics, recovered from the ruins of the Aetherspire by Kaelen's grandfather. Kaelen has kept this secret even from his own officers. He does not intend to rebuild the engine — but he believes its principles could be used to construct a device that could either amplify or suppress Aetherium energy across the continent. If he can build it, he could either weaponize every Aetherium deposit on the map or render the Hollow King powerless. He has not yet decided which.`,
+    77→  },
+    78→
+    79→  mage: {
+    80→    name: "The Arcane Conclave",
+    81→    leader: "Lady Seraphine Elara",
+    82→    motto: "Knowledge is the only weapon that never dulls.",
+    83→    backstory: `The Arcane Conclave was born from the empire's greatest institution of learning: the Aetherspire Academy, once the foremost center of magical research in the known world. When the Shattering destroyed the Aetherspire, the Academy's surviving scholars fled to the southern reaches of the continent, where they established a new seat of learning among the sun-baked ruins of an older, forgotten civilization.
+    84→
+    85→Lady Seraphine Elara is the Conclave's youngest ever Archon, elevated to the position after her predecessor was consumed by a rogue Aetherium experiment. She is a prodigy who mastered three schools of arcane theory before her twentieth birthday and has since developed several original spells, including the infamous "Aetheric Resonance" technique that allows mages to harmonize their casting, creating spell effects far more powerful than any single caster could achieve alone.
+    86→
+    87→The Conclave's military might lies in its battlemages and arcane constructs. Where the Iron Legion builds machines and powers them with Aetherium, the Conclave directly channels Aetherium through living mages — a far more efficient but far more dangerous approach. Their armies include Arcane Cannons (mages who specialize in projecting concentrated bolts of destructive energy), Warden Golems (Aetherium-powered constructs that serve as mobile shields and melee fighters), and Stormcallers who can manipulate weather patterns to devastating effect on the battlefield.
+    88→
+    89→But the Conclave's pursuit of knowledge has made them both powerful and feared. Their experiments push the boundaries of what is safe, and more than one settlement has been leveled by an arcane accident. Lady Elara's predecessor was not the first Archon to die by Aetherium — merely the most recent. The other factions view the Conclave with a mixture of respect and deep suspicion, knowing that the mages' thirst for understanding may one day lead them to repeat the very catastrophe that created the Hollow King.`,
+    90→    motivation: `Lady Elara is driven by a genuine desire to understand Aetherium and find a way to neutralize the Hollow King without destroying the continent. She believes the answer lies in knowledge — specifically, in recovering lost research from the empire's golden age. She views the other factions as obstacles to this goal, short-sighted warriors who would rather fight over territory than invest in the research that could save them all.`,
+    91→    secret: `Deep within the Conclave's vaults, Lady Elara has been conducting private research into Flesh Aetherization — the forbidden practice that created the Hollow King. She is not trying to replicate it. Instead, she is attempting to develop a reverse process: a way to draw Aetherium out of a living subject and return them to normal. If she succeeds, she believes she could potentially "cure" the Hollow King — restoring Emperor Aldric's humanity and ending the threat without violence. But the research requires living test subjects, and some of her experiments have not gone well. The basement of the Conclave's academy holds things that would horrify even the Hollow King's generals.`,
+    92→  },
+    93→
+    94→  rogue: {
+    95→    name: "The Underworld Syndicate",
+    96→    leader: "Shadow Vex",
+    97→    motto: "Every crown is held by blood. We simply collect the debt.",
+    98→    backstory: `The Underworld Syndicate is not a kingdom, not an army, and not a nation by any traditional definition. It is a network — a vast, sprawling web of smugglers, assassins, informants, thieves, and mercenaries that spans every settlement on the continent. The Syndicate was born in the chaos immediately following the Shattering, when the old empire's criminal underworld suddenly found itself without any law enforcement to fear. In the power vacuum, the strongest and most cunning criminal organizations absorbed the weaker ones, until a single syndicate emerged supreme.
+    99→
+   100→Shadow Vex is not the syndicate's founder, but they are its most effective leader. No one knows Shadow Vex's true name, gender, or even species — they wear a featureless mask of blackened Aetherium and speak through a voice-modulation device that makes them sound like overlapping whispers. What is known is that Shadow Vex rose to power by assassinating the previous syndicate boss and seventeen of his top lieutenants in a single night, using poisoned Aetherium needles that killed silently and left no trace.
+   101→
+   102→The Syndicate's military strength is unconventional but formidable. They do not field armies in the traditional sense. Instead, they deploy small teams of highly specialized operatives: Ghostblade Assassins who can kill a target and vanish before the body hits the ground, Saboteurs who disable enemy war machines with Aetherium-disrupting charges, and Spymasters who can turn an enemy garrison against itself through blackmail, bribery, and strategically placed poison. In open battle, the Syndicate relies on ambush tactics, hit-and-run strikes, and a network of hidden tunnels and safe houses that allow them to appear and disappear at will.
+   103→
+   104→The other factions despise the Syndicate but cannot afford to ignore it. Every faction has, at some point, hired Syndicate operatives for tasks too dirty or too delicate for regular soldiers. This web of debts and blackmail gives Shadow Vex an outsized influence over continental politics — an influence that is far greater than their territorial holdings would suggest.`,
+   105→    motivation: `Shadow Vex's true motivation is unknown even to their closest lieutenants. Some say Vex wants to rule Aethermoor from the shadows, creating a puppet government controlled by the Syndicate. Others believe Vex is searching for something specific — a particular artifact, a hidden Aetherium deposit, or perhaps information about their own mysterious past. What is certain is that Vex is playing a long game, and every move on the continental chessboard serves some purpose that only they can see.`,
+   106→    secret: `Shadow Vex was once a child of the Aetherspire Academy — a young student who showed extraordinary aptitude for Aetherium manipulation. During the Shattering, this child was caught in the blast wave and exposed to raw, uncontrolled Aetherium. The exposure should have killed them. Instead, it transformed them — granting them the ability to absorb and redirect Aetherium energy through their body, but at a terrible cost. Their physical form became unstable, shifting between solid and shadow. They cannot remove their mask because there is no face beneath it — only a swirling vortex of dark Aetherium. Shadow Vex is not merely the Syndicate's leader; they are a living Aetherium anomaly, and they are terrified that if the Hollow King absorbs all the continent's Aetherium, Vex will cease to exist entirely.`,
+   107→  },
+   108→
+   109→  paladin: {
+   110→    name: "The Order of the Radiant Dawn",
+   111→    leader: "Sir Gideon the Unbroken",
+   112→    motto: "The light does not ask permission to shine.",
+   113→    backstory: `The Order of the Radiant Dawn was founded in the immediate aftermath of the Shattering by a group of soldiers, priests, and refugees who believed that the catastrophe was divine punishment for the empire's hubris. They saw the Hollow King not as a political problem to be solved but as a spiritual wound to be healed. Their founding charter declared three sacred duties: protect the innocent, purify corrupted Aetherium, and ultimately seal the Hollow King away forever.
+   114→
+   115→Sir Gideon is the Order's current Grandmaster, a title he earned not through birthright but through decades of unwavering service and three near-death experiences that should have killed any ordinary warrior. He carries the Dawnbrand — a massive two-handed sword forged from purified Aetherium crystal that glows with warm golden light. The Dawnbrand is one of the few weapons known to cause lasting damage to Hollowed beings, and Gideon has used it to destroy three of the Hollow King's lesser generals over the course of his career.
+   116→
+   117→The Order's military forces are the most spiritually disciplined on the continent. Their Paladins undergo years of meditation and ritual purification before they are allowed to wield Aetherium-powered equipment, ensuring that the mineral's corrupting influence is kept in check. Their signature units are the Dawn Guard — heavy infantry wearing Aegis Suits, powered armor that generates a shimmering energy shield capable of deflecting both physical and magical attacks. The Order also fields Sanctifiers, specialized priests who can channel purified Aetherium to heal allies and weaken enemies, and Champions — elite warriors mounted on Aetherium-powered war steeds that can gallop across any terrain, even water, for short distances.
+   118→
+   119→The Order's rigid code of honor makes them both respected and frustrated by the other factions. They refuse to use ambushes, poison, or any tactic they consider dishonorable. They will not attack non-combatants. They will not break truces. This chivalry has cost them dearly in a war where their opponents feel no such constraints. But the Order's unwavering principles have also earned them something no other faction possesses: the genuine trust and loyalty of the common people.`,
+   120→    motivation: `Sir Gideon is driven by an unshakable conviction that the Hollow King must be sealed, not killed. He believes that killing the Hollow King would release the concentrated Aetherium within him in an uncontrolled burst that would cause a second Shattering — potentially destroying the continent entirely. The Order's mission, as Gideon sees it, is not to win the war but to prevent an apocalypse. Every battle he fights, every territory he claims, is in service of gathering enough purified Aetherium to construct a new sealing device — one that will be strong enough to contain the Hollow King for another thousand years.`,
+   121→    secret: `Sir Gideon has already been partially hollowed. During his third encounter with a Hollowed General, the creature's Aetherium-corrupted weapon pierced his Aegis Suit and injected a sliver of tainted Aetherium directly into his bloodstream. Gideon has kept this secret from everyone, including his own order's priests. He can feel the corruption spreading slowly through his body — a cold numbness that creeps up his spine a little further each year. He estimates he has perhaps five years before the hollowing process claims him completely. This is why he is in such a desperate hurry to complete the sealing device. He is not just trying to save Aethermoor. He is racing against his own extinction.`,
+   122→  },
+   123→};
+   124→
+   125→// ============================================================
+   126→// CAMPAIGN CHAPTERS
+   127→// ============================================================
+   128→
+   129→export const CAMPAIGN_CHAPTERS: CampaignChapter[] = [
+   130→  {
+   131→    id: "prologue",
+   132→    chapterNumber: 0,
+   133→    title: "The Shattering",
+   134→    subtitle: "Where gods fell and empires crumbled to dust",
+   135→    introNarration: `The night the Aetherspire fell, the sky over Aethermoor burned violet.
+   136→
+   137→You have heard the stories a thousand times — told by grandparents who heard them from their own grandparents, each retelling adding fresh horror. The emperor's mad ritual. The crystal tower cracking like a glass egg. The shockwave that flattened forests and boiled rivers. The three days of darkness that followed, during which no one dared to light a fire for fear of attracting the things that crawled from the broken earth.
+   138→
+   139→Three generations later, the scars of the Shattering still define every aspect of life on the continent. The Frostlands in the north are locked in unnatural winter, kept frozen by disrupted arcane currents that show no sign of weakening. The Western Reaches are choked with corrupted Aetherium mist that drives wanderers mad. The Eastern Shores are littered with the rusted hulks of war machines that fought and died in the cataclysm's final hours.
+   140→
+   141→And beneath it all, growing stronger with each passing year, the Hollow King waits in his subterranean kingdom — dreaming his hollow dreams, and slowly, patiently, reaching upward through the stone.
+   142→
+   143→You are one of the four warlords who have claimed pieces of this broken world. Whether you seek to save it, rule it, or simply survive it, the time for waiting is over. The Hollow King stirs. The old borders will not hold. And the war for Aethermoor begins now.`,
+   144→    victoryNarration: `The first blows have been struck. The continent trembles not from the Shattering this time, but from the march of armies and the clash of steel and spellfire.
+   145→
+   146→Your banner flies over new territory tonight. But the victories feel hollow already — you can feel it in the Aetherium beneath your boots, vibrating with a frequency that makes your teeth ache. The Hollow King's influence is growing. Whatever you are fighting for, you had better fight fast. Time is a luxury Aethermoor can no longer afford.`,
+   147→    defeatNarration: `Defeat. Bitter, swift, and absolute. Your forces are scattered, your banners torn, your claim on this land reduced to a memory. But defeat in Aethermoor is rarely final — the shattered continent has a way of offering second chances to those desperate enough to take them.
+   148→
+   149→Lick your wounds. Rebuild. And remember: the Hollow King does not care which warlord wins this battle. He only cares that they are too busy fighting each other to notice him clawing his way back to the surface.`,
+   150→    objectives: [
+   151→      "Secure your home territories and establish a foothold",
+   152→      "Deploy reinforcements to strengthen border positions",
+   153→      "Eliminate at least one rival faction's presence in your region",
+   154→    ],
+   155→  },
+   156→
+   157→  {
+   158→    id: "chapter_1",
+   159→    chapterNumber: 1,
+   160→    title: "The Gathering Storm",
+   161→    subtitle: "Four warlords, four visions, one shattered continent",
+   162→    introNarration: `The border skirmishes have begun in earnest. What started as probes and raids has escalated into full-scale territorial warfare as each faction pushes to control the continent's most valuable Aetherium deposits.
+   163→
+   164→The Iron Legion's war machines thunder across the Heartlands, their steam-driven cavalry leaving furrows of torn earth in their wake. Lord Ashford's strategy is characteristically blunt: overwhelming force applied at decisive points, supported by Aetherium-tipped siege bolts that can shatter fortress walls in a single volley. His commanders call it "the anvil and the hammer." His enemies call it "being crushed between a rock and a hard place."
+   165→
+   166→The Arcane Conclave responds with precision and terror. Lady Elara's battlemages do not march in formation — they teleport. Strike teams materialize behind enemy lines, unleash devastating spells, and vanish before a response can be organized. Meanwhile, the Conclave's Warden Golems hold the front lines, tireless constructs of enchanted stone and crystal that absorb punishment that would shatter any living soldier.
+   167→
+   168→The Underworld Syndicate watches from the shadows, as always. Shadow Vex's operatives have infiltrated every faction's supply lines. Poisoned rations disable garrisons. Sabotaged war machines explode at critical moments. And when a territory changes hands, it is rarely because of a fair fight — the Syndicate has already prepared the ground with bribes, blackmail, and strategically placed informants.
+   169→
+   170→The Order of the Radiant Dawn marches with purpose. Sir Gideon does not seek territory for its own sake — he seeks specific locations where purified Aetherium can be harvested for his sealing device. His paladins fight with a ferocity that belies their chivalric code, driving hard toward ancient ruins and forgotten temples where the old empire's purified Aetherium caches might still lie hidden.
+   171→
+   172→The storm is gathering. Choose your battles wisely — the wrong war at the wrong time could leave you vulnerable to far worse than a rival warlord.`,
+   173→    victoryNarration: `The first true campaign of the war is yours. Your rivals reel from your advances, and the common folk of the territories you have liberated whisper your name with a mixture of hope and fear.
+   174→
+   175→But hope is a dangerous thing in Aethermoor. It makes people lower their guard. And something is stirring in the deep places — something that feeds on hope and turns it to despair.
+   176→
+   177→The tremors are getting stronger. The Aetherium is singing a different song now. The next chapter of this war will not be fought against your rivals. It will be fought against something far older and far worse.`,
+   178→    defeatNarration: `Your campaign has stalled. Rival warlords have seized the initiative, and your forces are stretched thin across too many fronts. In Aethermoor, weakness invites predators — and there is no predator more dangerous than a rival who smells blood.
+   179→
+   180→But take heart. The war is far from over. Your rivals may have won battles, but they have not won the war. And they are about to face a threat that makes territorial disputes look like playground squabbles.`,
+   181→    objectives: [
+   182→      "Control at least 6 territories to establish regional dominance",
+   183→      "Capture an enemy territory to demonstrate military strength",
+   184→      "Defend your territories against rival counterattacks",
+   185→      "Begin stockpiling Aetherium resources for the battles ahead",
+   186→    ],
+   187→  },
+   188→
+   189→  {
+   190→    id: "chapter_2",
+   191→    chapterNumber: 2,
+   192→    title: "The Hollow King Awakens",
+   193→    subtitle: "Death does not sleep — it merely waits",
+   194→    introNarration: `It begins with the tremors.
+   195→
+   196→They are subtle at first — a vibration in the ground that most people dismiss as mining activity or natural seismic shifts. But the Arcane Conclave's seismographs tell a different story. The tremors are not random. They are rhythmic, deliberate, and originating from a single point deep beneath the continent's center. Something enormous is moving down there. Something that has been still for three generations is finally waking up.
+   197→
+   198→Then come the Hollowed Ones.
+   199→
+   200→They emerge from fissures in the earth — not the great Hollowed Generals, but lesser creatures: Hollowed Stalkers, humanoid figures with rusted Aetherium armor fused to their flesh, moving with jerky, puppet-like motions. They do not eat, sleep, or speak. They simply attack anything that moves, driven by the Hollow King's psychic command. Entire villages are found emptied, their populations dragged underground. Patrols vanish without a trace. And in the corrupted territories of the Western Reaches, something far worse is happening — the land itself is changing, Aetherium crystals erupting from the soil like malevolent flowers, pulsing with a sickly violet light.
+   201→
+   202→The factions are forced to divert forces from their war against each other to deal with this new threat. Lord Ashford dispatches mechanized strike teams to seal the underground fissures. Lady Elara sends battlemages to study the emerging creatures, hoping to find a weakness. Shadow Vex's informants report that the Hollowed Ones are not mindless — they are being directed by something, herded toward specific targets with tactical precision that suggests a guiding intelligence. And Sir Gideon knows, with a certainty that chills him to his corrupted bones, that this is only the beginning.
+   203→
+   204→The Hollow King is testing the surface dwellers. Probing their defenses. Learning their strengths and weaknesses. And when he is ready, he will send his true servants — the Hollowed Generals — to finish what the Stalkers have started.`,
+   205→    victoryNarration: `You have pushed back the Hollowed incursion, but the victory tastes like ash. The creatures you destroyed were merely scouts — disposable pawns in a game whose scope you are only beginning to comprehend.
+   206→
+   207→The Aetherium deposits across the continent are behaving strangely. Crystals that have been stable for decades are suddenly resonating at new frequencies, as if responding to a signal from deep below. Your artificers report that their machines are running hotter than usual, the Aetherium cores straining against some invisible pressure.
+   208→
+   209→And in your dreams, you hear it: a voice that is not a voice, a thought that is not your own, whispering from the crystal beneath your feet.
+   210→
+   211→Soon.`,
+   212→    defeatNarration: `The Hollowed Ones have overwhelmed your defenses. Territories you fought hard to claim are now no-man's-lands patrolled by rusted abominations that feel no pain and know no mercy.
+   213→
+   214→But the war goes on. The other factions have also suffered — the Hollow King's emergence is an equal-opportunity catastrophe. If anything, this shared threat might create opportunities for unexpected alliances.
+   215→
+   216→Or it might simply give the Hollow King more time to prepare his true assault. The clock is ticking, and every territory lost to the hollow ones is a territory that feeds the enemy's growing strength.`,
+   217→    objectives: [
+   218→      "Defend your territories against Hollowed Stalker incursions",
+   219→      "Recapture any territory lost to the Hollow King's forces",
+   220→      "Push into corrupted regions to seal underground fissures",
+   221→      "Maintain your military strength while fighting on two fronts",
+   222→    ],
+   223→  },
+   224→
+   225→  {
+   226→    id: "chapter_3",
+   227→    chapterNumber: 3,
+   228→    title: "Blood and Betrayal",
+   229→    subtitle: "In war, the enemy of my enemy is still my enemy",
+   230→    introNarration: `The Hollow King's emergence has changed everything. The faction war that dominated Aethermoor for three generations is no longer the continent's primary concern — but it has not stopped. If anything, the desperation born of the Hollow King's awakening has made the remaining factions more ruthless, not less.
+   231→
+   232→Lord Ashford proposes an alliance. It is a logical proposition: the Iron Legion provides military might, the Arcane Conclave provides magical firepower, the Order provides purified Aetherium technology, and the Syndicate... well, the Syndicate provides intelligence and deniable operations. Together, the four factions could mount a genuine campaign against the Hollow King.
+   233→
+   234→But trust is a currency in short supply on Aethermoor. Lady Elara suspects Ashford wants to use the alliance to absorb the other factions once the Hollow King is dealt with. Shadow Vex knows that any alliance would require the Syndicate to reveal its networks — a vulnerability they cannot afford. Sir Gideon wants the alliance, but only if the other factions agree to submit their Aetherium stockpiles to his order's purification process — a condition that no faction will accept.
+   235→
+   236→And so the betrayals begin.
+   237→
+   238→In the Frostlands, an Iron Legion convoy carrying Aetherium warheads is ambushed — not by the Hollow King's forces, but by Syndicate operatives who sell the weapons to the highest bidder. In the Heartlands, a Conclave research outpost is destroyed by an "accidental" siege engine misfire from a Legion garrison stationed nearby. In the Southern Realms, Order paladins discover that one of their own sanctuaries has been secretly housing a Conclave black-site where forbidden Flesh Aetherization experiments are being conducted on captured prisoners.
+   239→
+   240→Alliances form and shatter within weeks. Promises are made and broken before the ink dries. And through it all, the Hollow King's influence continues to spread, turning the faction war into exactly the distraction he needs.
+   241→
+   242→You must navigate this web of betrayal and opportunity. Form alliances when they serve you. Break them when they don't. And never, ever forget that the true enemy is not the warlord across the border — it is the thing beneath your feet that is slowly waking up.`,
+   243→    victoryNarration: `You have emerged from the crucible of betrayal stronger than before. The alliances you forged — and broke — have reshaped the political landscape of Aethermoor. Rivals who underestimated you now know better. Those who trusted you may come to regret it. But regret is a luxury for the living, and in Aethermoor, the living are becoming scarce.
+   244→
+   245→The Hollow King's influence continues to grow, but you have bought something precious: time. Time to gather resources. Time to strengthen your forces. Time to prepare for the final confrontation that is coming, whether anyone is ready or not.
+   246→
+   247→The endgame approaches. The continent holds its breath.`,
+   248→    defeatNarration: `Betrayal has cost you dearly. Allies turned enemies at the worst possible moment, territories you fought to secure were stolen by diplomatic knife-work, and your forces are demoralized by the realization that the war they are fighting has no honor and no rules.
+   249→
+   250→But here is the truth that no one in Aethermoor wants to admit: honor and rules will not save this continent. Only power will. And power is not won by being noble. It is won by being smart, being ruthless, and being willing to do what others will not.
+   251→
+   252→The Hollow King does not care about your morals. He only cares about his hunger. And every moment you spend licking your wounds is a moment he spends growing stronger.`,
+   253→    objectives: [
+   254→      "Form or exploit at least one alliance with a rival faction",
+   255→      "Capture territories rich in Aetherium deposits",
+   256→      "Defend against both rival attacks and Hollowed incursions",
+   257→      "Eliminate a rival faction from the war entirely",
+   258→    ],
+   259→  },
+   260→
+   261→  {
+   262→    id: "chapter_4",
+   263→    chapterNumber: 4,
+   264→    title: "The Siege of Aethermoor",
+   265→    subtitle: "The final battle for the soul of a broken world",
+   266→    introNarration: `The tremors have stopped.
+   267→
+   268→For three weeks, the ground beneath Aethermoor has been utterly still — no vibrations, no tremors, no underground rumbles. The seismographs in the Arcane Conclave's observatories show a flat line, as if the earth itself is holding its breath.
+   269→
+   270→Lady Elara knows what this means. She has seen it in her research, in the fragmented records recovered from the Aetherspire's ruins. The Hollow King is not dormant. He is concentrating. Every ounce of Aetherium energy in the continent's bedrock — every crystal, every vein, every trace molecule — is being drawn toward a single point deep underground, funneling into the Hollow King's chamber like water swirling down a drain.
+   271→
+   272→He is preparing his final form.
+   273→
+   274→On the surface, the effects are immediate and devastating. Aetherium-powered machines begin failing across the continent — war constructs stall, siege engines go cold, Aegis Suits flicker and die. Without Aetherium, the factions' most powerful weapons are useless. The Iron Legion's mechanized cavalry reverts to horseback. The Conclave's golems crumble into inert rubble. The Order's energy shields fail. Even the Syndicate's stealth technology becomes unreliable.
+   275→
+   276→Only the Hollowed Ones grow stronger. Fed by the concentrated Aetherium flowing toward their master, they emerge from the earth in vast numbers — no longer scouts and raiders but a full army, led by the Hollowed Generals themselves. Seven of them. Seven towering monstrosities of rusted iron and corrupted crystal, each one carrying a fragment of the Hollow King's will and a weapon that has been absorbing Aetherium for three generations.
+   277→
+   278→The final battle for Aethermoor will not be won by the faction with the most territory or the biggest army. It will be won by the warlord who can adapt fastest to a world suddenly stripped of its greatest power source. Steel, spellcraft, cunning, and faith — the old ways, the ways that existed before Aetherium changed everything — will determine who survives to see the dawn.
+   279→
+   280→This is it. The siege of Aethermoor. The last war. Win, and you will have the chance to face the Hollow King on his own ground. Lose, and there will be no one left to remember that Aethermoor ever existed.`,
+   281→    victoryNarration: `Against all odds, you have held. The Hollowed army has been driven back, the Generals destroyed or scattered, and the continent — battered, bleeding, but alive — has survived the Hollow King's greatest assault.
+   282→
+   283→But it is not over. The tremors have returned, stronger than ever, and the Aetherium is flowing underground with renewed fury. The Hollow King has not been defeated — merely delayed. His final transformation is nearly complete, and when it finishes, he will emerge from the depths not as the broken emperor of a fallen empire, but as something entirely new. Something that has never existed before.
+   284→
+   285→Something godlike.
+   286→
+   287→The final battle awaits. Gather your forces, sharpen your steel, pray to whatever gods still listen, and prepare to descend into the hollow places of the earth. The Hollow King awaits.`,
+   288→    defeatNarration: `The Hollowed army has broken through. Your defenses are shattered, your forces scattered, your territories overrun by a tide of rust and corruption that shows no mercy and accepts no surrender.
+   289→
+   290→But even in defeat, there is a sliver of hope. The Hollowed Ones are not invincible. They were driven back — briefly — by coordinated assaults from all four factions working in desperate, unspoken unison. If the factions could stop fighting each other long enough to face the true enemy...
+   291→
+   292→No. That is a fantasy. Aethermoor runs on power, not hope. But perhaps, in the darkness of defeat, you will find the one thing that matters most: the will to stand up and fight again.
+   293→
+   294→The war is not over. Not yet. Not while you still draw breath.`,
+   295→    objectives: [
+   296→      "Survive the Hollowed army's massive assault",
+   297→      "Destroy or repel at least 2 Hollowed Generals",
+   298→      "Adapt to the loss of Aetherium-powered technology",
+   299→      "Control the majority of the continent when the dust settles",
+   300→    ],
+   301→  },
+   302→
+   303→  {
+   304→    id: "chapter_5",
+   305→    chapterNumber: 5,
+   306→    title: "Into the Hollow",
+   307→    subtitle: "To kill a god, you must first become something more than mortal",
+   308→    introNarration: `The entrance to the Hollow King's domain lies beneath the ruins of the Aetherspire — a gaping wound in the earth where the greatest structure ever built once stood. Jagged crystals of raw Aetherium line the descent, pulsing with sickly light that illuminates a staircase carved into the bedrock itself, spiraling downward into darkness that seems to swallow the light whole.
+   309→
+   310→You are not going alone. Whatever alliances, betrayals, and sacrifices brought you to this moment, you stand at the threshold with the combined might of every faction that still survives. The enemy of my enemy is still my enemy — but today, that enemy is the same for all of us.
+   311→
+   312→The descent takes hours. The staircase opens into vast underground chambers that defy geometry — spaces too large to exist beneath the surface, illuminated by Aetherium crystals that have grown to the size of buildings. The air is thick with arcane energy, so dense that it tastes of copper and ozone. And everywhere, the Hollow King's presence: a psychic pressure that presses against your mind like a physical weight, whispering promises of power, of peace, of the beautiful simplicity of surrender.
+   313→
+   314→Your forces encounter resistance as they descend — Hollowed Stalkers by the thousand, automated war machines from the old empire that have been running on standby for three centuries, and traps of Aetherium-enhanced crystal that can slice through armor like paper. Casualties mount. But you press on, because the alternative is to turn back and let the Hollow King complete his transformation — and that is not an option.
+   315→
+   316→And then, at the bottom of everything, you find him.
+   317→
+   318→Emperor Aldric the Undying sits on a throne of pure, crystallized Aetherium, his body a ruin of fused metal and flesh, his eyes twin voids of swirling violet energy. Around him, the Hollowing Engine still turns — not destroyed in the Shattering but merely cracked, operating at a fraction of its original capacity, slowly but surely absorbing every trace of Aetherium on the continent.
+   319→
+   320→He does not speak. He does not need to. The air itself carries his intent: absolute domination, absolute consumption, the reduction of all things to the beautiful, silent, hollow peace of nothingness.
+   321→
+   322→The final battle begins. Not for territory. Not for resources. Not for pride or revenge or survival.
+   323→
+   324→For everything.`,
+   325→    victoryNarration: `The Hollow King falls.
+   326→
+   327→Not easily. Not cleanly. Not without cost. But he falls. The Aetherium that sustains him destabilizes, the Hollowing Engine cracks and shatters, and the entity that was once Emperor Aldric the Undying collapses into a pile of rusted metal and fading crystal light. In his final moment, just before the void consumes him entirely, something flickers in those hollow eyes — not recognition, not regret, but perhaps something like relief. The agony of being a god is over. He is finally, after three centuries, allowed to die.
+   328→
+   329→The Aetherium that was concentrated in his chamber explodes outward in a shockwave that ripples through the continent's bedrock, healing the corrupted deposits and purifying the tainted veins. Above ground, the unnatural winter in the Frostlands begins to ease. The corrupted mist in the Western Reaches dissipates. Crystal Lake, long choked with unstable Aetherium, clears to reveal waters of extraordinary purity.
+   330→
+   331→You emerge from the depths into a changed world. The factions still exist. The rivalries still simmer. But for the first time in three generations, the shadow that hung over Aethermoor has lifted. The continent is broken, scarred, and will take generations to fully heal — but it is free.
+   332→
+   333→The war for Aethermoor is over. What comes next is up to you.`,
+   334→    defeatNarration: `The Hollow King stands victorious.
+   335→
+   336→Your armies lie broken at the foot of his throne, your weapons shattered, your allies fallen. The Hollow King does not gloat. He does not celebrate. He simply absorbs — drawing the Aetherium from the fallen, from the air, from the very stones of his chamber, growing larger and more terrible with each passing moment.
+   337→
+   338→But this is not the end. The Hollow King's victory is not absolute — the crack in the Hollowing Engine still leaks, and his transformation is not yet complete. There is still time. There is still a chance.
+   339→
+   340→In the depths of defeat, when all hope seems lost, that is when heroes are forged. Rise again. Gather new allies. Find new strength. And return to the hollow places, because Aethermoor has no one else to save it.
+   341→
+   342→The King may be hollow, but you are not. And that makes all the difference.`,
+   343→    objectives: [
+   344→      "Descend into the Hollow King's domain and survive",
+   345→      "Destroy the Hollow King's defensive layers",
+   346→      "Shatter the Hollowing Engine to break his power source",
+   347→      "Defeat the Hollow King in final combat",
+   348→    ],
+   349→  },
+   350→];

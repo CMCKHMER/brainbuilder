@@ -1,0 +1,991 @@
+     1→'use client';
+     2→
+     3→import React, { useRef, useState, useCallback, useMemo, Suspense } from 'react';
+     4→import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
+     5→import { OrbitControls, Html, Line } from '@react-three/drei';
+     6→import * as THREE from 'three';
+     7→import { useGameStore } from '@/lib/game-store';
+     8→import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
+     9→import { getUnitComposition, getDominantUnit, getUnitCost } from '@/lib/game-logic';
+    10→
+    11→// ========================
+    12→// Constants
+    13→// ========================
+    14→const SCALE = 0.012;
+    15→const CENTER_X = 500;
+    16→const CENTER_Y = 325;
+    17→const PLATFORM_RADIUS = 7.5;
+    18→
+    19→type StructureType = 'mountain' | 'tower' | 'castle' | 'forest' | 'temple' | 'crystal' | 'port' | 'ruins' | 'fortress' | 'ice';
+    20→
+    21→interface TerritoryVisualData {
+    22→  structure: StructureType;
+    23→  height: number;
+    24→  structureColor: string;
+    25→  terrainColor: string;
+    26→  terrainSideColor: string;
+    27→}
+    28→
+    29→const TERRITORY_VISUAL: Record<string, TerritoryVisualData> = {
+    30→  ironhold:        { structure: 'fortress',  height: 0.35, structureColor: '#8B8682', terrainColor: '#7A8A9A', terrainSideColor: '#4A5A6A' },
+    31→  wintermere:      { structure: 'ice',       height: 0.25, structureColor: '#B0D4E8', terrainColor: '#9AB8CC', terrainSideColor: '#5A7888' },
+    32→  frostpeak:       { structure: 'mountain',  height: 0.45, structureColor: '#9E9E9E', terrainColor: '#8A9AAE', terrainSideColor: '#4A5A6E' },
+    33→  dragonspine:     { structure: 'mountain',  height: 0.40, structureColor: '#7A7A7A', terrainColor: '#7A8A9A', terrainSideColor: '#3A4A5A' },
+    34→  goldshire:       { structure: 'castle',    height: 0.20, structureColor: '#C4A882', terrainColor: '#8A9A6A', terrainSideColor: '#5A6A3A' },
+    35→  silverdale:      { structure: 'tower',     height: 0.25, structureColor: '#C0C0C0', terrainColor: '#7A9A6A', terrainSideColor: '#4A6A3A' },
+    36→  thornwall:       { structure: 'fortress',  height: 0.30, structureColor: '#8B7355', terrainColor: '#8A9A6A', terrainSideColor: '#5A6A3A' },
+    37→  ashenvale:       { structure: 'forest',    height: 0.20, structureColor: '#2D6B1E', terrainColor: '#6A8A4A', terrainSideColor: '#3A5A2A' },
+    38→  sunforge:        { structure: 'temple',    height: 0.25, structureColor: '#D4A76A', terrainColor: '#B8A46A', terrainSideColor: '#7A6A3A' },
+    39→  ravencrest:      { structure: 'tower',     height: 0.30, structureColor: '#4A3A4A', terrainColor: '#7A8A5A', terrainSideColor: '#4A5A2A' },
+    40→  stormhold:       { structure: 'fortress',  height: 0.35, structureColor: '#5A6A7A', terrainColor: '#8A8A5A', terrainSideColor: '#5A5A3A' },
+    41→  moonhaven:       { structure: 'temple',    height: 0.20, structureColor: '#8B7DB8', terrainColor: '#9A8A6A', terrainSideColor: '#6A5A3A' },
+    42→  port_brighthelm: { structure: 'port',      height: 0.15, structureColor: '#C4A882', terrainColor: '#7A9A7A', terrainSideColor: '#3A6A5A' },
+    43→  crystal_lake:    { structure: 'crystal',   height: 0.18, structureColor: '#88BBDD', terrainColor: '#6A9A8A', terrainSideColor: '#3A6A5A' },
+    44→  darkwood:        { structure: 'forest',    height: 0.28, structureColor: '#1A3A1A', terrainColor: '#3A5A2A', terrainSideColor: '#1A3A1A' },
+    45→  misthollow:      { structure: 'ruins',     height: 0.22, structureColor: '#5A5A5A', terrainColor: '#5A6A4A', terrainSideColor: '#2A3A1A' },
+    46→};
+    47→
+    48→// ========================
+    49→// Utility Functions
+    50→// ========================
+    51→function parseSVGPath(pathStr: string): [number, number][] {
+    52→  const points: [number, number][] = [];
+    53→  const parts = pathStr.trim().split(/\s+/);
+    54→  let i = 0;
+    55→  while (i < parts.length) {
+    56→    const cmd = parts[i];
+    57→    if (cmd === 'M' || cmd === 'L') {
+    58→      const x = parseFloat(parts[i + 1]);
+    59→      const y = parseFloat(parts[i + 2]);
+    60→      if (!isNaN(x) && !isNaN(y)) {
+    61→        points.push([x, y]);
+    62→      }
+    63→      i += 3;
+    64→    } else if (cmd === 'Z') {
+    65→      break;
+    66→    } else {
+    67→      i++;
+    68→    }
+    69→  }
+    70→  return points;
+    71→}
+    72→
+    73→function svgTo3D(sx: number, sy: number): [number, number] {
+    74→  return [(sx - CENTER_X) * SCALE, -(sy - CENTER_Y) * SCALE];
+    75→}
+    76→
+    77→function createTerritoryGeometry(pathStr: string, height: number): THREE.ExtrudeGeometry {
+    78→  const points = parseSVGPath(pathStr);
+    79→  if (points.length < 3) {
+    80→    return new THREE.ExtrudeGeometry(new THREE.Shape(), { depth: 0.1 });
+    81→  }
+    82→  const shape = new THREE.Shape();
+    83→  const [x0, z0] = svgTo3D(points[0][0], points[0][1]);
+    84→  shape.moveTo(x0, z0);
+    85→  for (let i = 1; i < points.length; i++) {
+    86→    const [x, z] = svgTo3D(points[i][0], points[i][1]);
+    87→    shape.lineTo(x, z);
+    88→  }
+    89→  shape.closePath();
+    90→
+    91→  const geo = new THREE.ExtrudeGeometry(shape, {
+    92→    steps: 1,
+    93→    depth: height,
+    94→    bevelEnabled: true,
+    95→    bevelThickness: 0.015,
+    96→    bevelSize: 0.015,
+    97→    bevelOffset: 0,
+    98→    bevelSegments: 2,
+    99→  });
+   100→  geo.rotateX(-Math.PI / 2);
+   101→  geo.translate(0, 0.05, 0);
+   102→  return geo;
+   103→}
+   104→
+   105→// ========================
+   106→// 3D Structure Components
+   107→// ========================
+   108→
+   109→function MountainStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   110→  return (
+   111→    <group position={position}>
+   112→      {/* Main peak */}
+   113→      <mesh position={[0, 0.3, 0]}>
+   114→        <coneGeometry args={[0.25, 0.6, 7]} />
+   115→        <meshStandardMaterial color={color} roughness={0.85} />
+   116→      </mesh>
+   117→      {/* Snow cap */}
+   118→      <mesh position={[0, 0.55, 0]}>
+   119→        <coneGeometry args={[0.1, 0.15, 7]} />
+   120→        <meshStandardMaterial color="#E8E8F0" roughness={0.4} />
+   121→      </mesh>
+   122→      {/* Secondary peak */}
+   123→      <mesh position={[0.15, 0.18, 0.08]} scale={[0.6, 0.7, 0.6]}>
+   124→        <coneGeometry args={[0.25, 0.6, 6]} />
+   125→        <meshStandardMaterial color={color} roughness={0.9} />
+   126→      </mesh>
+   127→    </group>
+   128→  );
+   129→}
+   130→
+   131→function CastleStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   132→  return (
+   133→    <group position={position}>
+   134→      {/* Main keep */}
+   135→      <mesh position={[0, 0.18, 0]}>
+   136→        <boxGeometry args={[0.18, 0.36, 0.18]} />
+   137→        <meshStandardMaterial color={color} roughness={0.7} />
+   138→      </mesh>
+   139→      {/* Roof */}
+   140→      <mesh position={[0, 0.42, 0]}>
+   141→        <coneGeometry args={[0.13, 0.14, 4]} />
+   142→        <meshStandardMaterial color="#8B1A1A" roughness={0.6} />
+   143→      </mesh>
+   144→      {/* Corner towers */}
+   145→      {[[-0.12, 0.1, -0.12], [0.12, 0.1, -0.12], [-0.12, 0.1, 0.12], [0.12, 0.1, 0.12]].map((pos, i) => (
+   146→        <group key={i} position={pos as [number, number, number]}>
+   147→          <mesh>
+   148→            <cylinderGeometry args={[0.03, 0.035, 0.24, 8]} />
+   149→            <meshStandardMaterial color={color} roughness={0.7} />
+   150→          </mesh>
+   151→          <mesh position={[0, 0.15, 0]}>
+   152→            <coneGeometry args={[0.04, 0.08, 8]} />
+   153→            <meshStandardMaterial color="#6A1515" roughness={0.6} />
+   154→          </mesh>
+   155→        </group>
+   156→      ))}
+   157→      {/* Gate */}
+   158→      <mesh position={[0, 0.05, -0.1]}>
+   159→        <boxGeometry args={[0.06, 0.1, 0.01]} />
+   160→        <meshStandardMaterial color="#1a1008" roughness={0.9} />
+   161→      </mesh>
+   162→    </group>
+   163→  );
+   164→}
+   165→
+   166→function TowerStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   167→  return (
+   168→    <group position={position}>
+   169→      <mesh position={[0, 0.25, 0]}>
+   170→        <cylinderGeometry args={[0.06, 0.07, 0.5, 8]} />
+   171→        <meshStandardMaterial color={color} roughness={0.7} />
+   172→      </mesh>
+   173→      {/* Roof */}
+   174→      <mesh position={[0, 0.55, 0]}>
+   175→        <coneGeometry args={[0.08, 0.14, 8]} />
+   176→        <meshStandardMaterial color="#4A3728" roughness={0.6} />
+   177→      </mesh>
+   178→      {/* Battlements ring */}
+   179→      <mesh position={[0, 0.48, 0]}>
+   180→        <cylinderGeometry args={[0.075, 0.075, 0.04, 12]} />
+   181→        <meshStandardMaterial color={color} roughness={0.7} />
+   182→      </mesh>
+   183→      {/* Flag pole */}
+   184→      <mesh position={[0, 0.68, 0]}>
+   185→        <cylinderGeometry args={[0.005, 0.005, 0.2, 4]} />
+   186→        <meshStandardMaterial color="#8B7355" />
+   187→      </mesh>
+   188→      {/* Flag */}
+   189→      <mesh position={[0.04, 0.72, 0]}>
+   190→        <planeGeometry args={[0.06, 0.035]} />
+   191→        <meshStandardMaterial color="#DC2626" side={THREE.DoubleSide} />
+   192→      </mesh>
+   193→    </group>
+   194→  );
+   195→}
+   196→
+   197→function ForestStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   198→  const trees = useMemo(() => [
+   199→    { x: 0, z: 0, s: 1, h: 0.2 },
+   200→    { x: 0.1, z: 0.06, s: 0.75, h: 0.16 },
+   201→    { x: -0.08, z: -0.05, s: 0.6, h: 0.13 },
+   202→    { x: 0.05, z: -0.09, s: 0.85, h: 0.18 },
+   203→    { x: -0.12, z: 0.04, s: 0.5, h: 0.11 },
+   204→    { x: 0.13, z: -0.03, s: 0.65, h: 0.14 },
+   205→  ], []);
+   206→  return (
+   207→    <group position={position}>
+   208→      {trees.map((tree, i) => (
+   209→        <group key={i} position={[tree.x, 0, tree.z]} scale={tree.s}>
+   210→          {/* Trunk */}
+   211→          <mesh position={[0, 0.06, 0]}>
+   212→            <cylinderGeometry args={[0.012, 0.018, 0.12, 5]} />
+   213→            <meshStandardMaterial color="#5C4033" roughness={0.95} />
+   214→          </mesh>
+   215→          {/* Foliage layers */}
+   216→          <mesh position={[0, 0.15, 0]}>
+   217→            <coneGeometry args={[0.065, 0.12, 6]} />
+   218→            <meshStandardMaterial color={color} roughness={0.85} />
+   219→          </mesh>
+   220→          <mesh position={[0, 0.2, 0]}>
+   221→            <coneGeometry args={[0.05, 0.1, 6]} />
+   222→            <meshStandardMaterial color={color} roughness={0.85} />
+   223→          </mesh>
+   224→        </group>
+   225→      ))}
+   226→    </group>
+   227→  );
+   228→}
+   229→
+   230→function TempleStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   231→  return (
+   232→    <group position={position}>
+   233→      {/* Base */}
+   234→      <mesh position={[0, 0.04, 0]}>
+   235→        <boxGeometry args={[0.3, 0.04, 0.25]} />
+   236→        <meshStandardMaterial color="#D2B48C" roughness={0.6} />
+   237→      </mesh>
+   238→      {/* Main building */}
+   239→      <mesh position={[0, 0.15, 0]}>
+   240→        <boxGeometry args={[0.22, 0.22, 0.18]} />
+   241→        <meshStandardMaterial color={color} roughness={0.6} />
+   242→      </mesh>
+   243→      {/* Pyramidal roof */}
+   244→      <mesh position={[0, 0.32, 0]} rotation={[0, Math.PI / 4, 0]}>
+   245→        <coneGeometry args={[0.17, 0.15, 4]} />
+   246→        <meshStandardMaterial color="#D4A017" roughness={0.4} metalness={0.3} />
+   247→      </mesh>
+   248→      {/* Pillars */}
+   249→      {[[-0.09, 0, -0.08], [0.09, 0, -0.08], [-0.09, 0, 0.08], [0.09, 0, 0.08]].map((pos, i) => (
+   250→        <mesh key={i} position={pos as [number, number, number]}>
+   251→          <cylinderGeometry args={[0.012, 0.014, 0.22, 6]} />
+   252→          <meshStandardMaterial color="#E8D8B8" roughness={0.4} />
+   253→        </mesh>
+   254→      ))}
+   255→    </group>
+   256→  );
+   257→}
+   258→
+   259→function CrystalStructure({ position }: { position: [number, number, number] }) {
+   260→  const crystalsRef = useRef<THREE.Group>(null);
+   261→  useFrame((state) => {
+   262→    if (crystalsRef.current) {
+   263→      crystalsRef.current.rotation.y = state.clock.elapsedTime * 0.3;
+   264→    }
+   265→  });
+   266→  return (
+   267→    <group position={position} ref={crystalsRef}>
+   268→      {[
+   269→        { x: 0, z: 0, ry: 0, s: 1, h: 0.18 },
+   270→        { x: 0.08, z: 0.04, ry: 0.5, s: 0.65, h: 0.13 },
+   271→        { x: -0.06, z: -0.06, ry: 1.2, s: 0.5, h: 0.1 },
+   272→        { x: 0.03, z: -0.08, ry: 2, s: 0.4, h: 0.08 },
+   273→      ].map((c, i) => (
+   274→        <mesh key={i} position={[c.x, c.h / 2 + 0.02, c.z]} rotation={[0.15, c.ry, 0.1]} scale={c.s}>
+   275→          <octahedronGeometry args={[0.05, 0]} />
+   276→          <meshStandardMaterial
+   277→            color="#88CCFF"
+   278→            transparent
+   279→            opacity={0.75}
+   280→            roughness={0.05}
+   281→            metalness={0.6}
+   282→            emissive="#2244AA"
+   283→            emissiveIntensity={0.2}
+   284→          />
+   285→        </mesh>
+   286→      ))}
+   287→    </group>
+   288→  );
+   289→}
+   290→
+   291→function PortStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   292→  return (
+   293→    <group position={position}>
+   294→      {/* Main building */}
+   295→      <mesh position={[0, 0.1, 0]}>
+   296→        <boxGeometry args={[0.18, 0.2, 0.14]} />
+   297→        <meshStandardMaterial color={color} roughness={0.8} />
+   298→      </mesh>
+   299→      {/* Roof */}
+   300→      <mesh position={[0, 0.24, 0]}>
+   301→        <boxGeometry args={[0.2, 0.02, 0.16]} />
+   302→        <meshStandardMaterial color="#8B4513" roughness={0.7} />
+   303→      </mesh>
+   304→      {/* Second building */}
+   305→      <mesh position={[0.15, 0.07, 0.05]}>
+   306→        <boxGeometry args={[0.1, 0.14, 0.1]} />
+   307→        <meshStandardMaterial color={color} roughness={0.85} />
+   308→      </mesh>
+   309→      {/* Mast */}
+   310→      <mesh position={[0.12, 0.2, 0.05]}>
+   311→        <cylinderGeometry args={[0.006, 0.006, 0.3, 4]} />
+   312→        <meshStandardMaterial color="#5C4033" />
+   313→      </mesh>
+   314→      {/* Sail */}
+   315→      <mesh position={[0.15, 0.28, 0.05]} rotation={[0, 0.3, 0]}>
+   316→        <planeGeometry args={[0.06, 0.08]} />
+   317→        <meshStandardMaterial color="#E8D8B8" side={THREE.DoubleSide} transparent opacity={0.8} />
+   318→      </mesh>
+   319→    </group>
+   320→  );
+   321→}
+   322→
+   323→function RuinsStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   324→  return (
+   325→    <group position={position}>
+   326→      {/* Broken wall 1 */}
+   327→      <mesh position={[-0.06, 0.07, 0]}>
+   328→        <boxGeometry args={[0.04, 0.14, 0.14]} />
+   329→        <meshStandardMaterial color={color} roughness={0.95} />
+   330→      </mesh>
+   331→      {/* Broken wall 2 */}
+   332→      <mesh position={[0.07, 0.09, 0.03]} scale={[1, 1.2, 1]}>
+   333→        <boxGeometry args={[0.035, 0.15, 0.12]} />
+   334→        <meshStandardMaterial color={color} roughness={0.95} />
+   335→      </mesh>
+   336→      {/* Broken column */}
+   337→      <mesh position={[0, 0.04, -0.08]}>
+   338→        <cylinderGeometry args={[0.02, 0.025, 0.08, 8]} />
+   339→        <meshStandardMaterial color={color} roughness={0.9} />
+   340→      </mesh>
+   341→      {/* Fallen column */}
+   342→      <mesh position={[0.08, 0.015, -0.07]} rotation={[0, 0.5, Math.PI / 2]}>
+   343→        <cylinderGeometry args={[0.018, 0.02, 0.12, 8]} />
+   344→        <meshStandardMaterial color={color} roughness={0.95} />
+   345→      </mesh>
+   346→      {/* Rubble */}
+   347→      <mesh position={[-0.03, 0.012, 0.06]} rotation={[0.2, 0.8, 0.3]}>
+   348→        <dodecahedronGeometry args={[0.025, 0]} />
+   349→        <meshStandardMaterial color={color} roughness={1} />
+   350→      </mesh>
+   351→      <mesh position={[0.1, 0.01, -0.03]}>
+   352→        <boxGeometry args={[0.03, 0.02, 0.035]} />
+   353→        <meshStandardMaterial color={color} roughness={1} />
+   354→      </mesh>
+   355→    </group>
+   356→  );
+   357→}
+   358→
+   359→function FortressStructure({ position, color }: { position: [number, number, number]; color: string }) {
+   360→  return (
+   361→    <group position={position}>
+   362→      {/* Main building */}
+   363→      <mesh position={[0, 0.15, 0]}>
+   364→        <boxGeometry args={[0.2, 0.3, 0.2]} />
+   365→        <meshStandardMaterial color={color} roughness={0.7} />
+   366→      </mesh>
+   367→      {/* Battlement top */}
+   368→      <mesh position={[0, 0.32, 0]}>
+   369→        <boxGeometry args={[0.22, 0.03, 0.22]} />
+   370→        <meshStandardMaterial color={color} roughness={0.7} />
+   371→      </mesh>
+   372→      {/* Corner towers */}
+   373→      {[[-0.12, 0.1, -0.12], [0.12, 0.1, -0.12], [-0.12, 0.1, 0.12], [0.12, 0.1, 0.12]].map((pos, i) => (
+   374→        <group key={i} position={pos as [number, number, number]}>
+   375→          <mesh>
+   376→            <cylinderGeometry args={[0.028, 0.032, 0.24, 8]} />
+   377→            <meshStandardMaterial color={color} roughness={0.7} />
+   378→          </mesh>
+   379→          <mesh position={[0, 0.15, 0]}>
+   380→            <coneGeometry args={[0.038, 0.08, 8]} />
+   381→            <meshStandardMaterial color="#3A2A1A" roughness={0.6} />
+   382→          </mesh>
+   383→        </group>
+   384→      ))}
+   385→      {/* Gate */}
+   386→      <mesh position={[0, 0.06, -0.11]}>
+   387→        <boxGeometry args={[0.06, 0.12, 0.01]} />
+   388→        <meshStandardMaterial color="#0a0a0a" roughness={0.9} />
+   389→      </mesh>
+   390→      {/* Gate arch */}
+   391→      <mesh position={[0, 0.12, -0.11]}>
+   392→        <cylinderGeometry args={[0.03, 0.03, 0.01, 12, 1, false, 0, Math.PI]} />
+   393→        <meshStandardMaterial color="#0a0a0a" roughness={0.9} />
+   394→      </mesh>
+   395→    </group>
+   396→  );
+   397→}
+   398→
+   399→function IceStructure({ position }: { position: [number, number, number] }) {
+   400→  const iceRef = useRef<THREE.Group>(null);
+   401→  useFrame((state) => {
+   402→    if (iceRef.current) {
+   403→      iceRef.current.children.forEach((child, i) => {
+   404→        child.position.y = (i === 0 ? 0.2 : i === 1 ? 0.1 : 0.04) + Math.sin(state.clock.elapsedTime * 1.5 + i) * 0.008;
+   405→      });
+   406→    }
+   407→  });
+   408→  return (
+   409→    <group position={position} ref={iceRef}>
+   410→      {/* Ice spire 1 */}
+   411→      <mesh position={[0, 0.2, 0]}>
+   412→        <coneGeometry args={[0.05, 0.4, 6]} />
+   413→        <meshStandardMaterial color="#B0D4E8" transparent opacity={0.8} roughness={0.08} metalness={0.15} />
+   414→      </mesh>
+   415→      {/* Ice spire 2 */}
+   416→      <mesh position={[0.08, 0.1, 0.05]} scale={[0.6, 0.7, 0.6]}>
+   417→        <coneGeometry args={[0.05, 0.35, 5]} />
+   418→        <meshStandardMaterial color="#C8E0F0" transparent opacity={0.7} roughness={0.05} metalness={0.2} />
+   419→      </mesh>
+   420→      {/* Ice chunk */}
+   421→      <mesh position={[-0.06, 0.04, -0.05]} rotation={[0.3, 0.7, 0.1]}>
+   422→        <dodecahedronGeometry args={[0.045, 0]} />
+   423→        <meshStandardMaterial color="#D0E8F8" transparent opacity={0.6} roughness={0.03} metalness={0.25} />
+   424→      </mesh>
+   425→    </group>
+   426→  );
+   427→}
+   428→
+   429→function StructureRenderer({ type, position, color }: { type: StructureType; position: [number, number, number]; color: string }) {
+   430→  switch (type) {
+   431→    case 'mountain': return <MountainStructure position={position} color={color} />;
+   432→    case 'castle': return <CastleStructure position={position} color={color} />;
+   433→    case 'tower': return <TowerStructure position={position} color={color} />;
+   434→    case 'forest': return <ForestStructure position={position} color={color} />;
+   435→    case 'temple': return <TempleStructure position={position} color={color} />;
+   436→    case 'crystal': return <CrystalStructure position={position} />;
+   437→    case 'port': return <PortStructure position={position} color={color} />;
+   438→    case 'ruins': return <RuinsStructure position={position} color={color} />;
+   439→    case 'fortress': return <FortressStructure position={position} color={color} />;
+   440→    case 'ice': return <IceStructure position={position} />;
+   441→  }
+   442→}
+   443→
+   444→// ========================
+   445→// Territory Mesh
+   446→// ========================
+   447→
+   448→interface TerritoryMeshProps {
+   449→  territoryId: string;
+   450→  path: string;
+   451→  labelX: number;
+   452→  labelY: number;
+   453→  onHover: (id: string | null) => void;
+   454→  onClick: (id: string) => void;
+   455→}
+   456→
+   457→function TerritoryMesh({ territoryId, path, labelX, labelY, onHover, onClick }: TerritoryMeshProps) {
+   458→  const territories = useGameStore(s => s.territories);
+   459→  const selectedTerritory = useGameStore(s => s.selectedTerritory);
+   460→  const targetTerritory = useGameStore(s => s.targetTerritory);
+   461→  const phase = useGameStore(s => s.phase);
+   462→  const players = useGameStore(s => s.players);
+   463→  const reinforcementsLeft = useGameStore(s => s.reinforcementsLeft);
+   464→  const deployUnitType = useGameStore(s => s.deployUnitType);
+   465→  const currentPlayerIndex = useGameStore(s => s.currentPlayerIndex);
+   466→  const selectTerritory = useGameStore(s => s.selectTerritory);
+   467→  const deployArmy = useGameStore(s => s.deployArmy);
+   468→
+   469→  const territory = territories[territoryId];
+   470→  if (!territory) return null;
+   471→
+   472→  const visual = TERRITORY_VISUAL[territoryId] || { structure: 'tower' as StructureType, height: 0.2, structureColor: '#8B7355', terrainColor: '#5A5A3A', terrainSideColor: '#3A3A2A' };
+   473→  const playerColorMap = useMemo(() => {
+   474→    const map: Record<string, { color: string; colorLight: string }> = {};
+   475→    players.forEach(p => { map[p.id] = { color: p.color, colorLight: p.colorLight }; });
+   476→    return map;
+   477→  }, [players]);
+   478→
+   479→  const owner = territory.ownerId ? playerColorMap[territory.ownerId] : null;
+   480→  const currentPlayerId = phase !== 'setup' && phase !== 'gameover' ? players[currentPlayerIndex]?.id : null;
+   481→
+   482→  const isSelected = territoryId === selectedTerritory;
+   483→  const isTarget = territoryId === targetTerritory;
+   484→
+   485→  const geometry = useMemo(() => createTerritoryGeometry(path, visual.height), [path, visual.height]);
+   486→  const edgesGeometry = useMemo(() => new THREE.EdgesGeometry(geometry, 25), [geometry]);
+   487→
+   488→  const [cx, cz] = svgTo3D(labelX, labelY);
+   489→  const structY = 0.05 + visual.height;
+   490→  const dominant = getDominantUnit(territory.units);
+   491→
+   492→  const isSelectable = useMemo(() => {
+   493→    if (phase === 'deploy') {
+   494→      const cost = getUnitCost(deployUnitType, players[currentPlayerIndex]?.characterClass || '');
+   495→      return territory.ownerId === currentPlayerId && reinforcementsLeft >= cost;
+   496→    }
+   497→    if (phase === 'attack') {
+   498→      if (selectedTerritory === null) return territory.ownerId === currentPlayerId && territory.units.length > 1;
+   499→      if (territoryId === selectedTerritory) return true;
+   500→      if (territory.ownerId !== currentPlayerId) return territory.adjacentTo.includes(selectedTerritory);
+   501→      return territory.ownerId === currentPlayerId && territory.units.length > 1;
+   502→    }
+   503→    if (phase === 'fortify') {
+   504→      if (selectedTerritory === null) return territory.ownerId === currentPlayerId && territory.units.length > 1;
+   505→      if (territoryId === selectedTerritory) return true;
+   506→      if (territory.ownerId === currentPlayerId && selectedTerritory !== null) return territory.adjacentTo.includes(selectedTerritory);
+   507→      return false;
+   508→    }
+   509→    return false;
+   510→  }, [phase, territory, selectedTerritory, currentPlayerId, reinforcementsLeft, deployUnitType, players, currentPlayerIndex]);
+   511→
+   512→  const topColor = owner ? owner.colorLight : visual.terrainColor;
+   513→  const sideColor = owner ? owner.color + 'AA' : visual.terrainSideColor;
+   514→
+   515→  const emissiveColor = isSelected ? '#FFD700' : isTarget ? '#FF0000' : '#000000';
+   516→
+   517→  const meshRef = useRef<THREE.Mesh>(null);
+   518→  const edgesRef = useRef<THREE.LineSegments>(null);
+   519→
+   520→  useFrame((state) => {
+   521→    if (meshRef.current) {
+   522→      const mat = meshRef.current.material as THREE.MeshStandardMaterial;
+   523→      if (isSelected) {
+   524→        mat.emissiveIntensity = 0.3 + Math.sin(state.clock.elapsedTime * 3) * 0.15;
+   525→      } else if (isTarget) {
+   526→        mat.emissiveIntensity = 0.4 + Math.sin(state.clock.elapsedTime * 4) * 0.2;
+   527→      } else {
+   528→        mat.emissiveIntensity = 0;
+   529→      }
+   530→    }
+   531→    if (edgesRef.current) {
+   532→      const mat = edgesRef.current.material as THREE.LineBasicMaterial;
+   533→      if (isSelected) {
+   534→        mat.color.set('#FFD700');
+   535→        mat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 3) * 0.3;
+   536→      } else if (isTarget) {
+   537→        mat.color.set('#FF0000');
+   538→        mat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 4) * 0.3;
+   539→      } else {
+   540→        mat.color.set('#3D2B1F');
+   541→        mat.opacity = 0.8;
+   542→      }
+   543→    }
+   544→  });
+   545→
+   546→  const handleClick = useCallback((e: ThreeEvent<MouseEvent>) => {
+   547→    e.stopPropagation();
+   548→    if (phase === 'deploy') {
+   549→      const cost = getUnitCost(deployUnitType, players[currentPlayerIndex]?.characterClass || '');
+   550→      if (territory.ownerId === currentPlayerId && reinforcementsLeft >= cost) {
+   551→        deployArmy(territoryId, deployUnitType);
+   552→      }
+   553→    } else if (phase === 'attack' || phase === 'fortify') {
+   554→      selectTerritory(territoryId);
+   555→    }
+   556→  }, [phase, territory, currentPlayerId, reinforcementsLeft, deployUnitType, players, currentPlayerIndex, selectTerritory, deployArmy, territoryId]);
+   557→
+   558→  const handlePointerOver = useCallback((e: ThreeEvent<PointerEvent>) => {
+   559→    e.stopPropagation();
+   560→    if (isSelectable) {
+   561→      document.body.style.cursor = 'pointer';
+   562→    }
+   563→    onHover(territoryId);
+   564→  }, [isSelectable, territoryId, onHover]);
+   565→
+   566→  const handlePointerOut = useCallback((e: ThreeEvent<PointerEvent>) => {
+   567→    e.stopPropagation();
+   568→    document.body.style.cursor = 'auto';
+   569→    onHover(null);
+   570→  }, [onHover]);
+   571→
+   572→  return (
+   573→    <group>
+   574→      {/* Territory extruded shape */}
+   575→      <mesh
+   576→        ref={meshRef}
+   577→        geometry={geometry}
+   578→        onClick={handleClick}
+   579→        onPointerOver={handlePointerOver}
+   580→        onPointerOut={handlePointerOut}
+   581→      >
+   582→        <meshStandardMaterial
+   583→          color={topColor}
+   584→          roughness={0.75}
+   585→          metalness={0.05}
+   586→          emissive={emissiveColor}
+   587→          emissiveIntensity={0}
+   588→          transparent={!isSelectable}
+   589→          opacity={isSelectable ? 1 : (phase === 'attack' || phase === 'fortify') ? 0.6 : 0.85}
+   590→        />
+   591→      </mesh>
+   592→
+   593→      {/* Territory border edges */}
+   594→      <lineSegments ref={edgesRef} geometry={edgesGeometry}>
+   595→        <lineBasicMaterial color="#3D2B1F" transparent opacity={0.8} />
+   596→      </lineSegments>
+   597→
+   598→      {/* 3D Structure */}
+   599→      <StructureRenderer type={visual.structure} position={[cx, structY, cz]} color={visual.structureColor} />
+   600→
+   601→      {/* Territory label and unit badge */}
+   602→      <Html position={[cx, structY + (visual.structure === 'mountain' ? 0.75 : visual.structure === 'tower' ? 0.8 : visual.structure === 'fortress' ? 0.45 : 0.35), cz]} center>
+   603→        <div style={{ pointerEvents: 'none', userSelect: 'none', textAlign: 'center' }}>
+   604→          <div style={{
+   605→            fontSize: '9px',
+   606→            fontFamily: 'var(--font-cinzel), serif',
+   607→            color: 'rgba(255,255,255,0.9)',
+   608→            textShadow: '0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.6)',
+   609→            whiteSpace: 'nowrap',
+   610→            letterSpacing: '1px',
+   611→          }}>
+   612→            {territory.name}
+   613→          </div>
+   614→          {territory.units.length > 0 && dominant && (
+   615→            <div style={{
+   616→              marginTop: '2px',
+   617→              display: 'inline-flex',
+   618→              alignItems: 'center',
+   619→              gap: '2px',
+   620→              background: 'rgba(0,0,0,0.6)',
+   621→              borderRadius: '8px',
+   622→              padding: '1px 5px',
+   623→              border: `1px solid ${owner ? owner.color + '66' : 'rgba(139,115,85,0.3)'}`,
+   624→            }}>
+   625→              <span style={{ fontSize: '9px' }}>{UNIT_TYPES[dominant].icon}</span>
+   626→              <span style={{
+   627→                fontSize: '8px',
+   628→                fontWeight: 'bold',
+   629→                color: owner ? owner.colorLight : '#ccc',
+   630→                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+   631→              }}>
+   632→                {territory.units.length}
+   633→              </span>
+   634→            </div>
+   635→          )}
+   636→        </div>
+   637→      </Html>
+   638→    </group>
+   639→  );
+   640→}
+   641→
+   642→// ========================
+   643→// Connection Lines
+   644→// ========================
+   645→function ConnectionLines() {
+   646→  const territories = useGameStore(s => s.territories);
+   647→
+   648→  const lines = useMemo(() => {
+   649→    const result: { start: [number, number, number]; end: [number, number, number] }[] = [];
+   650→    const drawn = new Set<string>();
+   651→    for (const t of Object.values(territories)) {
+   652→      const vis = TERRITORY_VISUAL[t.id];
+   653→      const h = (vis?.height || 0.2) + 0.1;
+   654→      for (const adjId of t.adjacentTo) {
+   655→        const key = [t.id, adjId].sort().join('-');
+   656→        if (!drawn.has(key)) {
+   657→          drawn.add(key);
+   658→          const adj = territories[adjId];
+   659→          if (adj) {
+   660→            const [x1, z1] = svgTo3D(t.labelX, t.labelY);
+   661→            const [x2, z2] = svgTo3D(adj.labelX, adj.labelY);
+   662→            const adjVis = TERRITORY_VISUAL[adjId];
+   663→            const h2 = (adjVis?.height || 0.2) + 0.1;
+   664→            const avgH = (h + h2) / 2 + 0.08;
+   665→            result.push({ start: [x1, avgH, z1], end: [x2, avgH, z2] });
+   666→          }
+   667→        }
+   668→      }
+   669→    }
+   670→    return result;
+   671→  }, [territories]);
+   672→
+   673→  return (
+   674→    <group>
+   675→      {lines.map((line, i) => (
+   676→        <Line
+   677→          key={`conn-${i}`}
+   678→          points={[line.start, line.end]}
+   679→          color="#8B735544"
+   680→          lineWidth={1}
+   681→          dashed
+   682→          dashSize={0.08}
+   683→          gapSize={0.08}
+   684→        />
+   685→      ))}
+   686→    </group>
+   687→  );
+   688→}
+   689→
+   690→// ========================
+   691→// Floating Platform
+   692→// ========================
+   693→function FloatingPlatform() {
+   694→  const platformRef = useRef<THREE.Group>(null);
+   695→  useFrame((state) => {
+   696→    if (platformRef.current) {
+   697→      platformRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.03 - 0.2;
+   698→    }
+   699→  });
+   700→
+   701→  return (
+   702→    <group ref={platformRef}>
+   703→      {/* Main disc top */}
+   704→      <mesh position={[0, 0, 0]}>
+   705→        <cylinderGeometry args={[7.8, 8.2, 0.3, 64]} />
+   706→        <meshStandardMaterial color="#3D2B1F" roughness={0.9} metalness={0.05} />
+   707→      </mesh>
+   708→      {/* Surface layer */}
+   709→      <mesh position={[0, 0.16, 0]}>
+   710→        <cylinderGeometry args={[7.7, 7.7, 0.04, 64]} />
+   711→        <meshStandardMaterial color="#4A3828" roughness={0.85} metalness={0.02} />
+   712→      </mesh>
+   713→      {/* Top edge ring */}
+   714→      <mesh position={[0, 0.19, 0]}>
+   715→        <torusGeometry args={[7.75, 0.08, 8, 64]} />
+   716→        <meshStandardMaterial color="#5A4A3A" roughness={0.7} metalness={0.1} />
+   717→      </mesh>
+   718→      {/* Bottom taper - upper section */}
+   719→      <mesh position={[0, -0.8, 0]}>
+   720→        <cylinderGeometry args={[8.2, 5.5, 1.2, 64]} />
+   721→        <meshStandardMaterial color="#2A1A0E" roughness={1} />
+   722→      </mesh>
+   723→      {/* Bottom taper - lower section */}
+   724→      <mesh position={[0, -2.0, 0]}>
+   725→        <cylinderGeometry args={[5.5, 2.5, 1.8, 64]} />
+   726→        <meshStandardMaterial color="#1A0E06" roughness={1} />
+   727→      </mesh>
+   728→      {/* Bottom point */}
+   729→      <mesh position={[0, -3.2, 0]}>
+   730→        <coneGeometry args={[2.5, 1.2, 64]} />
+   731→        <meshStandardMaterial color="#150A04" roughness={1} />
+   732→      </mesh>
+   733→      {/* Rocky protrusions on the bottom */}
+   734→      {[0, 1, 2, 3, 4, 5].map((i) => {
+   735→        const angle = (i / 6) * Math.PI * 2;
+   736→        const r = 6.5 + Math.sin(i * 2.3) * 1.2;
+   737→        const y = -1.5 - Math.random() * 1.5;
+   738→        return (
+   739→          <mesh key={i} position={[Math.cos(angle) * r, y, Math.sin(angle) * r]} rotation={[Math.random(), Math.random(), Math.random()]}>
+   740→            <dodecahedronGeometry args={[0.3 + Math.random() * 0.4, 0]} />
+   741→            <meshStandardMaterial color="#2A1A0E" roughness={1} />
+   742→          </mesh>
+   743→        );
+   744→      })}
+   745→    </group>
+   746→  );
+   747→}
+   748→
+   749→// ========================
+   750→// Ocean
+   751→// ========================
+   752→function Ocean() {
+   753→  const waterRef = useRef<THREE.Mesh>(null);
+   754→  useFrame((state) => {
+   755→    if (waterRef.current) {
+   756→      waterRef.current.position.y = -3.5 + Math.sin(state.clock.elapsedTime * 0.4) * 0.05;
+   757→    }
+   758→  });
+   759→
+   760→  return (
+   761→    <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.5, 0]}>
+   762→      <planeGeometry args={[60, 60, 32, 32]} />
+   763→      <meshStandardMaterial
+   764→        color="#0A2A3A"
+   765→        transparent
+   766→        opacity={0.75}
+   767→        roughness={0.15}
+   768→        metalness={0.4}
+   769→      />
+   770→    </mesh>
+   771→  );
+   772→}
+   773→
+   774→// ========================
+   775→// Magical Particles
+   776→// ========================
+   777→function MagicalParticles() {
+   778→  const pointsRef = useRef<THREE.Points>(null);
+   779→  const count = 150;
+   780→
+   781→  const [positions] = useState(() => {
+   782→    const pos = new Float32Array(count * 3);
+   783→    for (let i = 0; i < count; i++) {
+   784→      pos[i * 3] = (Math.random() - 0.5) * 16;
+   785→      pos[i * 3 + 1] = Math.random() * 5 + 0.5;
+   786→      pos[i * 3 + 2] = (Math.random() - 0.5) * 12;
+   787→    }
+   788→    return pos;
+   789→  });
+   790→
+   791→  const [sizes] = useState(() => {
+   792→    const s = new Float32Array(count);
+   793→    for (let i = 0; i < count; i++) {
+   794→      s[i] = Math.random() * 0.04 + 0.01;
+   795→    }
+   796→    return s;
+   797→  });
+   798→
+   799→  useFrame((state) => {
+   800→    if (pointsRef.current) {
+   801→      pointsRef.current.rotation.y = state.clock.elapsedTime * 0.02;
+   802→      const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
+   803→      const arr = posAttr.array as Float32Array;
+   804→      for (let i = 0; i < count; i++) {
+   805→        arr[i * 3 + 1] += Math.sin(state.clock.elapsedTime + i) * 0.0005;
+   806→      }
+   807→      posAttr.needsUpdate = true;
+   808→    }
+   809→  });
+   810→
+   811→  return (
+   812→    <points ref={pointsRef}>
+   813→      <bufferGeometry>
+   814→        <bufferAttribute
+   815→          attach="attributes-position"
+   816→          array={positions}
+   817→          count={count}
+   818→          itemSize={3}
+   819→        />
+   820→      </bufferGeometry>
+   821→      <pointsMaterial
+   822→        size={0.04}
+   823→        color="#D4A017"
+   824→        transparent
+   825→        opacity={0.5}
+   826→        sizeAttenuation
+   827→        blending={THREE.AdditiveBlending}
+   828→        depthWrite={false}
+   829→      />
+   830→    </points>
+   831→  );
+   832→}
+   833→
+   834→// ========================
+   835→// Lighting
+   836→// ========================
+   837→function SceneLighting() {
+   838→  const dirLightRef = useRef<THREE.DirectionalLight>(null);
+   839→
+   840→  useFrame((state) => {
+   841→    if (dirLightRef.current) {
+   842→      const t = state.clock.elapsedTime * 0.1;
+   843→      dirLightRef.current.position.x = Math.sin(t) * 3;
+   844→      dirLightRef.current.position.z = Math.cos(t) * 3;
+   845→    }
+   846→  });
+   847→
+   848→  return (
+   849→    <>
+   850→      {/* Ambient light - cool moonlight */}
+   851→      <ambientLight intensity={0.25} color="#4466AA" />
+   852→      {/* Hemisphere light - sky/ground */}
+   853→      <hemisphereLight args={['#2A3A5A', '#3A2A1A', 0.3]} />
+   854→      {/* Main directional - slowly orbiting moonlight */}
+   855→      <directionalLight
+   856→        ref={dirLightRef}
+   857→        position={[3, 8, 3]}
+   858→        intensity={0.6}
+   859→        color="#C0C8E0"
+   860→        castShadow={false}
+   861→      />
+   862→      {/* Warm accent light - from below the platform */}
+   863→      <pointLight position={[0, -2, 0]} intensity={0.4} color="#FF8844" distance={12} decay={2} />
+   864→      {/* Secondary fill light */}
+   865→      <pointLight position={[-4, 4, -2]} intensity={0.15} color="#6688CC" distance={15} decay={2} />
+   866→      <pointLight position={[4, 3, 3]} intensity={0.1} color="#CC8844" distance={12} decay={2} />
+   867→    </>
+   868→  );
+   869→}
+   870→
+   871→// ========================
+   872→// Main Scene
+   873→// ========================
+   874→
+   875→function WorldScene({ onTerritoryHover }: { onTerritoryHover: (id: string | null) => void }) {
+   876→  const territories = useGameStore(s => s.territories);
+   877→  const territoryList = useMemo(() => Object.values(territories), [territories]);
+   878→
+   879→  return (
+   880→    <>
+   881→      <color attach="background" args={['#060810']} />
+   882→      <fog attach="fog" args={['#060810', 14, 35]} />
+   883→
+   884→      <SceneLighting />
+   885→      <OrbitControls
+   886→        enablePan={true}
+   887→        minDistance={4}
+   888→        maxDistance={22}
+   889→        minPolarAngle={Math.PI / 8}
+   890→        maxPolarAngle={Math.PI / 2.1}
+   891→        enableDamping
+   892→        dampingFactor={0.08}
+   893→      />
+   894→
+   895→      <FloatingPlatform />
+   896→      <Ocean />
+   897→
+   898→      {territoryList.map(t => (
+   899→        <TerritoryMesh
+   900→          key={t.id}
+   901→          territoryId={t.id}
+   902→          path={t.path}
+   903→          labelX={t.labelX}
+   904→          labelY={t.labelY}
+   905→          onHover={onTerritoryHover}
+   906→          onClick={() => {}}
+   907→        />
+   908→      ))}
+   909→
+   910→      <ConnectionLines />
+   911→      <MagicalParticles />
+   912→
+   913→      {/* Map title in 3D space */}
+   914→      <Html position={[0, -0.1, 4.2]} center>
+   915→        <div style={{
+   916→          pointerEvents: 'none',
+   917→          fontSize: '10px',
+   918→          fontFamily: 'var(--font-cinzel), serif',
+   919→          color: 'rgba(212,160,23,0.4)',
+   920→          letterSpacing: '4px',
+   921→          whiteSpace: 'nowrap',
+   922→        }}>
+   923→          THE CONTINENT OF AETHERMOOR
+   924→        </div>
+   925→      </Html>
+   926→    </>
+   927→  );
+   928→}
+   929→
+   930→// ========================
+   931→// Loading Screen
+   932→// ========================
+   933→function LoadingScreen() {
+   934→  return (
+   935→    <div style={{
+   936→      width: '100%',
+   937→      height: '100%',
+   938→      background: '#060810',
+   939→      display: 'flex',
+   940→      alignItems: 'center',
+   941→      justifyContent: 'center',
+   942→      flexDirection: 'column',
+   943→      gap: '12px',
+   944→    }}>
+   945→      <div style={{
+   946→        fontSize: '14px',
+   947→        fontFamily: 'var(--font-cinzel), serif',
+   948→        color: '#D4A017',
+   949→        letterSpacing: '3px',
+   950→        animation: 'pulse 2s ease-in-out infinite',
+   951→      }}>
+   952→        ENTERING AETHERMOOR...
+   953→      </div>
+   954→      <style>{`
+   955→        @keyframes pulse {
+   956→          0%, 100% { opacity: 0.4; }
+   957→          50% { opacity: 1; }
+   958→        }
+   959→      `}</style>
+   960→    </div>
+   961→  );
+   962→}
+   963→
+   964→// ========================
+   965→// Exported Component
+   966→// ========================
+   967→
+   968→interface GameMap3DProps {
+   969→  onTerritoryHover?: (id: string | null) => void;
+   970→}
+   971→
+   972→export default function GameMap3D({ onTerritoryHover = () => {} }: GameMap3DProps) {
+   973→  const handleHover = useCallback((id: string | null) => {
+   974→    onTerritoryHover(id);
+   975→  }, [onTerritoryHover]);
+   976→
+   977→  return (
+   978→    <Suspense fallback={<LoadingScreen />}>
+   979→      <Canvas
+   980→        camera={{ position: [0, 10, 10], fov: 42, near: 0.1, far: 100 }}
+   981→        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
+   982→        style={{ background: '#060810' }}
+   983→        onPointerMissed={() => {
+   984→          useGameStore.getState().clearSelection();
+   985→        }}
+   986→      >
+   987→        <WorldScene onTerritoryHover={handleHover} />
+   988→      </Canvas>
+   989→    </Suspense>
+   990→  );
+   991→}
