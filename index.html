@@ -1698,7 +1698,7 @@ function onMouseMove(e) {
         updateGhostPosition();
         // Drag-to-build for linear blocks (fences, walls, stairs, streets)
         if (isMouseDown && isDrawing && ghost.visible) {
-            const linearBlocks = ['fence', 'wall', 'stair', 'railing', 'pipe_horizontal', 'pipe_vertical', 'curb', 'crosswalk'];
+            const linearBlocks = ['fence', 'wall', 'stair', 'railing', 'pipe_horizontal', 'pipe_vertical', 'curb', 'crosswalk', 'street', 'road', 'road_cross', 'pavement', 'road_marking'];
             if (linearBlocks.includes(currentBlock)) {
                 build();
                 // Auto-move ghost to continue drawing in direction of movement
@@ -1710,6 +1710,16 @@ function onMouseMove(e) {
                 }
                 ghost.position.x = Math.round(ghost.position.x / moveDelta) * moveDelta;
                 ghost.position.z = Math.round(ghost.position.z / moveDelta) * moveDelta;
+                
+                // CRITICAL: Re-align Y to terrain after moving ghost
+                const resampleRay = new THREE.Raycaster(
+                    new THREE.Vector3(ghost.position.x, 50, ghost.position.z),
+                    new THREE.Vector3(0, -1, 0)
+                );
+                const terrainHits = resampleRay.intersectObject(terrainMesh);
+                if (terrainHits.length > 0) {
+                    ghost.position.y = terrainHits[0].point.y + currentSize / 2;
+                }
             }
         }
     }
@@ -1725,7 +1735,7 @@ function onMouseDown(e) {
         hideContextMenu();
         if (currentTool === 'build' && ghost.visible) {
             // Check if building linear blocks - enable drag mode
-            const linearBlocks = ['fence', 'wall', 'stair', 'railing', 'pipe_horizontal', 'pipe_vertical', 'curb', 'crosswalk'];
+            const linearBlocks = ['fence', 'wall', 'stair', 'railing', 'pipe_horizontal', 'pipe_vertical', 'curb', 'crosswalk', 'street', 'road', 'road_cross', 'pavement', 'road_marking'];
             if (linearBlocks.includes(currentBlock)) {
                 isDrawing = true;
                 toast('Drag Mode: Draw ' + currentBlock + 's continuously', 'info');
@@ -2007,24 +2017,65 @@ function toggleRotateMode() {
 // ==================== GHOST POSITION ====================
 function updateGhostPosition() {
     raycaster.setFromCamera(mouse, camera);
-    const hits = raycaster.intersectObjects([ground, ...placedBlocks], true);
+    
+    // Include terrainMesh in intersection tests for accurate ground following
+    const objectsToTest = [ground, terrainMesh, ...placedBlocks];
+    const hits = raycaster.intersectObjects(objectsToTest, true);
+    
     if (hits.length > 0) {
         const hit = hits[0];
         const p = hit.point.clone();
         const n = hit.face.normal.clone();
-        if (hit.object !== ground) n.transformDirection(hit.object.matrixWorld).normalize();
+        
+        // Transform normal if hitting a transformed object
+        if (hit.object !== ground && hit.object !== terrainMesh) {
+            n.transformDirection(hit.object.matrixWorld).normalize();
+        }
+        
         const half = currentSize / 2;
-        p.add(n.multiplyScalar(half));
-        if (snapToGrid) {
-            p.x = Math.round(p.x); p.z = Math.round(p.z);
-            p.y = Math.max(half, Math.round(p.y / half) * half);
-        } else { p.y = Math.max(half, p.y); }
+        
+        // CRITICAL FIX: Ensure blocks align with ground/terrain
+        // If hitting terrain or ground, calculate Y based on terrain height at X,Z
+        if (hit.object === ground || hit.object === terrainMesh) {
+            // Get the exact terrain height at this X,Z position
+            // We use the hit point Y as base, then adjust to sit ON top
+            p.y = hit.point.y + half; // Sit directly on top of the hit surface
+            
+            // Snap X,Z to grid but keep Y locked to terrain
+            if (snapToGrid) {
+                p.x = Math.round(p.x); 
+                p.z = Math.round(p.z);
+                // Re-sample terrain height at snapped position for perfect alignment
+                const resampleRay = new THREE.Raycaster(
+                    new THREE.Vector3(p.x, 50, p.z),
+                    new THREE.Vector3(0, -1, 0)
+                );
+                const terrainHits = resampleRay.intersectObject(terrainMesh);
+                if (terrainHits.length > 0) {
+                    p.y = terrainHits[0].point.y + half;
+                }
+            }
+        } else {
+            // Hitting an existing block - use standard voxel logic
+            p.add(n.multiplyScalar(half));
+            if (snapToGrid) {
+                p.x = Math.round(p.x); 
+                p.z = Math.round(p.z);
+                p.y = Math.max(half, Math.round(p.y / half) * half);
+            } else { 
+                p.y = Math.max(half, p.y); 
+            }
+        }
+        
         ghost.position.copy(p);
         ghost.visible = true;
+        
         // Update mirror ghosts
         updateMirrorGhosts(p);
+        
         // Update glow light position
         if (ghostGlowLight) ghostGlowLight.position.copy(p);
+        
         // Update arrow
         if (ghostArrow) {
             ghostArrow.position.set(p.x, p.y / 2, p.z);
@@ -2592,12 +2643,13 @@ function updateGhostGeo() {
         case 'bay_window': geo = new THREE.CylinderGeometry(s*0.38,s*0.38,s*0.9,10,1,false,0,Math.PI); break;
         case 'rotunda': geo = new THREE.CylinderGeometry(s*0.9,s*1.0,s*0.18,20); break;
         case 'arch_wall': geo = new THREE.CylinderGeometry(s*0.42,s*0.42,s*0.3,16,1,true,0,Math.PI); break;
-        // Roads & pavement
+        // Roads & pavement - enable drag-to-build for all road types
         case 'road': geo = new THREE.BoxGeometry(s,s*0.07,s); break;
         case 'road_cross': geo = new THREE.BoxGeometry(s,s*0.07,s); break;
         case 'pavement': geo = new THREE.BoxGeometry(s,s*0.1,s); break;
         case 'curb': geo = new THREE.BoxGeometry(s,s*0.18,s*0.14); break;
         case 'crosswalk': geo = new THREE.BoxGeometry(s,s*0.07,s); break;
+        case 'street': geo = new THREE.BoxGeometry(s,s*0.07,s); break;
         case 'road_marking': geo = new THREE.BoxGeometry(s*0.12,s*0.065,s*0.8); break;
         default: geo = new THREE.BoxGeometry(s,s,s);
     }
@@ -3281,7 +3333,7 @@ function buildAtPosition(pos, blockType, color, size, rotation, isMirror) {
             }
             break;
         }
-        case 'road_cross': {
+        case 'street': case 'road_cross': {
             mesh=makeGroup();
             const rcMat=new THREE.MeshStandardMaterial({color:0x252525,roughness:0.96});
             const rcLineMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.8,emissive:0xffffff,emissiveIntensity:0.04});
