@@ -66,8 +66,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             overflow: hidden;
         }
-        #splash-screen.fade-out { animation: splash-fade 0.8s ease-in-out forwards; }
-        @keyframes splash-fade { 0% { opacity: 1; } 100% { opacity: 0; pointer-events: none; } }
+        #splash-screen.fade-out { opacity: 0; transition: opacity 0.8s ease-in-out; pointer-events: none; }
 
         .splash-particles { position: absolute; inset: 0; overflow: hidden; }
         .splash-particle {
@@ -1235,7 +1234,7 @@
         </div>
         <div style="width:1px; height:26px; background:rgba(255,255,255,0.1);"></div>
         <div class="tool-pill">
-            <button onclick="setTool('build')" class="tool-pill-btn active" id="tool-build"><i class="fas fa-cubes" style="font-size:12px;"></i> Build</button>
+            <button onclick="setTool('build')" class="tool-pill-btn" id="tool-build"><i class="fas fa-cubes" style="font-size:12px;"></i> Build</button>
             <button onclick="setTool('erase')" class="tool-pill-btn" id="tool-erase"><i class="fas fa-trash-alt" style="font-size:12px;"></i> Erase</button>
             <button onclick="setTool('select')" class="tool-pill-btn" id="tool-select"><i class="fas fa-mouse-pointer" style="font-size:12px;"></i> Select</button>
             <button onclick="setTool('move')" class="tool-pill-btn" id="tool-move"><i class="fas fa-arrows-alt" style="font-size:12px;"></i> Move</button>
@@ -1337,7 +1336,7 @@ function selectRole(el, role) {
 }
 
 // ==================== GLOBAL STATE ====================
-let currentTool = 'build', currentBlock = 'cube', currentSize = 1, currentColor = '#CC0000', ghostRotation = 0;
+let currentTool = null, currentBlock = 'cube', currentSize = 1, currentColor = '#CCCCCC', ghostRotation = 0;
 let scene, camera, renderer, ground, ghost, skyMesh, cloudMesh;
 let raycaster, mouse, placedBlocks = [];
 let undoStack = [], redoStack = [];
