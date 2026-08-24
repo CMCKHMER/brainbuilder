@@ -1,0 +1,87 @@
+        <!-- Architecture -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Architecture</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn selected" onclick="selectBlock('cube')" id="btn-cube"><div class="icon"><i class="fas fa-cube"></i></div><div class="label">Brick</div></div>
+                    <div class="block-btn" onclick="selectBlock('slope')" id="btn-slope"><div class="icon"><i class="fas fa-mountain"></i></div><div class="label">Roof</div></div>
+                    <div class="block-btn" onclick="selectBlock('stair')" id="btn-stair"><div class="icon"><i class="fas fa-stairs"></i></div><div class="label">Stair</div></div>
+                    <div class="block-btn" onclick="selectBlock('window')" id="btn-window"><div class="icon"><i class="fas fa-window-maximize"></i></div><div class="label">Window</div></div>
+                    <div class="block-btn" onclick="selectBlock('door')" id="btn-door"><div class="icon"><i class="fas fa-door-open"></i></div><div class="label">Door</div></div>
+                    <div class="block-btn" onclick="selectBlock('fence')" id="btn-fence"><div class="icon"><i class="fas fa-border-all"></i></div><div class="label">Fence</div></div>
+                </div>
+            </div>
+            
+            <!-- Columns -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Columns</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('pillar')" id="btn-pillar"><div class="icon"><i class="fas fa-grip-lines-vertical"></i></div><div class="label">Column</div></div>
+                    <div class="block-btn" onclick="selectBlock('arch')" id="btn-arch"><div class="icon"><i class="fas fa-archway"></i></div><div class="label">Arch</div></div>
+                    <div class="block-btn" onclick="selectBlock('cylinder')" id="btn-cylinder"><div class="icon"><i class="fas fa-database"></i></div><div class="label">Round</div></div>
+                    <div class="block-btn" onclick="selectBlock('plate')" id="btn-plate"><div class="icon"><i class="fas fa-minus"></i></div><div class="label">Slab</div></div>
+                </div>
+            </div>
+            
+            <!-- Nature -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Nature</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('tree-oak')" id="btn-tree-oak"><div class="icon"><i class="fas fa-tree"></i></div><div class="label">Oak</div></div>
+                    <div class="block-btn" onclick="selectBlock('tree-pine')" id="btn-tree-pine"><div class="icon"><i class="fas fa-tree" style="color: #0f5132;"></i></div><div class="label">Pine</div></div>
+                    <div class="block-btn" onclick="selectBlock('rock')" id="btn-rock"><div class="icon"><i class="fas fa-mountain"></i></div><div class="label">Rock</div></div>
+                    <div class="block-btn" onclick="selectBlock('bush')" id="btn-bush"><div class="icon"><i class="fas fa-leaf"></i></div><div class="label">Bush</div></div>
+                </div>
+            </div>
+            
+            <!-- Terrain -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Terrain</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('sand-block')" id="btn-sand-block"><div class="icon"><i class="fas fa-square" style="color: #f4e4bc;"></i></div><div class="label">Sand</div></div>
+                    <div class="block-btn" onclick="selectBlock('sandstone-brick')" id="btn-sandstone-brick"><div class="icon"><i class="fas fa-square" style="color: #d4a574;"></i></div><div class="label">Stone</div></div>
+                    <div class="block-btn" onclick="selectBlock('dirt')" id="btn-dirt"><div class="icon"><i class="fas fa-square" style="color: #5d4037;"></i></div><div class="label">Dirt</div></div>
+                    <div class="block-btn" onclick="selectBlock('clay')" id="btn-clay"><div class="icon"><i class="fas fa-square" style="color: #b66a50;"></i></div><div class="label">Clay</div></div>
+                </div>
+            </div>
+            
+            <!-- Construction -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Construction</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('concrete')" id="btn-concrete"><div class="icon"><i class="fas fa-hammer"></i></div><div class="label">Concrete</div></div>
+                    <div class="block-btn" onclick="selectBlock('concrete-slab')" id="btn-concrete-slab"><div class="icon"><i class="fas fa-layer-group"></i></div><div class="label">Slab</div></div>
+                    <div class="block-btn" onclick="selectBlock('steel-beam')" id="btn-steel-beam"><div class="icon"><i class="fas fa-grip-lines"></i></div><div class="label">I-Beam</div></div>
+                    <div class="block-btn" onclick="selectBlock('metal-plate')" id="btn-metal-plate"><div class="icon"><i class="fas fa-weight-hanging"></i></div><div class="label">Metal</div></div>
+                </div>
+            </div>
+            
+            <!-- Extreme -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Extreme</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('ice-block')" id="btn-ice-block"><div class="icon"><i class="fas fa-snowflake" style="color: #a5f2f3;"></i></div><div class="label">Ice</div></div>
+                    <div class="block-btn" onclick="selectBlock('snow-block')" id="btn-snow-block"><div class="icon"><i class="fas fa-snowflake"></i></div><div class="label">Snow</div></div>
+                    <div class="block-btn" onclick="selectBlock('magma')" id="btn-magma"><div class="icon"><i class="fas fa-fire" style="color: #ff4500;"></i></div><div class="label">Magma</div></div>
+                    <div class="block-btn" onclick="selectBlock('obsidian')" id="btn-obsidian"><div class="icon"><i class="fas fa-gem" style="color: #1a0a2e;"></i></div><div class="label">Obsidian</div></div>
+                </div>
+            </div>
+            
+            <!-- Lighting -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Lighting</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('neon-strip')" id="btn-neon-strip"><div class="icon"><i class="fas fa-bolt" style="color: #ff00ff;"></i></div><div class="label">Neon</div></div>
+                    <div class="block-btn" onclick="selectBlock('glow')" id="btn-glow"><div class="icon"><i class="fas fa-lightbulb"></i></div><div class="label">Light</div></div>
+                    <div class="block-btn" onclick="selectBlock('lava')" id="btn-lava"><div class="icon"><i class="fas fa-volcano" style="color: #ff4400;"></i></div><div class="label">Lava</div></div>
+                </div>
+            </div>
+            
+            <!-- Special -->
+            <div class="flex flex-col mb-2">
+                <div class="category-label">Advanced</div>
+                <div class="flex flex-wrap">
+                    <div class="block-btn" onclick="selectBlock('water')" id="btn-water"><div class="icon"><i class="fas fa-water" style="color: #0066ff;"></i></div><div class="label">Water</div></div>
+                    <div class="block-btn" onclick="selectBlock('glass')" id="btn-glass"><div class="icon"><i class="far fa-square" style="color: #aaccff;"></i></div><div class="label">Glass</div></div>
+                    <div class="block-btn" onclick="selectBlock('glassTinted')" id="btn-glassTinted"><div class="icon"><i class="fas fa-square" style="color: #4a4a4a;"></i></div><div class="label">Tinted</div></div>
+                </div>
+            </div>
