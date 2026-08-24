@@ -1,213 +1,134 @@
-# 🧱 BrickForge Pro - Educational Platform
+# BrickForge Pro — Building Game for Education
 
-A collaborative 3D building platform designed for schools to facilitate digital building projects and team-based learning.
-
-## 🚀 Quick Start
-
-### For Teachers
-
-1. **Start the Server**
-   ```bash
-   npm install
-   npm start
-   ```
-
-2. **Open Browser**
-   Navigate to `http://localhost:3000`
-
-3. **Login as Teacher**
-   - Enter your name
-   - Select "Teacher" role
-   - Click "Enter Platform"
-
-4. **Create a Project**
-   - Click "Create New Project"
-   - Enter project name and assignment details
-   - Share the Room ID with students
-
-5. **Monitor and Guide**
-   - Lock/unlock the room to control editing
-   - View student progress in real-time
-   - Chat with students
-   - Review submissions
-
-### For Students
-
-1. **Join the Platform**
-   - Enter your name
-   - Select "Student" role
-   - Click "Enter Platform"
-
-2. **Join a Room**
-   - Click on a project from the list, OR
-   - Enter the Room ID provided by your teacher
-   - Click "Join"
-
-3. **Build Together**
-   - Place blocks to build your project
-   - Chat with teammates
-   - See everyone's cursor positions
-   - Submit your work when done
-
-## ✨ Features
-
-### 🎓 Educational Features
-
-- **Assignment System**: Teachers can create assignments with descriptions and requirements
-- **Real-time Collaboration**: Multiple students can build together simultaneously
-- **Progress Monitoring**: Teachers can watch student progress in real-time
-- **Submission System**: Students submit their work with comments
-- **Room Locking**: Teachers can lock rooms to prevent changes during instruction
-
-### 💬 Communication
-
-- **Team Chat**: Built-in chat for team coordination
-- **User Presence**: See who's online and their role
-- **Remote Cursors**: See where teammates are looking/pointing
-- **System Messages**: Automatic notifications for joins, leaves, and actions
-
-### 🎮 Building Features
-
-- **20+ Block Types**: Bricks, slopes, trees, windows, doors, and more
-- **Multiplayer Sync**: All block changes sync instantly
-- **Undo/Redo**: Full history support (Ctrl+Z / Ctrl+Y)
-- **Color Palette**: 24 colors for customization
-- **3D Model Import**: Support for .glb, .gltf, and .obj files
-
-### 🎨 Environment
-
-- **Day/Night Cycle**: Adjustable time of day
-- **Weather Effects**: Rain and snow
-- **Themes**: Dark and light mode
-- **Auto-rotate Camera**: For presentations
-
-### 💾 Save & Share
-
-- **Export Build**: Save your creation as JSON
-- **Import Build**: Load previous saves
-- **Screenshots**: Capture your work as PNG
-
-## 🖥️ System Requirements
-
-- **Node.js** 14+ (for server)
-- **Modern Web Browser** with WebGL support
-- **Network**: All users must be on the same network or server must be publicly accessible
-
-## 🌐 Deployment for Schools
-
-### Local Network (Classroom)
-
-1. Run the server on a classroom computer
-2. Find the server's IP address: `ipconfig` (Windows) or `ifconfig` (Mac/Linux)
-3. Students access via: `http://[SERVER_IP]:3000`
-
-### Cloud Deployment
-
-For remote learning, deploy to:
-- **Heroku**: `git push heroku main`
-- **Railway**: Connect GitHub repo
-- **AWS/GCP**: Use EC2/Compute Engine
-- **Vercel**: Not recommended (needs WebSocket support)
-
-### Docker Deployment
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 8080
-CMD ["npm", "start"]
-```
-
-```bash
-docker build -t brickforge-pro .
-docker run -p 8080:8080 brickforge-pro
-```
-
-## 📋 Keyboard Shortcuts
-
-| Key | Action |
-|-----|--------|
-| B / Space | Place block |
-| R | Rotate block |
-| T | Build tool |
-| E | Erase tool |
-| P | Paint tool |
-| S | Select tool |
-| W | Toggle weather |
-| A | Auto-rotate camera |
-| G | Toggle grid |
-| X | Toggle snap |
-| H | Toggle help |
-| Tab | Toggle UI |
-| Ctrl+Z | Undo |
-| Ctrl+Y | Redo |
-| Ctrl+D | Duplicate selected |
-| Delete | Delete selected |
-
-## 🏗️ Project Structure
-
-```
-BrickForgePro/
-├── index.html          # Main client application
-├── server.js           # WebSocket server
-├── package.json        # Dependencies
-├── README.md          # This file
-└── .gitignore         # Git ignore rules
-```
-
-## 🔒 Security Considerations
-
-- **No Authentication**: Current version uses simple name-based identification
-- **Room Isolation**: Each room is separate; users can't access other rooms
-- **Teacher Controls**: Only teachers can create rooms, lock rooms, clear blocks
-- **No Persistence**: Rooms are deleted 5 minutes after all users leave
-
-## 🐛 Troubleshooting
-
-### Connection Issues
-- Check firewall settings (port 8080)
-- Verify all users are on the same network
-- Check browser console for errors
-
-### WebGL Not Working
-- Update graphics drivers
-- Enable hardware acceleration in browser
-- Try a different browser (Chrome recommended)
-
-### Port Already in Use
-The default port is 3000. To use a different port:
-```bash
-PORT=8080 npm start  # Unix/Mac
-set PORT=8080 && npm start  # Windows
-```
-
-## 🤝 Contributing
-
-This is an educational open-source project. Contributions welcome!
-
-### Ideas for Enhancement
-- [ ] User accounts and authentication
-- [ ] Persistent room storage (database)
-- [ ] Project templates
-- [ ] Grading/rubric system
-- [ ] Screen sharing for teachers
-- [ ] Audio chat
-- [ ] Mobile app
-- [ ] VR support
-
-## 📜 License
-
-MIT License - Free for educational use
-
-## 🙏 Credits
-
-- **Three.js** - 3D rendering
-- **WebSocket** - Real-time communication
-- **Tailwind CSS** - Styling
+A real-time multiplayer 3D building platform designed for classrooms. Teachers create rooms, set assignments, and monitor student progress; students collaborate to build structures using a rich set of block types and tools.
 
 ---
 
-**Built for educators who want to bring creativity into the classroom.** 🎓✨
+## Features
+
+- **Real-time multiplayer** — multiple users in the same room see each other's changes instantly via WebSockets
+- **Roles** — Teacher, Student, and Observer modes with different permission levels
+- **Assignment system** — teachers create and publish assignments; students submit completed builds for review
+- **Room management** — room codes for easy joining, room locking to prevent late entries
+- **Team chat** — in-app messaging between all room participants
+- **User presence & remote cursors** — see who is online and where others are pointing
+- **20+ block types** — standard, glass, wood, brick, stone, metal, and more
+- **Color palette** — full per-block coloring
+- **Undo / Redo** — full history stack per session
+- **Day/night cycle & weather effects** — visual environment controls
+- **Export / Import builds** — save and load scenes as JSON
+- **PNG screenshots** — one-click capture of the current view
+- **Keyboard shortcuts** — power-user workflow support
+
+---
+
+## Quick Start
+
+\`\`\`bash
+npm install
+npm start
+\`\`\`
+
+The server listens on \`process.env.PORT\` or **5000** by default.
+Open **http://localhost:5000** in your browser.
+
+> **Windows users:** double-click \`start-server.bat\` to launch the server.
+> Make sure the \`.bat\` file references port **5000** (edit it if it still says 3000).
+
+---
+
+## Teacher Guide
+
+1. Open the app and choose **Create Room**.
+2. Share the generated **room code** with your students.
+3. Use **Set Assignment** to publish a build prompt or objective.
+4. Monitor progress in real time; use **Lock Room** to prevent new joins when ready.
+5. When done, use **Export Progress** (JSON) to save all student builds.
+
+---
+
+## Student Guide
+
+1. Open the app and choose **Join Room**.
+2. Enter the room code provided by your teacher.
+3. Build your structure using the block palette, color picker, and toolbar.
+4. Use **Chat** to communicate with teammates.
+5. Click **Submit Work** when your build is complete.
+
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| \`W\` / \`A\` / \`S\` / \`D\` | Move camera |
+| \`Q\` / \`E\` | Move camera up / down |
+| \`Ctrl + Z\` | Undo |
+| \`Ctrl + Y\` / \`Ctrl + Shift + Z\` | Redo |
+| \`Delete\` | Remove selected block |
+| \`G\` | Toggle grid |
+| \`N\` | Toggle day/night |
+| \`P\` | Take PNG screenshot |
+| \`Esc\` | Deselect / close panel |
+
+---
+
+## Project Structure
+
+\`\`\`
+brainbuilder/
+├── index.html          # Single-file client app (Three.js + Tailwind)
+├── server.js           # Node.js HTTP + WebSocket server (ws)
+├── package.json        # npm config; only production dependency: ws
+├── package-lock.json   # Lockfile
+├── start-server.bat    # Windows convenience launcher
+├── .gitignore
+├── README.md
+├── LICENSE
+└── COPYRIGHT.md
+\`\`\`
+
+---
+
+## Deployment
+
+### Local classroom network
+Run \`npm start\` on the teacher's machine. Students connect via the machine's LAN IP, e.g. \`http://192.168.1.10:5000\`.
+
+### Cloud (Heroku / Railway)
+Both platforms expose a \`PORT\` environment variable automatically. The server already reads \`process.env.PORT\`, so no code changes are needed. Push the repo (without \`node_modules/\`) and the platform will run \`npm install && npm start\`.
+
+### Docker
+
+\`\`\`dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+EXPOSE 5000
+CMD ["node", "server.js"]
+\`\`\`
+
+Build and run:
+
+\`\`\`bash
+docker build -t brickforge-pro .
+docker run -p 5000:5000 brickforge-pro
+\`\`\`
+
+---
+
+## Security Considerations
+
+- **No authentication** — anyone with the room code can join. Use unique codes per session.
+- **Room isolation** — rooms are independent; one room cannot read another's data.
+- **No persistence** — all room data is held in memory. Rooms are deleted **5 minutes** after the last user leaves. Export builds before closing.
+- For production use, consider adding authentication and a persistent data store.
+
+---
+
+## License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for full text.
+Copyright and usage rules are detailed in [COPYRIGHT.md](COPYRIGHT.md).
