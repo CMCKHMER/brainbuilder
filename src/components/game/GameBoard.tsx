@@ -5,7 +5,7 @@ import PlayerPanel from '@/components/game/PlayerPanel';
 import ActionPanel from '@/components/game/ActionPanel';
 import { useGameStore } from '@/lib/game-store';
 import { Button } from '@/components/ui/button';
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { UNIT_TYPES, type UnitTypeId } from '@/lib/game-data';
 import { UnitPortrait } from './UnitCards';
 import { useAIController } from '@/hooks/useAIController';
@@ -31,7 +31,7 @@ const GameMap3D = dynamic(() => import('./GameMap3D'), {
 });
 
 // Territory detail overlay on hover - enhanced with unit portraits
-const TerritoryTooltip = React.memo(function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
+function TerritoryTooltip({ territoryId }: { territoryId: string | null }) {
   const territories = useGameStore(s => s.territories);
   const players = useGameStore(s => s.players);
 
@@ -40,12 +40,10 @@ const TerritoryTooltip = React.memo(function TerritoryTooltip({ territoryId }: {
   if (!territory) return null;
   const owner = territory.ownerId ? players.find(p => p.id === territory.ownerId) : null;
 
-  // Count units by type - memoized computation
-  const entries = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const u of territory.units) counts[u] = (counts[u] || 0) + 1;
-    return Object.entries(counts) as [UnitTypeId, number][];
-  }, [territory.units]);
+  // Count units by type
+  const counts: Record<string, number> = {};
+  for (const u of territory.units) counts[u] = (counts[u] || 0) + 1;
+  const entries = Object.entries(counts) as [UnitTypeId, number][];
 
   return (
     <div
@@ -98,10 +96,9 @@ const TerritoryTooltip = React.memo(function TerritoryTooltip({ territoryId }: {
       </div>
     </div>
   );
-});
+}
 
 export default function GameBoard() {
-  // Use shallow selection to prevent unnecessary re-renders
   const phase = useGameStore(s => s.phase);
   const players = useGameStore(s => s.players);
   const currentPlayerIndex = useGameStore(s => s.currentPlayerIndex);
@@ -112,7 +109,7 @@ export default function GameBoard() {
   const selectedTerritory = useGameStore(s => s.selectedTerritory);
   const [hoveredTerritory, setHoveredTerritory] = useState<string | null>(null);
 
-  // Story system - memoized selectors
+  // Story system
   const storyBeat = useGameStore(s => s.storyBeat);
   const currentEvent = useGameStore(s => s.currentEvent);
   const dismissStory = useGameStore(s => s.dismissStory);
@@ -195,7 +192,7 @@ export default function GameBoard() {
   // AI turn controller
   useAIController();
 
-  // Handle territory hover from 3D map - memoized callback
+  // Handle territory hover from 3D map
   const handleTerritoryHover = useCallback((id: string | null) => {
     setHoveredTerritory(id);
   }, []);
@@ -204,12 +201,8 @@ export default function GameBoard() {
     return <GameSetup />;
   }
 
-  // Memoize computed values
-  const currentPlayer = useMemo(() => players[currentPlayerIndex], [players, currentPlayerIndex]);
-  const isAITurn = useMemo(() => 
-    currentPlayer?.isAI && !currentPlayer?.eliminated && phase !== 'gameover',
-    [currentPlayer, phase]
-  );
+  const currentPlayer = players[currentPlayerIndex];
+  const isAITurn = currentPlayer?.isAI && !currentPlayer?.eliminated && phase !== 'gameover';
 
   return (
     <div
