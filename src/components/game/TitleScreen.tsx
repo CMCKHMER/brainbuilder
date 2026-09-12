@@ -1,35 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useGameStore } from '@/lib/game-store';
 
-/* ─── particle system ─── */
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-  opacity: number;
-  hue: number;
-  life: number;
-  maxLife: number;
-  type: 'firefly' | 'ember' | 'mist';
-}
-
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
-}
-
-function randomRange(min: number, max: number) {
-  return Math.random() * (max - min) + min;
-}
-
 export default function TitleScreen() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animRef = useRef<number>(0);
-  const particles = useRef<Particle[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0 });
   const [loaded, setLoaded] = useState(false);
 
   // Fallback: ensure loading overlay dismisses even if image is cached
@@ -265,10 +239,9 @@ export default function TitleScreen() {
     >
       {/* Background image */}
       <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-in-out"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: 'url(/game_menu.png)',
-          animation: 'kenBurns 20s ease-in-out infinite alternate',
           filter: 'brightness(0.75) saturate(1.15) contrast(1.05)',
         }}
       />
@@ -276,40 +249,6 @@ export default function TitleScreen() {
       {/* Dark gradient overlays for depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none" />
-
-      {/* Particle canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 z-10 pointer-events-none"
-      />
-
-      {/* Ambient light beams */}
-      <div
-        className="absolute z-[5] pointer-events-none"
-        style={{
-          top: '5%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120%',
-          height: '60%',
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(180,160,120,0.06) 0%, transparent 60%)',
-          animation: 'lightBeam 8s ease-in-out infinite alternate',
-        }}
-      />
-
-      {/* Portal glow pulse (top center area) */}
-      <div
-        className="absolute z-[6] pointer-events-none"
-        style={{
-          top: '0%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '400px',
-          height: '200px',
-          background: 'radial-gradient(ellipse at 50% 80%, rgba(100,80,200,0.12) 0%, rgba(60,100,200,0.06) 40%, transparent 70%)',
-          animation: 'portalPulse 4s ease-in-out infinite',
-        }}
-      />
 
       {/* Title area */}
       <div
@@ -327,7 +266,6 @@ export default function TitleScreen() {
           className="absolute -inset-10 opacity-30"
           style={{
             background: 'radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.3) 0%, transparent 65%)',
-            animation: 'titleGlow 3s ease-in-out infinite alternate',
           }}
         />
         <h1
@@ -343,7 +281,6 @@ export default function TitleScreen() {
               0 2px 4px rgba(0,0,0,0.8)
             `,
             letterSpacing: '0.08em',
-            animation: 'titleFloat 6s ease-in-out infinite',
           }}
         >
           REALM OF
@@ -361,7 +298,6 @@ export default function TitleScreen() {
               0 3px 6px rgba(0,0,0,0.9)
             `,
             letterSpacing: '0.12em',
-            animation: 'titleFloat 6s ease-in-out infinite reverse',
           }}
         >
           THE KHMER EMPIRE
@@ -375,7 +311,6 @@ export default function TitleScreen() {
             height: '2px',
             background: 'linear-gradient(90deg, transparent, #D4AF37, #F0D060, #D4AF37, transparent)',
             boxShadow: '0 0 12px rgba(212,175,55,0.5)',
-            animation: 'dividerGlow 2.5s ease-in-out infinite alternate',
           }}
         />
         <p
@@ -554,7 +489,6 @@ export default function TitleScreen() {
             width: '30px',
             height: '50px',
             background: 'radial-gradient(ellipse at 50% 80%, rgba(255,150,30,0.25) 0%, rgba(255,100,20,0.1) 40%, transparent 70%)',
-            animation: 'torchFlicker 0.15s ease-in-out infinite alternate',
             filter: 'blur(3px)',
           }}
         />
@@ -566,7 +500,6 @@ export default function TitleScreen() {
             width: '12px',
             height: '20px',
             background: 'radial-gradient(ellipse at 50% 70%, rgba(255,220,100,0.6) 0%, rgba(255,150,30,0.2) 50%, transparent 80%)',
-            animation: 'torchFlame 0.1s ease-in-out infinite alternate',
           }}
         />
       </div>
@@ -579,7 +512,6 @@ export default function TitleScreen() {
             width: '30px',
             height: '50px',
             background: 'radial-gradient(ellipse at 50% 80%, rgba(255,150,30,0.25) 0%, rgba(255,100,20,0.1) 40%, transparent 70%)',
-            animation: 'torchFlicker 0.18s ease-in-out infinite alternate-reverse',
             filter: 'blur(3px)',
           }}
         />
@@ -591,7 +523,6 @@ export default function TitleScreen() {
             width: '12px',
             height: '20px',
             background: 'radial-gradient(ellipse at 50% 70%, rgba(255,220,100,0.6) 0%, rgba(255,150,30,0.2) 50%, transparent 80%)',
-            animation: 'torchFlame 0.12s ease-in-out infinite alternate-reverse',
           }}
         />
       </div>
@@ -639,41 +570,9 @@ export default function TitleScreen() {
 
       {/* Inline keyframes */}
       <style jsx global>{`
-        @keyframes kenBurns {
-          0% { transform: scale(1) translate(0, 0); }
-          100% { transform: scale(1.06) translate(-0.5%, -0.3%); }
-        }
-        @keyframes titleFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-4px); }
-        }
-        @keyframes titleGlow {
-          0% { opacity: 0.2; }
-          100% { opacity: 0.4; }
-        }
-        @keyframes dividerGlow {
-          0% { opacity: 0.6; }
-          100% { opacity: 1; }
-        }
         @keyframes menuFadeIn {
           0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
           100% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        @keyframes torchFlicker {
-          0% { opacity: 0.6; transform: scaleY(1); }
-          100% { opacity: 1; transform: scaleY(1.15); }
-        }
-        @keyframes torchFlame {
-          0% { opacity: 0.7; transform: scaleX(0.9) scaleY(0.95); }
-          100% { opacity: 1; transform: scaleX(1.1) scaleY(1.05); }
-        }
-        @keyframes lightBeam {
-          0% { opacity: 0.5; transform: translateX(-50%) rotate(-1deg); }
-          100% { opacity: 0.8; transform: translateX(-50%) rotate(1deg); }
-        }
-        @keyframes portalPulse {
-          0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-          50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
         }
         @keyframes spin {
           to { transform: rotate(360deg); }
