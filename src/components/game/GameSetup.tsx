@@ -506,14 +506,12 @@ export default function GameSetup() {
                 boxShadow: '0 8px 0 #5C4A0A, 0 10px 30px rgba(212,160,23,0.4), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)',
                 transform: 'translateY(0)',
                 textShadow: '0 1px 0 rgba(255,255,255,0.3)',
-                animation: 'btn-golden-pulse 2.5s ease-in-out infinite',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 0 #5C4A0A, 0 14px 40px rgba(212,160,23,0.5), 0 0 80px rgba(212,160,23,0.25), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; e.currentTarget.style.animation = 'none'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 0 #5C4A0A, 0 10px 30px rgba(212,160,23,0.4), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; e.currentTarget.style.animation = 'btn-golden-pulse 2.5s ease-in-out infinite'; }}
-              onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(3px)'; e.currentTarget.style.boxShadow = '0 3px 0 #5C4A0A, 0 5px 15px rgba(212,160,23,0.3), inset 0 2px 4px rgba(0,0,0,0.2)'; e.currentTarget.style.animation = 'none'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 0 #5C4A0A, 0 14px 40px rgba(212,160,23,0.5), 0 0 80px rgba(212,160,23,0.25), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 0 #5C4A0A, 0 10px 30px rgba(212,160,23,0.4), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(3px)'; e.currentTarget.style.boxShadow = '0 3px 0 #5C4A0A, 0 5px 15px rgba(212,160,23,0.3), inset 0 2px 4px rgba(0,0,0,0.2)'; }}
               onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 0 #5C4A0A, 0 14px 40px rgba(212,160,23,0.5), 0 0 80px rgba(212,160,23,0.25), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)'; }}
             >
-              <div className="absolute top-0 bottom-0 w-1/3 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)', animation: 'btn-shimmer 3s ease-in-out infinite' }} />
               <div className="absolute top-0 left-3 right-3 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }} />
               <span className="relative z-10" style={{ display: 'inline-block', filter: 'drop-shadow(0 1px 0 rgba(255,255,255,0.4))' }}>
                 ⚔️ BEGIN CONQUEST ⚔️
